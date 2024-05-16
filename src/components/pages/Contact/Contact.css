@@ -53,3 +53,43 @@
   border-radius: 2rem;
   border-bottom-left-radius: 4px;
 }
+.chat-room {
+  padding: 20px;
+}
+
+.participants-list {
+  border-right: 1px solid #ccc;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.chat-section {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.msg-box {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.msg-self {
+  text-align: right;
+  background-color: #d1e7dd;
+  padding: 5px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.msg-other {
+  text-align: left;
+  background-color: #f8d7da;
+  padding: 5px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}

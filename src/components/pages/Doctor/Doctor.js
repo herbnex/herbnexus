@@ -1,48 +1,39 @@
 import React, { useState, useEffect } from "react";
 import { Alert, Badge, Card, Col, Container, Row, Button } from "react-bootstrap";
 import { useParams, NavLink, useHistory } from "react-router-dom";
-import useDoctorList from "../../../hooks/useDoctorList";
 import Appoinment from "../Appointment/Appoinment";
 import "./Doctor.css";
 import { db } from "../../../Firebase/firebase.config";
+import { doc, getDoc } from "firebase/firestore";
 
 const Doctor = () => {
-  const [doctors] = useDoctorList();
-  const { doctorId } = useParams();
+  const { doctorId } = useParams(); // This should be the id
   const [isOnline, setIsOnline] = useState(false);
   const [doctor, setDoctor] = useState(null);
   const history = useHistory();
 
+  // Fetch the doctor's online status and data
   useEffect(() => {
-    const fetchDoctorStatus = async () => {
-      const onlineStatus = await checkIfDoctorIsOnline(doctorId);
-      setIsOnline(onlineStatus);
-    };
-    fetchDoctorStatus();
-  }, [doctorId]);
+    const fetchDoctorData = async () => {
+      try {
+        const doctorRef = doc(db, "doctors", doctorId.toString());
+        const doctorSnapshot = await getDoc(doctorRef);
+        console.log("Doctor document snapshot:", doctorSnapshot);
 
-  useEffect(() => {
-    const foundDoctor = doctorId ? doctors.find((dr) => dr.id === parseInt(doctorId)) : null;
-    setDoctor(foundDoctor);
-  }, [doctors, doctorId]);
-
-  const checkIfDoctorIsOnline = async (doctorId) => {
-    try {
-      const doctorRef = db.collection("doctors").doc(doctorId);
-      const doctorSnapshot = await doctorRef.get();
-      
-      if (doctorSnapshot.exists) {
-        const doctorData = doctorSnapshot.data();
-        return doctorData.isOnline || false; // Assuming the doctor document has an "isOnline" field
-      } else {
-        console.log("Doctor document does not exist");
-        return false;
+        if (doctorSnapshot.exists()) {
+          const doctorData = doctorSnapshot.data();
+          console.log("Doctor data from Firestore:", doctorData);
+          setIsOnline(doctorData.isOnline || false);
+          setDoctor(doctorData);
+        } else {
+          console.log("Doctor document does not exist");
+        }
+      } catch (error) {
+        console.error("Error fetching doctor data:", error);
       }
-    } catch (error) {
-      console.error("Error checking if doctor is online:", error);
-      return false;
-    }
-  };
+    };
+    fetchDoctorData();
+  }, [doctorId]);
 
   if (!doctor) {
     return <div className="alert">No result found</div>;
@@ -54,7 +45,7 @@ const Doctor = () => {
 
   return (
     <div>
-      {/* DETAILS PAGE'S HEADING  */}
+      {/* DETAILS PAGE'S HEADING */}
       <Container fluid className="details-heading">
         <Container className="name h-100">
           <Row className="h-100">
@@ -67,7 +58,7 @@ const Doctor = () => {
         </Container>
       </Container>
 
-      {/* DETAILS  */}
+      {/* DETAILS */}
       <Container className="details">
         <Row>
           <Col xs={12} lg={4}>
