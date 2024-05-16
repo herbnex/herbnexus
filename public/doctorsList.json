@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "name": "Dr. Richard Muldoone",
+    "speciality": "Herbal Medicine Specialist",
+    "image": "https://i.ibb.co/vPk8yYt/1.jpg",
+    "bio": "Dr. Muldoone obtained his degree in Herbal Medicine from the International University of Natural Health. He specializes in creating personalized herbal remedies for various health conditions.",
+    "degrees": "PhD in Herbal Medicine",
+    "office": "792 East Race Drive, Rome, NY 13440",
+    "rating": 5,
+    "isOnline": true
+  },
+  {
+    "id": 2,
+    "name": "Dr. Julia Jhones",
+    "speciality": "Ayurvedic Medicine",
+    "image": "https://i.ibb.co/CPh2GfL/2.jpg",
+    "bio": "Dr. Jhones specializes in Ayurvedic treatments, addressing health issues using traditional Indian herbal practices. She is dedicated to revitalizing the appearance of skin and overall health.",
+    "degrees": "BAMS, MD (Ayurveda)",
+    "office": "489 Hawthorne Street, New York, NY 10024",
+    "rating": 4.9,
+    "isOnline": true
+  },
+  {
+    "id": 3,
+    "name": "Dr. Maria Andaloro",
+    "speciality": "Pediatric Herbalist",
+    "image": "https://i.ibb.co/FD5G1CJ/3.jpg",
+    "bio": "Dr. Andaloro specializes in pediatric herbal medicine, providing natural treatments for children's health. She combines modern practices with traditional herbal remedies.",
+    "degrees": "PhD in Pediatric Herbal Medicine",
+    "office": "29 Vale Drive, Lockport, NY 14094",
+    "rating": 4.7,
+    "isOnline": true
+  },
+  {
+    "id": 4,
+    "name": "Dr. Kiano Barker",
+    "speciality": "Traditional Chinese Medicine",
+    "image": "https://i.ibb.co/mcTPmcw/4.jpg",
+    "bio": "Dr. Barker is an expert in Traditional Chinese Medicine, utilizing acupuncture and herbal formulas to treat chronic conditions and improve overall well-being.",
+    "degrees": "PhD in Traditional Chinese Medicine",
+    "office": "378 Nicolls Ave., New York, NY 10003",
+    "rating": 4.9,
+    "isOnline": true
+  },
+  {
+    "id": 5,
+    "name": "Dr. Dupree Black",
+    "speciality": "Naturopathic Medicine",
+    "image": "https://i.ibb.co/z5pn604/5.jpg",
+    "bio": "Dr. Black diagnoses and treats health issues using natural therapies and herbal treatments. He focuses on holistic approaches to improve overall health.",
+    "degrees": "ND, Certified Herbalist",
+    "office": "91 Wakehurst Ave., Bronx, NY 10473",
+    "rating": 4.6,
+    "isOnline": true
+  },
+  {
+    "id": 6,
+    "name": "Dr. Markus Skar",
+    "speciality": "Botanical Medicine",
+    "image": "https://i.ibb.co/CJGhMkK/6.jpg",
+    "bio": "Dr. Skar specializes in botanical medicine, using plant-based treatments to address a variety of health conditions. He emphasizes eco-friendly practices in his treatments.",
+    "degrees": "PhD in Botanical Medicine",
+    "office": "9806 Armstrong Ave., Flushing, NY 11355",
+    "rating": 4.8,
+    "isOnline": true
+  },
+  {
+    "id": 7,
+    "name": "Dr. John Henry",
+    "speciality": "Integrative Herbal Medicine",
+    "image": "https://i.ibb.co/0sfThCT/7.jpg",
+    "bio": "Dr. Henry integrates traditional herbal practices with modern medical knowledge to provide comprehensive health solutions. He focuses on natural healing and preventative care.",
+    "degrees": "MD, Certified Herbalist",
+    "office": "47 NE. Circle Dr., New York, NY 10011",
+    "rating": 4.3,
+    "isOnline": true
+  },
+  {
+    "id": 8,
+    "name": "Dr. Michael Brian",
+    "speciality": "Dermatological Herbalist",
+    "image": "https://i.ibb.co/C6jK21V/8.jpg",
+    "bio": "Dr. Brian specializes in herbal dermatology, treating skin conditions with natural remedies. He addresses cosmetic issues and enhances the health of skin and nails.",
+    "degrees": "MD, Certified Dermatologist",
+    "office": "489 Hawthorne Street, New York, NY 10024",
+    "rating": 4.9,
+    "isOnline": false
+  }
+]
