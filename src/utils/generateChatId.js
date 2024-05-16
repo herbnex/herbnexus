@@ -1,4 +1,5 @@
-// src/utils/generateChatId.js
-export const generateChatId = (uid1, uid2) => {
-  return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
+export const generateChatId = (doctorId, userName) => {
+  // Remove invalid characters from userName
+  const sanitizedUserName = userName.replace(/[.#$[\]]/g, '');
+  return `${doctorId}${sanitizedUserName}`;
 };

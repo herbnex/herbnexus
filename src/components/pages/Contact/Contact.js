@@ -79,7 +79,10 @@ const Contact = () => {
       return;
     }
 
-    const chatId = generateChatId(user.uid, selectedParticipant.id);
+    const chatId = isDoctor
+      ? generateChatId(selectedParticipant.id, user.displayName) // Doctor: user.displayName is the user name
+      : generateChatId(user.uid, selectedParticipant.name); // User: selectedParticipant.id is the doctor id
+
     console.log("Generated Chat ID:", chatId); // Debugging log
     const chatRef = ref(database, `chats/${chatId}/messages`);
 
@@ -95,7 +98,7 @@ const Contact = () => {
     });
 
     return () => unsubscribe();
-  }, [user, selectedParticipant]);
+  }, [user, selectedParticipant, isDoctor]);
 
   useEffect(() => {
     if (msgBoxRef.current) {
@@ -116,7 +119,10 @@ const Contact = () => {
       timestamp: new Date().toISOString()
     };
 
-    const chatId = generateChatId(user.uid, selectedParticipant.id);
+    const chatId = isDoctor
+      ? generateChatId(selectedParticipant.id, user.displayName) // Doctor: user.displayName is the user name
+      : generateChatId(user.uid, selectedParticipant.name); // User: selectedParticipant.id is the doctor id
+
     const chatRef = ref(database, `chats/${chatId}/messages`);
     const newMessageRef = push(chatRef);
 
