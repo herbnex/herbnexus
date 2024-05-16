@@ -50,14 +50,28 @@ const Contact = () => {
     const q = query(doctorsRef, where("isOnline", "==", true));
     const querySnapshot = await getDocs(q);
     const doctors = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setOnlineDoctors(doctors);
+    console.log("Fetched online doctors:", doctors); // Debugging log
+
+    // Deduplicate doctors
+    const uniqueDoctors = doctors.filter((doctor, index, self) =>
+      index === self.findIndex((d) => d.id === doctor.id)
+    );
+
+    setOnlineDoctors(uniqueDoctors);
   };
 
   const fetchActiveUsers = async () => {
     const usersRef = collection(db, "users");
     const querySnapshot = await getDocs(usersRef);
     const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setActiveUsers(users);
+    console.log("Fetched active users:", users); // Debugging log
+
+    // Deduplicate users
+    const uniqueUsers = users.filter((user, index, self) =>
+      index === self.findIndex((u) => u.id === user.id)
+    );
+
+    setActiveUsers(uniqueUsers);
   };
 
   useEffect(() => {
@@ -66,12 +80,14 @@ const Contact = () => {
     }
 
     const chatId = generateChatId(user.uid, selectedParticipant.id);
+    console.log("Generated Chat ID:", chatId); // Debugging log
     const chatRef = ref(database, `chats/${chatId}/messages`);
 
     const unsubscribe = onValue(chatRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const messages = Object.values(data);
+        console.log("Fetched messages:", messages); // Debugging log
         setMsgList(messages);
       } else {
         setMsgList([]);
@@ -105,6 +121,7 @@ const Contact = () => {
     const newMessageRef = push(chatRef);
 
     await set(newMessageRef, newMessage);
+    console.log("Sent message:", newMessage); // Debugging log
     setMessage('');
   };
 
@@ -116,7 +133,7 @@ const Contact = () => {
           <ListGroup>
             {(isDoctor ? activeUsers : onlineDoctors).map(participant => (
               <ListGroup.Item
-                key={participant.id}
+                key={`${isDoctor ? "user" : "doctor"}-${participant.id}`} // Ensure unique key with a prefix
                 active={selectedParticipant && selectedParticipant.id === participant.id}
                 onClick={() => setSelectedParticipant(participant)}
               >
