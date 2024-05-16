@@ -15,6 +15,8 @@ const Contact = () => {
   const [msgList, setMsgList] = useState([]);
   const [message, setMessage] = useState('');
   const [isDoctor, setIsDoctor] = useState(false);
+  const [otherTyping, setOtherTyping] = useState(false);
+  const typingTimeoutRef = useRef(null);
   const msgBoxRef = useRef(null);
 
   useEffect(() => {
@@ -50,7 +52,7 @@ const Contact = () => {
     const q = query(doctorsRef, where("isOnline", "==", true));
     const querySnapshot = await getDocs(q);
     const doctors = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log("Fetched online doctors:", doctors); // Debugging log
+    console.log("Fetched online doctors:", doctors);
 
     // Deduplicate doctors
     const uniqueDoctors = doctors.filter((doctor, index, self) =>
@@ -64,7 +66,7 @@ const Contact = () => {
     const usersRef = collection(db, "users");
     const querySnapshot = await getDocs(usersRef);
     const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log("Fetched active users:", users); // Debugging log
+    console.log("Fetched active users:", users);
 
     // Deduplicate users
     const uniqueUsers = users.filter((user, index, self) =>
@@ -80,31 +82,40 @@ const Contact = () => {
     }
 
     const chatId = isDoctor
-      ? generateChatId(selectedParticipant.id, user.displayName) // Doctor: user.displayName is the user name
-      : generateChatId(user.uid, selectedParticipant.name); // User: selectedParticipant.id is the doctor id
+      ? generateChatId(selectedParticipant.id, user.displayName)
+      : generateChatId(user.uid, selectedParticipant.name);
 
-    console.log("Generated Chat ID:", chatId); // Debugging log
+    console.log("Generated Chat ID:", chatId);
     const chatRef = ref(database, `chats/${chatId}/messages`);
+    const typingRef = ref(database, `chats/${chatId}/typing`);
 
     const unsubscribe = onValue(chatRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const messages = Object.values(data);
-        console.log("Fetched messages:", messages); // Debugging log
+        console.log("Fetched messages:", messages);
         setMsgList(messages);
       } else {
         setMsgList([]);
       }
     });
 
-    return () => unsubscribe();
+    const typingUnsubscribe = onValue(typingRef, (snapshot) => {
+      const typingData = snapshot.val();
+      setOtherTyping(typingData && typingData.typing && typingData.typing !== user.uid);
+    });
+
+    return () => {
+      unsubscribe();
+      typingUnsubscribe();
+    };
   }, [user, selectedParticipant, isDoctor]);
 
   useEffect(() => {
     if (msgBoxRef.current) {
       msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
     }
-  }, [msgList]);
+  }, [msgList, otherTyping]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -120,15 +131,39 @@ const Contact = () => {
     };
 
     const chatId = isDoctor
-      ? generateChatId(selectedParticipant.id, user.displayName) // Doctor: user.displayName is the user name
-      : generateChatId(user.uid, selectedParticipant.name); // User: selectedParticipant.id is the doctor id
+      ? generateChatId(selectedParticipant.id, user.displayName)
+      : generateChatId(user.uid, selectedParticipant.name);
 
     const chatRef = ref(database, `chats/${chatId}/messages`);
     const newMessageRef = push(chatRef);
 
     await set(newMessageRef, newMessage);
-    console.log("Sent message:", newMessage); // Debugging log
+    console.log("Sent message:", newMessage);
     setMessage('');
+
+    await set(ref(database, `chats/${chatId}/typing`), { typing: false });
+  };
+
+  const handleTyping = async (e) => {
+    setMessage(e.target.value);
+
+    const chatId = isDoctor
+      ? generateChatId(selectedParticipant.id, user.displayName)
+      : generateChatId(user.uid, selectedParticipant.name);
+
+    if (e.target.value.trim()) {
+      await set(ref(database, `chats/${chatId}/typing`), { typing: user.uid });
+
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      typingTimeoutRef.current = setTimeout(async () => {
+        await set(ref(database, `chats/${chatId}/typing`), { typing: false });
+      }, 7000);
+    } else {
+      await set(ref(database, `chats/${chatId}/typing`), { typing: false });
+    }
   };
 
   return (
@@ -139,7 +174,7 @@ const Contact = () => {
           <ListGroup>
             {(isDoctor ? activeUsers : onlineDoctors).map(participant => (
               <ListGroup.Item
-                key={`${isDoctor ? "user" : "doctor"}-${participant.id}`} // Ensure unique key with a prefix
+                key={`${isDoctor ? "user" : "doctor"}-${participant.id}`}
                 active={selectedParticipant && selectedParticipant.id === participant.id}
                 onClick={() => setSelectedParticipant(participant)}
               >
@@ -162,8 +197,14 @@ const Contact = () => {
                 {msgList.map((msg, index) => (
                   <p key={index} title={msg.user} className={msg.userId === user.uid ? "msg-self" : "msg-other"}>
                     {msg.text}
+                    <small>{new Date(msg.timestamp).toLocaleTimeString()}</small>
                   </p>
                 ))}
+                {otherTyping && (
+                  <p className="msg-other typing-indicator">
+                    Typing...
+                  </p>
+                )}
               </div>
               <Form onSubmit={handleSendMessage}>
                 <InputGroup className="mb-3">
@@ -171,7 +212,7 @@ const Contact = () => {
                     type="text"
                     placeholder="Type your message..."
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={handleTyping}
                     aria-label="User message input"
                   />
                   <Button variant="outline-secondary" type="submit">Send</Button>
