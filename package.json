@@ -43,13 +43,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "resolutions": {
-    "postcss": "8.2.15",
-    "postcss-safe-parser": "5.0.2"
-  },
-  "overrides": {
-    "postcss": "8.2.15",
-    "postcss-safe-parser": "5.0.2"
   }
 }
