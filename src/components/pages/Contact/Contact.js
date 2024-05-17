@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Container, Row, Col, ListGroup, Form, Button, InputGroup, FormControl, Badge } from "react-bootstrap";
+import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge } from "react-bootstrap";
 import { ref, set, onValue, push } from "firebase/database";
 import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
@@ -18,6 +18,8 @@ const Contact = () => {
   const [otherTyping, setOtherTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
   const msgBoxRef = useRef(null);
+  const textareaRef = useRef(null);
+  const [visibleTimestamps, setVisibleTimestamps] = useState({});
 
   useEffect(() => {
     if (!user) {
@@ -140,6 +142,7 @@ const Contact = () => {
     await set(newMessageRef, newMessage);
     console.log("Sent message:", newMessage);
     setMessage('');
+    resetTextarea();
 
     await set(ref(database, `chats/${chatId}/typing`), { typing: false });
   };
@@ -164,6 +167,43 @@ const Contact = () => {
     } else {
       await set(ref(database, `chats/${chatId}/typing`), { typing: false });
     }
+
+    autoResizeTextarea();
+  };
+
+  const autoResizeTextarea = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  };
+
+  const resetTextarea = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.value = '';
+    }
+  };
+
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+  };
+
+  const toggleTimestamp = (index) => {
+    setVisibleTimestamps((prev) => ({
+      ...prev,
+      [index]: true,
+    }));
+
+    setTimeout(() => {
+      setVisibleTimestamps((prev) => ({
+        ...prev,
+        [index]: false,
+      }));
+    }, 3000); // Hide the timestamp after 3 seconds
   };
 
   return (
@@ -195,10 +235,18 @@ const Contact = () => {
               <h4>Chat with {selectedParticipant.name}</h4>
               <div className="msg-box" ref={msgBoxRef}>
                 {msgList.map((msg, index) => (
-                  <p key={index} title={msg.user} className={msg.userId === user.uid ? "msg-self" : "msg-other"}>
-                    {msg.text}
-                    <small>{new Date(msg.timestamp).toLocaleTimeString()}</small>
-                  </p>
+                  <div
+                    key={index}
+                    className={`message-container ${msg.userId === user.uid ? "msg-self" : "msg-other"} ${visibleTimestamps[index] ? "show-timestamp" : ""}`}
+                    onClick={() => toggleTimestamp(index)}
+                  >
+                    <p title={msg.user}>{msg.text}</p>
+                    {visibleTimestamps[index] && (
+                      <span className={`timestamp ${msg.userId === user.uid ? "timestamp-left" : "timestamp-right"}`}>
+                        {formatTimestamp(msg.timestamp)}
+                      </span>
+                    )}
+                  </div>
                 ))}
                 {otherTyping && (
                   <p className="msg-other typing-indicator">
@@ -208,13 +256,16 @@ const Contact = () => {
               </div>
               <Form onSubmit={handleSendMessage} className="message-input-container">
                 <InputGroup className="mb-3">
-                  <FormControl
-                    type="text"
+                  <Form.Control
+                    as="textarea"
+                    ref={textareaRef}
+                    rows={1}
                     placeholder="Type your message..."
                     value={message}
                     onChange={handleTyping}
                     aria-label="User message input"
                     className="message-input"
+                    style={{ resize: 'none', overflow: 'auto' }}
                   />
                   <Button variant="outline-secondary" type="submit" className="message-send-button">Send</Button>
                 </InputGroup>
