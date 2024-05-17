@@ -16,80 +16,91 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 1.5rem;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-color: #39cabb5b;
+  background-color: #e6f7f5; /* Light background color */
   border-radius: 1rem;
 }
 
 .msg-box {
-  width: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   padding-bottom: 10px;
-  overflow-y: auto; /* Allows scrolling */
-  height: calc(100% - 50px); /* Adjust height as necessary */
+  overflow-y: auto;
+  padding: 1rem;
+  background-color: #ffffff; /* Background color of the message area */
+  border-radius: 1rem;
+  border: 1px solid #39cabb;
 }
 
 .msg-self,
 .msg-other {
   max-width: 300px;
   display: inline-block;
-  align-self: flex-end;
   text-align: left;
   padding: 1rem;
   color: #fff;
-  background-color: #00224f;
   margin: 5px 10px;
   border-radius: 2rem;
+}
+
+.msg-self {
+  align-self: flex-end;
+  background-color: #39cabb; /* Sent message color */
   border-bottom-right-radius: 4px;
 }
 
 .msg-other {
   align-self: flex-start;
-  background-color: #c54e6a;
-  border-radius: 2rem;
+  background-color: #e5e5e5; /* Received message color */
+  color: #000;
   border-bottom-left-radius: 4px;
 }
+
 .chat-room {
   padding: 20px;
 }
 
 .participants-list {
   border-right: 1px solid #ccc;
-  height: 100vh;
+  height: calc(100vh - 100px);
   overflow-y: auto;
 }
 
 .chat-section {
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(100vh - 100px);
+  padding: 20px;
 }
 
-.msg-box {
-  flex: 1;
-  overflow-y: auto;
-  border: 1px solid #ccc;
+.message-input-container {
+  display: flex;
+  align-items: center;
   padding: 10px;
-  margin-bottom: 10px;
+  border-top: 1px solid #ccc;
+  background-color: #ffffff;
 }
 
-.msg-self {
-  text-align: right;
-  background-color: #d1e7dd;
-  padding: 5px;
+.message-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #39cabb;
   border-radius: 5px;
-  margin-bottom: 5px;
 }
 
-.msg-other {
-  text-align: left;
-  background-color: #f8d7da;
-  padding: 5px;
+.message-send-button {
+  padding: 10px;
+  margin-left: 10px;
+  border: none;
+  background-color: #39cabb; /* Send button color */
+  color: #fff;
   border-radius: 5px;
-  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.message-send-button:hover {
+  background-color: #33b3a3; /* Darker color on hover */
 }
