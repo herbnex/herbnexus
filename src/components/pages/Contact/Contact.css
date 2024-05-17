@@ -35,15 +35,24 @@
   border: 1px solid #39cabb;
 }
 
+.message-container {
+  position: relative;
+  margin-bottom: 20px; /* Adjust spacing to accommodate timestamps */
+  transition: margin-bottom 0.3s ease;
+}
+
 .msg-self,
 .msg-other {
-  max-width: 300px;
+  max-width: 80%; /* Adjust to ensure the bubble does not exceed container */
   display: inline-block;
   text-align: left;
   padding: 1rem;
   color: #fff;
   margin: 5px 10px;
   border-radius: 2rem;
+  cursor: pointer;
+  word-wrap: break-word; /* Ensure long words break */
+  overflow-wrap: break-word; /* Ensure long words break */
 }
 
 .msg-self {
@@ -57,6 +66,38 @@
   background-color: #e5e5e5; /* Received message color */
   color: #000;
   border-bottom-left-radius: 4px;
+}
+
+.timestamp {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  transform: translateY(100%);
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  z-index: 1; /* Ensure timestamps are on top */
+}
+
+.timestamp-left {
+  left: 0;
+  transform: translate(-100%, 100%);
+}
+
+.timestamp-right {
+  right: 0;
+  transform: translate(100%, 100%);
+}
+
+.show-timestamp {
+  margin-bottom: 40px;
+}
+
+.hidden {
+  display: none;
 }
 
 .chat-room {
@@ -89,6 +130,10 @@
   padding: 10px;
   border: 1px solid #39cabb;
   border-radius: 5px;
+  overflow: auto;
+  resize: none;
+  min-height: 40px; /* Ensure the minimum height */
+  max-height: 200px; /* Ensure the maximum height */
 }
 
 .message-send-button {
