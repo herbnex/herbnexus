@@ -206,7 +206,7 @@ const Contact = () => {
                   </p>
                 )}
               </div>
-              <Form onSubmit={handleSendMessage}>
+              <Form onSubmit={handleSendMessage} className="message-input-container">
                 <InputGroup className="mb-3">
                   <FormControl
                     type="text"
@@ -214,8 +214,9 @@ const Contact = () => {
                     value={message}
                     onChange={handleTyping}
                     aria-label="User message input"
+                    className="message-input"
                   />
-                  <Button variant="outline-secondary" type="submit">Send</Button>
+                  <Button variant="outline-secondary" type="submit" className="message-send-button">Send</Button>
                 </InputGroup>
               </Form>
             </>
