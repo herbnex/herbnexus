@@ -18,6 +18,12 @@
 .btn-main {
   margin: 10px 0; /* Ensure some vertical spacing */
 }
+@media (max-width: 767.98px) {
+  .about-style-two .content-box p,
+  .about-style-two .btn-box {
+    display: none;
+  }
+}
 
 
 /* .image_block_3 .image-box .pattern .pattern-1 {
