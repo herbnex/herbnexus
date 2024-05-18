@@ -34,7 +34,7 @@ const Home = () => {
         </NavLink>
       </Container>
 
-      <About></About>
+      <About home={true}></About>
 
       <Faq></Faq>
     </div>
