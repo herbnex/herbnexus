@@ -5,7 +5,7 @@ import './HerbalChat.css';
 
 const HerbalChat = () => {
   const [messages, setMessages] = useState([
-    { user: 'Bot', text: 'Hello! Get a free consultation with me first before you speak to our live, accredited Herbal Doctors. Could you please tell me a bit about your health concerns and your overall health condition?' }
+    { user: 'Bot', text: 'Hello! I\'m here to help you with your health concerns. Could you please describe your primary health concerns?' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -19,13 +19,26 @@ const HerbalChat = () => {
     setIsLoading(true);
 
     try {
-      const baseURL = process.env.NODE_ENV === 'development' 
-        ? 'http://localhost:8888/.netlify/functions/herbalChat' 
-        : '/.netlify/functions/herbalChat';
-      
-      const response = await axios.post(baseURL, { query: input });
-      const botMessage = response.data.answer;
+      // Send the user's message and the chat history to OpenAI to get the next question
+      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+        model: 'gpt-4o',
+        messages: [
+          { role: 'system', content: 'You are a knowledgeable and empathetic herbal doctor. Ask one short, specific question about the patient\'s condition at a time, and then provide a detailed herbal protocol step-by-step, including the herbs to take, dosage, and duration. Provide intermediate steps for both questions and answers.' },
+          ...newMessages.map(msg => ({
+            role: msg.user === 'You' ? 'user' : 'assistant',
+            content: msg.text
+          }))
+        ],
+        max_tokens: 150,
+        temperature: 0.7
+      }, {
+        headers: {
+          'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
 
+      const botMessage = response.data.choices[0].message.content.trim();
       setMessages([...newMessages, { user: 'Bot', text: botMessage }]);
     } catch (error) {
       setMessages([...newMessages, { user: 'Bot', text: 'Error: Could not get response' }]);

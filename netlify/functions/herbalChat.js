@@ -3,7 +3,6 @@ const axios = require('axios');
 
 exports.handler = async function(event, context) {
     if (event.httpMethod === 'OPTIONS') {
-        // To handle preflight
         return {
             statusCode: 200,
             headers: {
@@ -15,10 +14,7 @@ exports.handler = async function(event, context) {
         };
     }
 
-    console.log('Received body:', event.body);
-
     if (!event.body) {
-        console.error('No data received in the body');
         return {
             statusCode: 400,
             headers: {
@@ -34,7 +30,6 @@ exports.handler = async function(event, context) {
     try {
         userQuery = JSON.parse(event.body).query;
     } catch (error) {
-        console.error('Error parsing JSON:', error);
         return {
             statusCode: 400,
             headers: {
@@ -46,22 +41,10 @@ exports.handler = async function(event, context) {
         };
     }
 
-    if (!userQuery) {
-        return {
-            statusCode: 400,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-            },
-            body: JSON.stringify({ error: "Query not specified in the request" })
-        };
-    }
-
     const data = {
-        model: "gpt-4-0613",
+        model: "gpt-4o",
         messages: [
-            { role: "system", content: "You are a herbal medicine Doctor that provides a herbal medicine regiment after asking 3-4 important questions about them and thier condiiton" },
+            { role: "system", content: "You are a knowledgeable and empathetic herbal doctor. Ask one short, specific question about the patient's condition at a time, and then provide a detailed herbal protocol step-by-step, including the herbs to take, dosage, and duration. Provide intermediate steps for both questions and answers." },
             { role: "user", content: userQuery }
         ],
         max_tokens: 150
@@ -78,7 +61,6 @@ exports.handler = async function(event, context) {
         const response = await axios.post('https://api.openai.com/v1/chat/completions', data, config);
 
         if (!response.data || !response.data.choices || response.data.choices.length === 0) {
-            console.error('Invalid response structure from OpenAI', response);
             return {
                 statusCode: 500,
                 headers: {
@@ -100,7 +82,6 @@ exports.handler = async function(event, context) {
             body: JSON.stringify({ answer: response.data.choices[0].message.content })
         };
     } catch (error) {
-        console.error('Error calling the OpenAI API:', error.response ? error.response.data : error);
         return {
             statusCode: 500,
             headers: {
