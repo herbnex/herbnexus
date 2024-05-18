@@ -3,6 +3,7 @@ import { Container, Button } from "react-bootstrap";
 import "./Banner.css";
 import bannerBg from "../../assets/banner-bg.png";
 import { NavLink } from "react-router-dom";
+import HerbalChat from "../HerbalChat/HerbalChat"; // Import the new chat component
 
 const Banner = () => {
   return (
@@ -13,7 +14,7 @@ const Banner = () => {
             <div className="content_block_1">
               <div className="content-box me-50">
                 <div className="sec-title">
-                  <p className="text-main">About Herb Nexus</p>
+                 
                   <h2 className="title text-second">Connect live with a Herbalist</h2>
                 </div>
                 <div>
@@ -40,7 +41,8 @@ const Banner = () => {
           </div>
           <div className="col-12 col-lg-6">
             <div className="image_block_3">
-              <img src={bannerBg} alt="Herb Nexus Banner" />
+              {/* Replace the image with the HerbalChat component */}
+              <HerbalChat />
             </div>
           </div>
         </div>
