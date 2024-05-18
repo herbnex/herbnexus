@@ -59,9 +59,9 @@ exports.handler = async function(event, context) {
     }
 
     const data = {
-        model: "gpt-4o",
+        model: "gpt-4-0613",
         messages: [
-            { role: "system", content: "You are a helpful assistant." },
+            { role: "system", content: "You are a herbal medicine Doctor that provides a herbal medicine regiment after asking 3-4 important questions about them and thier condiiton" },
             { role: "user", content: userQuery }
         ],
         max_tokens: 150
