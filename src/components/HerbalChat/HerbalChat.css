@@ -58,4 +58,14 @@
   .mb-3 .btn {
     border-radius: 10px 0 0 10px;
   }
+  @media (max-width: 768px) {
+    .herbal-chat-container {
+      height: 50vh;
+      max-height: 90vh;
+    }
   
+    .chat-window {
+      height: 100%;
+      max-height: 100%;
+    }
+  }
