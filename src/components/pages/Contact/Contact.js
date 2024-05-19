@@ -98,6 +98,12 @@ const Contact = () => {
         const messages = Object.values(data);
         console.log("Fetched messages:", messages);
         setMsgList(messages);
+        // Scroll to the bottom when new messages arrive
+        setTimeout(() => {
+          if (msgBoxRef.current) {
+            msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
+          }
+        }, 100);
       } else {
         setMsgList([]);
       }
@@ -113,12 +119,6 @@ const Contact = () => {
       typingUnsubscribe();
     };
   }, [user, selectedParticipant, isDoctor]);
-
-  useEffect(() => {
-    if (msgBoxRef.current) {
-      msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
-    }
-  }, [msgList, otherTyping]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -146,6 +146,13 @@ const Contact = () => {
     resetTextarea();
 
     await set(ref(database, `chats/${chatId}/typing`), { typing: false });
+
+    // Scroll to the bottom after sending a message
+    setTimeout(() => {
+      if (msgBoxRef.current) {
+        msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
+      }
+    }, 100);
   };
 
   const handleTyping = async (e) => {
