@@ -14,7 +14,18 @@
   width: 200px;
   height: 200px;
 }
+
 .service-grid i {
   font-size: 4rem;
   opacity: 0.7;
+}
+
+.about-title {
+  display: block;
+}
+
+@media (max-width: 767.98px) {
+  .about-title {
+    display: none;
+  }
 }

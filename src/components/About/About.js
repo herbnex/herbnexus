@@ -25,20 +25,13 @@ const About = ({ home }) => {
       <Container className="name h-100">
         <Row className="h-100 p-5">
           <Col xs={12} md={7}>
-            <h1 className="text-white text-start mb-3">
-              <i className="bi bi-activity"></i> &nbsp;Herb Nexus: Connecting You with Accredited Herbalists Worldwide
-            </h1>
+            <div className="about-title">
+              <h1 className="text-white text-start mb-3">
+                <i className="bi bi-activity"></i> &nbsp;Herb Nexus: Connecting You with Accredited Herbalists Worldwide
+              </h1>
+            </div>
           </Col>
           <Col xs={12} md={4}></Col>
-          {/* <Col xs={12} md={12} className="my-2">
-            <i className="bi bi-shield-plus text-white" style={{ fontSize: "5rem" }}></i>
-          </Col>
-          <Col xs={12} md={5}></Col>
-          <Col xs={12} md={7}>
-            <h5 className="text-white text-start mb-3">
-              At Herb Nexus, we provide personalized herbal consultations with accredited herbalists. Our platform offers 24/7 live chat access to herbalists for a monthly subscription fee of $50, ensuring you get tailored herbal remedy recommendations whenever you need them.
-            </h5>
-          </Col> */}
         </Row>
       </Container>
       <Container>
