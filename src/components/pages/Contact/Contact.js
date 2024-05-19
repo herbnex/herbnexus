@@ -19,6 +19,7 @@ const Contact = () => {
   const typingTimeoutRef = useRef(null);
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
+  const chatSectionRef = useRef(null);
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
 
   useEffect(() => {
@@ -206,6 +207,18 @@ const Contact = () => {
     }, 3000); // Hide the timestamp after 3 seconds
   };
 
+  const handleParticipantClick = (participant) => {
+    setSelectedParticipant(participant);
+
+    // Scroll to the chat section on small screens
+    setTimeout(() => {
+      const chatSection = chatSectionRef.current;
+      if (chatSection) {
+        chatSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 300); // Delay to ensure layout has updated
+  };
+
   return (
     <Container fluid className="chat-room">
       <Row>
@@ -216,7 +229,7 @@ const Contact = () => {
               <ListGroup.Item
                 key={`${isDoctor ? "user" : "doctor"}-${participant.id}`}
                 active={selectedParticipant && selectedParticipant.id === participant.id}
-                onClick={() => setSelectedParticipant(participant)}
+                onClick={() => handleParticipantClick(participant)}
               >
                 <div className="d-flex justify-content-between align-items-center">
                   <div>
@@ -229,7 +242,7 @@ const Contact = () => {
             ))}
           </ListGroup>
         </Col>
-        <Col md={8} className="chat-section">
+        <Col md={8} className="chat-section" ref={chatSectionRef}>
           {selectedParticipant ? (
             <>
               <h4>Chat with {selectedParticipant.name}</h4>
