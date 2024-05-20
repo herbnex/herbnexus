@@ -1,0 +1,6 @@
+{
+  "printWidth": 70,
+  "trailingComma": "all",
+  "arrowParens": "always",
+  "semi": true
+}
