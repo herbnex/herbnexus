@@ -46,7 +46,17 @@ const NavBar = () => {
               </NavLink>
             </Nav>
 
-            {/* SHOW LOGIN OR LOGOUT BUTTON BASE ON LOGIN STATUS */}
+            {/* ADD SHOP BUTTON */}
+            <Button
+              variant="outline"
+              className="rounded-pill btn-main p-2 px-3 me-3"
+              onClick={() => window.open('https://shop.herbnexus.io', '_blank')}
+            >
+              Shop&nbsp;
+              <i className="bi bi-cart"></i>
+            </Button>
+
+            {/* SHOW LOGIN OR LOGOUT BUTTON BASED ON LOGIN STATUS */}
             {!user ? (
               <NavLink to="/login">
                 <Button variant="outline" className="rounded-pill btn-main p-2 px-3">
