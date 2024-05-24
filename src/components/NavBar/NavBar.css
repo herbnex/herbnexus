@@ -20,6 +20,7 @@
   margin-left: 1rem;
   color: #00224f;
 }
+
 .nav-item:hover,
 .active {
   color: #39cabb;
@@ -27,6 +28,8 @@
 
 .user {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .user-icon {
@@ -37,6 +40,10 @@
   border: 2px solid #fff;
   box-shadow: 0 0 0 3px #39cabb88;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
 }
 
 .user-icon img {
@@ -100,4 +107,34 @@
   .user-icon {
     margin-top: 0.5rem;
   }
+}
+
+/* Flexbox adjustments to align items in the navbar */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-nav .nav-item {
+  margin-left: 1rem;
+}
+
+.navbar-nav .btn-main {
+  margin-left: 1rem;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+}
+
+.user-icon {
+  margin-left: 1rem;
 }
