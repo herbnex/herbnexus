@@ -29,12 +29,12 @@ const Banner = () => {
                       <i className="bi bi-chat-dots"></i>
                     </Button>
                   </NavLink>
-                  <NavLink to="/about">
+                  <a href="https://shop.herbnexus.io/" target="_blank" rel="noopener noreferrer">
                     <Button variant="outline" className="rounded-pill btn-main my-5 p-2 px-3">
-                      About Us &nbsp;
+                      Shop &nbsp;
                       <i className="bi bi-arrow-right"></i>
                     </Button>
-                  </NavLink>
+                  </a>
                 </div>
               </div>
             </div>
