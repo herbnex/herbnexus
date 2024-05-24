@@ -61,7 +61,7 @@ const NavBar = () => {
               <NavLink to="/login">
                 <Button variant="outline" className="rounded-pill btn-main p-2 px-3">
                   <i className="bi bi-person"></i>
-                  &nbsp;Login Now
+                  &nbsp;Login
                 </Button>
               </NavLink>
             ) : (
