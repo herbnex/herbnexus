@@ -22,8 +22,8 @@ const Home = () => {
       <Banner />
 
       <SectionTitle>
-        <h4>Meet Our Herbalists</h4>
-        <h1>Top Rated Specialists</h1>
+        <h4>Subscribe Now</h4>
+        <h1>Get 24/7 Access to Herbalists</h1>
       </SectionTitle>
       <DoctorsCards home />
       <Container className="text-center my-5">
@@ -39,11 +39,11 @@ const Home = () => {
 
       <Faq />
 
-      <SectionTitle>
+      {/* <SectionTitle>
         <h4>Subscribe Now</h4>
         <h1>Get 24/7 Access to Herbalists</h1>
       </SectionTitle>
-      <Subscription />
+      <Subscription /> */}
     </div>
   );
 };
