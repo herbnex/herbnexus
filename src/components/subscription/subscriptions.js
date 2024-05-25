@@ -51,7 +51,7 @@ const SubscriptionForm = ({ clientSecret }) => {
           <ul>
             <li>Access to accredited herbal practitioners 24/7</li>
             <li>Personalized herbal recommendations</li>
-            <li>Exclusive content and discounts</li>
+            <li>Member rate at our shop</li>
           </ul>
           <h2>Common Questions</h2>
           <h5><FontAwesomeIcon icon={faInfoCircle} /> What does the subscription include?</h5>
