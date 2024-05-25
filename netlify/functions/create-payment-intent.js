@@ -12,7 +12,6 @@ const firebaseConfig = {
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.FIREBASE_APP_ID,
 };
-
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
@@ -27,6 +26,11 @@ exports.handler = async (event, context) => {
         enabled: true,
       },
       metadata: { userId },
+    });
+
+    // Update Firestore to mark the user as subscribed
+    await updateDoc(doc(db, 'users', userId), {
+      isSubscribed: true,
     });
 
     return {
