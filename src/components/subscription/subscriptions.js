@@ -51,7 +51,7 @@ const SubscriptionForm = ({ clientSecret }) => {
           <ul>
             <li>Access to accredited herbal practitioners 24/7</li>
             <li>Personalized herbal recommendations</li>
-            <li>Member rate at our shop</li>
+            <li>Exclusive content and discounts</li>
           </ul>
           <h2>Common Questions</h2>
           <h5><FontAwesomeIcon icon={faInfoCircle} /> What does the subscription include?</h5>
@@ -168,7 +168,7 @@ const Subscription = () => {
   useEffect(() => {
     const createPaymentIntent = async () => {
       try {
-        const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/api/create-payment-intent`, { userId: user.uid });
+        const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
         setClientSecret(data.clientSecret);
       } catch (error) {
         console.error("Error creating payment intent", error);
