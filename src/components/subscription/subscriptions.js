@@ -57,7 +57,7 @@ const SubscriptionForm = ({ clientSecret }) => {
           <h5><FontAwesomeIcon icon={faInfoCircle} /> What does the subscription include?</h5>
           <p>Your subscription includes 24/7 access to accredited herbal practitioners, personalized recommendations, and more.</p>
           <h5><FontAwesomeIcon icon={faInfoCircle} /> How do I cancel my subscription?</h5>
-          <p>You can cancel your subscription at any time through your account settings.</p>
+          <p>You can cancel your subscription at any time through your account settings. Your subscription will stay active until the end of your billing cycle.</p>
           <h5><FontAwesomeIcon icon={faInfoCircle} /> Is my payment information secure?</h5>
           <p>Yes, we use Stripe to process payments, ensuring your information is secure.</p>
         </Col>
