@@ -1,7 +1,9 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getDatabase } from "firebase/database";
+// firebase.config.js
+
+const { initializeApp } = require('firebase/app');
+const { getAuth } = require('firebase/auth');
+const { getFirestore } = require('firebase/firestore');
+const { getDatabase } = require('firebase/database');
 
 // Firebase configuration object using environment variables
 const firebaseConfig = {
@@ -18,11 +20,9 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase Authentication and export
-export const auth = getAuth(app);
+// Initialize Firebase services
+const auth = getAuth(app);
+const db = getFirestore(app);
+const database = getDatabase(app);
 
-// Initialize Firestore and export
-export const db = getFirestore(app);
-
-// Initialize Realtime Database and export
-export const database = getDatabase(app);
+module.exports = { auth, db, database };
