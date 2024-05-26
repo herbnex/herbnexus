@@ -10,8 +10,6 @@ import {
   onAuthStateChanged,
 } from "@firebase/auth";
 import { useEffect, useState } from "react";
-import { doc, getDoc, setDoc } from "@firebase/firestore";
-import { db } from "../Firebase/firebase.config";
 import initializeAuthentication from "../Firebase/firebase.init";
 
 initializeAuthentication();
@@ -20,28 +18,16 @@ const useFirebase = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubscribed, setIsSubscribed] = useState(false);
 
   const auth = getAuth();
 
-  const checkSubscriptionStatus = async (currentUser) => {
-    if (currentUser) {
-      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        setIsSubscribed(data.isSubscribed && new Date(data.subscriptionEndDate) > new Date());
-      }
-    }
-  };
-
-  // GOOGLE SIGN IN
+  //   GOOGLE SIGN IN
   const signInWithGoogle = () => {
     setIsLoading(true);
     const gAuthProvider = new GoogleAuthProvider();
     signInWithPopup(auth, gAuthProvider)
       .then((result) => {
         setUser(result.user);
-        checkSubscriptionStatus(result.user);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -50,14 +36,13 @@ const useFirebase = () => {
       });
   };
 
-  // GITHUB SIGN IN
+  //   GITHUB SIGN IN
   const signInWithGithub = () => {
     setIsLoading(true);
     const gitAuthProvider = new GithubAuthProvider();
     signInWithPopup(auth, gitAuthProvider)
       .then((result) => {
         setUser(result.user);
-        checkSubscriptionStatus(result.user);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -66,19 +51,13 @@ const useFirebase = () => {
       });
   };
 
-  // EMAIL AND PASSWORD SIGN UP
+  //   EMAIN AND PASSWORD SIGN UP
   const createAccountWithEmailPassword = (email, password, name) => {
     setIsLoading(true);
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        const newUser = userCredential.user;
-        setUser(newUser);
+        setUser(userCredential.user);
         setUserProfile(auth, name);
-        // Initialize subscription status in Firestore
-        setDoc(doc(db, "users", newUser.uid), {
-          isSubscribed: false,
-          subscriptionEndDate: null
-        });
         setIsLoading(false);
       })
       .catch((err) => {
@@ -94,22 +73,22 @@ const useFirebase = () => {
       displayName: name,
     })
       .then(() => {
+        // Profile updated!
         setIsLoading(false);
       })
       .catch((error) => {
+        // An error occurred
         console.log(error);
         setIsLoading(false);
       });
   };
 
-  // EMAIL AND PASSWORD LOGIN
+  //   EMAIN AND PASSWORD LOGIN
   const logInWithEmailandPassword = (email, password) => {
     setIsLoading(true);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        const loggedInUser = userCredential.user;
-        setUser(loggedInUser);
-        checkSubscriptionStatus(loggedInUser);
+        setUser(userCredential.user);
         setIsLoading(false);
       })
       .catch((err) => {
@@ -118,29 +97,25 @@ const useFirebase = () => {
       });
   };
 
-  // LOG OUT
+  //   LOG OUT
   const logOut = () => {
-    signOut(auth).then(() => {
-      setUser(null);
-      setIsSubscribed(false);
-    });
+    signOut(auth).then(setUser(null));
   };
 
-  // GET CURRENT USER WITH AUTH OBSERVER
+  //   GET CURRENT USER WITH AUTH OBSERVER
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        checkSubscriptionStatus(currentUser);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in
+        setUser(user);
         setIsLoading(false);
+        // ...
       } else {
-        setUser(null);
-        setIsSubscribed(false);
+        // User is signed out
+
         setIsLoading(false);
       }
     });
-
-    return () => unsubscribe();
   }, []);
 
   return {
@@ -148,7 +123,6 @@ const useFirebase = () => {
     error,
     setError,
     isLoading,
-    isSubscribed,
     signInWithGoogle,
     signInWithGithub,
     createAccountWithEmailPassword,
