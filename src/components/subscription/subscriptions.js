@@ -5,7 +5,7 @@ import axios from "axios";
 import { Container, Form, Button, Alert, Row, Col } from "react-bootstrap";
 import { doc, updateDoc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../../Firebase/firebase.config";
-import useAuth from "../../../hooks/useAuth";
+import useAuth from "../../../src/hooks/useAuth";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCreditCard, faCheckCircle, faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
 import { useHistory } from "react-router-dom";
