@@ -1,10 +1,12 @@
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { db } = require('../../src/Firebase/firebase.config'); // Ensure this path is correct
-const { doc, updateDoc } = require('firebase/firestore');
+
+const { doc, updateDoc, getDoc, setDoc } = require('firebase/firestore');
 
 exports.handler = async (event, context) => {
   console.log('Received event:', event);
+
   const { userId } = JSON.parse(event.body);
 
   try {
@@ -20,12 +22,24 @@ exports.handler = async (event, context) => {
 
     console.log('Payment intent created:', paymentIntent);
 
-    // Update Firestore to mark the user as subscribed
-    await updateDoc(doc(db, 'users', userId), {
-      isSubscribed: true,
-    });
+    // Reference to the user document
+    const userRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userRef);
 
-    console.log('Updated Firestore for user:', userId);
+    // Check if the document exists
+    if (userDoc.exists()) {
+      // Update the user document with the isSubscribed field
+      await updateDoc(userRef, {
+        isSubscribed: true,
+      });
+      console.log('Updated Firestore for existing user:', userId);
+    } else {
+      // Create the user document if it does not exist
+      await setDoc(userRef, {
+        isSubscribed: true,
+      });
+      console.log('Created new Firestore document for user:', userId);
+    }
 
     return {
       statusCode: 200,
