@@ -28,7 +28,8 @@ const useFirebase = () => {
     if (currentUser) {
       const userDoc = await getDoc(doc(db, "users", currentUser.uid));
       if (userDoc.exists()) {
-        setIsSubscribed(userDoc.data().isSubscribed || false);
+        const data = userDoc.data();
+        setIsSubscribed(data.isSubscribed && new Date(data.subscriptionEndDate) > new Date());
       }
     }
   };
@@ -76,6 +77,7 @@ const useFirebase = () => {
         // Initialize subscription status in Firestore
         setDoc(doc(db, "users", newUser.uid), {
           isSubscribed: false,
+          subscriptionEndDate: null
         });
         setIsLoading(false);
       })
