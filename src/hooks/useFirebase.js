@@ -11,7 +11,7 @@ import {
 } from "@firebase/auth";
 import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc } from "@firebase/firestore";
-import { db } from "../Firebase/firebase.config"; // Adjust the path as necessary
+import { db } from "../Firebase/firebase.config";
 import initializeAuthentication from "../Firebase/firebase.init";
 
 initializeAuthentication();
@@ -23,6 +23,15 @@ const useFirebase = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
 
   const auth = getAuth();
+
+  const checkSubscriptionStatus = async (currentUser) => {
+    if (currentUser) {
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+      if (userDoc.exists()) {
+        setIsSubscribed(userDoc.data().isSubscribed || false);
+      }
+    }
+  };
 
   // GOOGLE SIGN IN
   const signInWithGoogle = () => {
@@ -83,11 +92,9 @@ const useFirebase = () => {
       displayName: name,
     })
       .then(() => {
-        // Profile updated!
         setIsLoading(false);
       })
       .catch((error) => {
-        // An error occurred
         console.log(error);
         setIsLoading(false);
       });
@@ -121,12 +128,10 @@ const useFirebase = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        // User is signed in
         setUser(currentUser);
         checkSubscriptionStatus(currentUser);
         setIsLoading(false);
       } else {
-        // User is signed out
         setUser(null);
         setIsSubscribed(false);
         setIsLoading(false);
@@ -135,15 +140,6 @@ const useFirebase = () => {
 
     return () => unsubscribe();
   }, []);
-
-  const checkSubscriptionStatus = async (currentUser) => {
-    if (currentUser) {
-      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-      if (userDoc.exists()) {
-        setIsSubscribed(userDoc.data().isSubscribed);
-      }
-    }
-  };
 
   return {
     user,
