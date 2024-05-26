@@ -8,7 +8,6 @@ import { db } from "../../../src/Firebase/firebase.config";
 import useAuth from "../../../src/hooks/useAuth";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCreditCard, faCheckCircle, faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
-import { useHistory } from "react-router-dom";
 import "./subscription.css";
 
 // Load Stripe using your public key from the environment variables
@@ -18,7 +17,6 @@ const SubscriptionForm = ({ clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { user } = useAuth();
-  const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [contact, setContact] = useState("");
@@ -32,38 +30,31 @@ const SubscriptionForm = ({ clientSecret }) => {
     event.preventDefault();
     setLoading(true);
 
-    const { error: paymentError } = await stripe.confirmPayment({
+    const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: window.location.origin + "/contact",
       },
     });
 
-    if (paymentError) {
-      setError(paymentError.message);
+    if (error) {
+      setError(error.message);
       setLoading(false);
     } else {
       try {
         const userRef = doc(db, 'users', user.uid);
         const userDoc = await getDoc(userRef);
 
-        const subscriptionEndDate = new Date();
-        subscriptionEndDate.setDate(subscriptionEndDate.getDate() + 30);
-
         if (userDoc.exists()) {
           await updateDoc(userRef, {
             isSubscribed: true,
-            subscriptionEndDate: subscriptionEndDate.toISOString()
           });
         } else {
           await setDoc(userRef, {
             isSubscribed: true,
-            subscriptionEndDate: subscriptionEndDate.toISOString()
           });
         }
-
         alert("Subscription successful!");
-        history.push("/contact");
       } catch (firebaseError) {
         setError(firebaseError.message);
       } finally {
