@@ -174,7 +174,7 @@ const Subscription = () => {
   useEffect(() => {
     const createPaymentIntent = async () => {
       try {
-        const { data } = await axios.post("/netlify/functions/create-payment-intent", { userId: user.uid });
+        const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
         setClientSecret(data.clientSecret);
       } catch (error) {
         console.error("Error creating payment intent", error);
