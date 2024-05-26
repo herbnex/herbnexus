@@ -3,17 +3,20 @@ import { useStripe, useElements, PaymentElement, Elements } from "@stripe/react-
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import { Container, Form, Button, Alert, Row, Col } from "react-bootstrap";
-import useAuth from "../../hooks/useAuth";
+import { doc, updateDoc, setDoc, getDoc } from "firebase/firestore";
+import { db } from "../../../src/Firebase/firebase.config";
+import useAuth from "../../../src/hooks/useAuth";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCreditCard, faCheckCircle, faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
 import "./subscription.css";
 
+// Load Stripe using your public key from the environment variables
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 const SubscriptionForm = ({ clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
-  const { user, setUser } = useAuth();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [contact, setContact] = useState("");
@@ -38,14 +41,25 @@ const SubscriptionForm = ({ clientSecret }) => {
       setError(error.message);
       setLoading(false);
     } else {
-      // Update user's subscription status in frontend
-      setUser((prevUser) => ({
-        ...prevUser,
-        isSubscribed: true,
-      }));
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userRef);
 
-      setLoading(false);
-      alert("Subscription successful!");
+        if (userDoc.exists()) {
+          await updateDoc(userRef, {
+            isSubscribed: true,
+          });
+        } else {
+          await setDoc(userRef, {
+            isSubscribed: true,
+          });
+        }
+        alert("Subscription successful!");
+      } catch (firebaseError) {
+        setError(firebaseError.message);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
