@@ -1,6 +1,6 @@
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { db } = require('../../src/Firebase/firebase.config'); // Import the db object
+const { db } = require('../../src/Firebase/firebase.config'); // Use the existing Firebase configuration
 
 const { doc, updateDoc } = require('firebase/firestore');
 
