@@ -3,18 +3,16 @@ import { useStripe, useElements, PaymentElement, Elements } from "@stripe/react-
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import { Container, Form, Button, Alert, Row, Col } from "react-bootstrap";
-import { doc, updateDoc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "../../../src/Firebase/firebase.config";
 import useAuth from "../../../src/hooks/useAuth";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCreditCard, faCheckCircle, faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
 import { useHistory } from "react-router-dom";
 import "./subscription.css";
 
 // Load Stripe using your public key from the environment variables
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const SubscriptionForm = ({ clientSecret }) => {
+const Subscription = ({ clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { user } = useAuth();
@@ -31,44 +29,38 @@ const SubscriptionForm = ({ clientSecret }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
+    setError(null);
 
-    const { error: paymentError } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: window.location.origin + "/contact",
-      },
-    });
+    try {
+      const { error: paymentError } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: window.location.origin + "/contact",
+        },
+      });
 
-    if (paymentError) {
-      setError(paymentError.message);
-      setLoading(false);
-    } else {
-      try {
-        const userRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userRef);
+      const subscriptionEndDate = new Date();
+      subscriptionEndDate.setDate(subscriptionEndDate.getDate() + 30);
 
-        const subscriptionEndDate = new Date();
-        subscriptionEndDate.setDate(subscriptionEndDate.getDate() + 30);
+      const isSubscribed = !paymentError;
 
-        if (userDoc.exists()) {
-          await updateDoc(userRef, {
-            isSubscribed: true,
-            subscriptionEndDate: subscriptionEndDate.toISOString()
-          });
-        } else {
-          await setDoc(userRef, {
-            isSubscribed: true,
-            subscriptionEndDate: subscriptionEndDate.toISOString()
-          });
-        }
+      // Call the serverless function to update Firestore
+      await axios.post('/.netlify/functions/updateSubscription', {
+        userId: user.uid,
+        isSubscribed,
+        subscriptionEndDate: isSubscribed ? subscriptionEndDate.toISOString() : null,
+      });
 
+      if (paymentError) {
+        setError(paymentError.message);
+      } else {
         alert("Subscription successful!");
         history.push("/contact");
-      } catch (firebaseError) {
-        setError(firebaseError.message);
-      } finally {
-        setLoading(false);
       }
+    } catch (error) {
+      setError("An error occurred while processing your subscription. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -177,9 +169,11 @@ const SubscriptionForm = ({ clientSecret }) => {
             <div className="divider">
               <span>Payment Details</span>
             </div>
-            <Form.Group>
-              <PaymentElement className="PaymentElement" />
-            </Form.Group>
+            {clientSecret && (
+              <Form.Group>
+                <PaymentElement />
+              </Form.Group>
+            )}
             <Button type="submit" disabled={!stripe || loading} className="subscribe-button mt-3">
               {loading ? "Processing..." : "Subscribe for $50/month"}
             </Button>
@@ -190,7 +184,7 @@ const SubscriptionForm = ({ clientSecret }) => {
   );
 };
 
-const Subscription = () => {
+const SubscriptionWrapper = () => {
   const [clientSecret, setClientSecret] = useState("");
   const { user } = useAuth();
 
@@ -199,23 +193,26 @@ const Subscription = () => {
       try {
         const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
         setClientSecret(data.clientSecret);
+        
+        console.log("Client secret received:", data.clientSecret);
       } catch (error) {
-        console.error("Error creating payment intent", error);
+        console.error("Error creating payment intent:", error);
       }
     };
 
     if (user) {
       createPaymentIntent();
+      console.log('id:', user.uid);
     }
   }, [user]);
 
   return (
     clientSecret && (
       <Elements stripe={stripePromise} options={{ clientSecret }}>
-        <SubscriptionForm clientSecret={clientSecret} />
+        <Subscription clientSecret={clientSecret} />
       </Elements>
     )
   );
 };
 
-export default Subscription;
+export default SubscriptionWrapper;
