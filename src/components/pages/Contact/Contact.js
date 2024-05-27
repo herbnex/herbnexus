@@ -21,7 +21,8 @@ const Contact = () => {
   const textareaRef = useRef(null);
   const chatSectionRef = useRef(null);
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
-
+  
+  console.log(window.location)
   useEffect(() => {
     if (!user) {
       console.error("User is not authenticated!");

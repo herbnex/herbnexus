@@ -1,29 +1,31 @@
 // netlify/functions/updateSubscription.js
 
-const { db } = require('../../src/Firebase/setupFirebaseAdmin');
+const { db } = require("../../src/Firebase/setupFirebaseAdmin");
 
 exports.handler = async (event) => {
   try {
-    const { userId, isSubscribed, subscriptionEndDate } = JSON.parse(event.body);
+    const { userId, isSubscribed, subscriptionEndDate } = JSON.parse(
+      event.body
+    );
 
     // Update the user document in Firestore
-    const userRef = db.collection('users').doc(userId);
-    console.log('id:', userId);
+    const userRef = db.collection("users").doc(userId);
 
-    await userRef.set({
-      isSubscribed,
-      subscriptionEndDate: subscriptionEndDate || null,
-    }, { merge: true });
+    console.log("Updating user:", userId);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'Subscription updated successfully' }),
-    };
+    const user = await userRef.set(
+      {
+        isSubscribed,
+        subscriptionEndDate: subscriptionEndDate || null,
+      },
+      {
+        merge: true,
+      }
+    );
+
+    return { user, statusCode: 200 };
   } catch (error) {
-    console.error('Error updating subscription:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: 'Internal Server Error' }),
-    };
+    console.error("Error updating subscription:", error);
+    return { message, statusCode: 200 };
   }
 };
