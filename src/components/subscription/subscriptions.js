@@ -1,21 +1,12 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
-import {
-  useStripe,
-  useElements,
-  PaymentElement,
-  Elements,
-} from "@stripe/react-stripe-js";
+import { useStripe, useElements, PaymentElement, Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import { Container, Form, Button, Alert, Row, Col } from "react-bootstrap";
 import useAuth from "../../../src/hooks/useAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faInfoCircle,
-  faEnvelope,
-  faAddressCard,
-} from "@fortawesome/free-solid-svg-icons";
-import { useHistory, useLocation, useParams } from "react-router-dom";
+import { faInfoCircle, faEnvelope, faAddressCard } from "@fortawesome/free-solid-svg-icons";
+import { useHistory, useLocation } from "react-router-dom";
 import "./subscription.css";
 
 // Load Stripe using your public key from the environment variables
@@ -24,7 +15,7 @@ const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 const Subscription = ({ clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const history = useHistory();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
@@ -36,64 +27,51 @@ const Subscription = ({ clientSecret }) => {
   const [city, setCity] = useState("");
   const [zip, setZip] = useState("");
 
-  const params = useMemo(() => {
-    return new URLSearchParams(location.search);
-  }, [location]);
+  const refferer = location?.state?.from || { pathname: "/contact" };
+
+  const params = useMemo(() => new URLSearchParams(location.search), [location]);
 
   const getPaymentIntent = useCallback(async () => {
-    return stripe?.retrievePaymentIntent(
-      params.get("payment_intent_client_secret")
-    );
+    if (!stripe || !params.get("payment_intent_client_secret")) return null;
+    const { paymentIntent, error } = await stripe.retrievePaymentIntent(params.get("payment_intent_client_secret"));
+    return { paymentIntent, error };
   }, [params, stripe]);
 
   const handlePaymentSuccess = useCallback(async () => {
-    const { paymentIntent, error } = (await getPaymentIntent()) || {};
+    const { paymentIntent, error } = await getPaymentIntent() || {};
 
     if (error) {
       console.error("Error retrieving payment intent:", error);
-      setError(
-        error?.message || "An error occurred while trying to make payment"
-      );
+      setError(error.message || "An error occurred while trying to make payment");
       return;
     }
 
     console.log("Payment Intent", paymentIntent, user.uid);
 
-    if (paymentIntent.status === "succeeded") {
+    if (paymentIntent && paymentIntent.status === "succeeded") {
       try {
-        const data = await axios.post(
-          "/.netlify/functions/updateSubscription",
-          {
-            userId: user.uid,
-            isSubscribed: true,
-            subscriptionEndDate: new Date(
-              Date.now() + 30 * 24 * 60 * 60 * 1000
-            ).toISOString(),
-          }
-        );
-        console.log("Subscription update successful", data);
-        history.push("/contact");
+        await axios.post("/.netlify/functions/updateSubscription", {
+          userId: user.uid,
+          isSubscribed: true,
+          subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        });
+        console.log("Subscription update successful");
+        await updateUser(user);
+        history.replace(refferer);
       } catch (updateError) {
         console.error("Error updating subscription:", updateError);
-        setError(
-          "An error occurred while updating your subscription. Please try again."
-        );
+        setError("An error occurred while updating your subscription. Please try again.");
       }
     } else {
       setError("Payment was not successful.");
     }
-  }, [user, getPaymentIntent, history]);
+  }, [user, getPaymentIntent, history, updateUser]);
 
   useEffect(() => {
-    console.log("Handling payment success");
-    if (location.search && params.has("payment_intent_client_secret")) {
-      console.log(
-        "Handled payment success",
-        params.get('payment_intent_client_secret')
-      );
+    if (params.get("payment_intent_client_secret")) {
       handlePaymentSuccess();
     }
-  }, [handlePaymentSuccess, params, location]);
+  }, [handlePaymentSuccess, params]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -101,10 +79,10 @@ const Subscription = ({ clientSecret }) => {
     setError(null);
 
     try {
-      const { error: paymentError } = await stripe?.confirmPayment({
+      const { error: paymentError } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: new URL("/subscribe", window.origin).toString(),
+          return_url: `${window.location.origin}/subscribe`,
         },
       });
 
@@ -119,9 +97,7 @@ const Subscription = ({ clientSecret }) => {
       }
     } catch (error) {
       console.error("Error processing payment:", error);
-      setError(
-        "An error occurred while processing your subscription. Please try again."
-      );
+      setError("An error occurred while processing your subscription. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -139,36 +115,29 @@ const Subscription = ({ clientSecret }) => {
           </ul>
           <h2>Common Questions</h2>
           <h5>
-            <FontAwesomeIcon icon={faInfoCircle} /> What does the subscription
-            include?
+            <FontAwesomeIcon icon={faInfoCircle} /> What does the subscription include?
           </h5>
           <p>
-            Your subscription includes 24/7 access to accredited herbal
-            practitioners, personalized recommendations, and more.
+            Your subscription includes 24/7 access to accredited herbal practitioners, personalized recommendations, and more.
           </p>
           <h5>
-            <FontAwesomeIcon icon={faInfoCircle} /> How do I cancel my
-            subscription?
+            <FontAwesomeIcon icon={faInfoCircle} /> How do I cancel my subscription?
           </h5>
           <p>
-            You can cancel your subscription at any time through your account
-            settings.
+            You can cancel your subscription at any time through your account settings.
           </p>
           <h5>
-            <FontAwesomeIcon icon={faInfoCircle} /> Is my payment information
-            secure?
+            <FontAwesomeIcon icon={faInfoCircle} /> Is my payment information secure?
           </h5>
           <p>
-            Yes, we use Stripe to process payments, ensuring your information is
-            secure.
+            Yes, we use Stripe to process payments, ensuring your information is secure.
           </p>
         </Col>
         <Col md={6}>
           <div className="subscription-header">
             <h2>Subscribe to Herb Nexus</h2>
             <p>
-              Get 24/7 access to accredited herbal practitioners for only
-              $50/month.
+              Get 24/7 access to accredited herbal practitioners for only $50/month.
             </p>
           </div>
           {error && <Alert variant="danger">{error}</Alert>}
@@ -187,10 +156,7 @@ const Subscription = ({ clientSecret }) => {
               />
             </Form.Group>
             <Form.Group controlId="newsOffers">
-              <Form.Check
-                type="checkbox"
-                label="Email me with news and offers"
-              />
+              <Form.Check type="checkbox" label="Email me with news and offers" />
             </Form.Group>
             <h5>
               <FontAwesomeIcon icon={faAddressCard} /> Shipping Address
@@ -286,10 +252,7 @@ const SubscriptionWrapper = () => {
   useEffect(() => {
     const createPaymentIntent = async () => {
       try {
-        const { data } = await axios.post(
-          "/.netlify/functions/create-payment-intent",
-          { userId: user.uid }
-        );
+        const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
         setClientSecret(data.clientSecret);
         console.log("Client secret received:", data.clientSecret);
       } catch (error) {

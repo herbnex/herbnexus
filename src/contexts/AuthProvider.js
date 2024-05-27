@@ -1,52 +1,57 @@
-import React, { createContext, useCallback } from "react";
-import useFirebase from "../hooks/useFirebase";
+// src/contexts/AuthProvider.js
+import React, { useState, useEffect, createContext, useCallback } from 'react';
+import { auth, db } from '../Firebase/firebase.config'; // Adjust the path as necessary
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const firebaseAuth = useFirebase();
-  return <AuthContext.Provider value={firebaseAuth}>{children}</AuthContext.Provider>;
-};
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubscribed, setIsSubscribed] = useState(false);
 
-/**
- * 
-const AuthProvider = ({ children }) => {
-  const firebaseAuth = useFirebase();
-  const [authValue, setUser] = useState({
-    auth: firebaseAuth,
-    user: null,
-  });
-
-  const updateUser = useCallback(async () => {
-    if (!firebaseAuth?.isLoading && firebaseAuth?.user?.uid) {
-      const userRef = db.collection("users").doc(firebaseAuth.user.uid);
-      const user = await getDoc(userRef);
-
-      console.log(user);
-
-      setUser((currentValue) => ({
-        ...currentValue,
-        user: {
-          ...(currentValue.user || {}),
-          ...user,
-        },
-      }));
+  const updateUser = useCallback(async (user) => {
+    if (user) {
+      const userRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setUser({ ...user, ...userData });
+        setIsSubscribed(userData.isSubscribed || false);
+      } else {
+        setUser(user);
+        setIsSubscribed(false);
+      }
+    } else {
+      setUser(null);
+      setIsSubscribed(false);
     }
-  }, [firebaseAuth]);
+    setIsLoading(false);
+  }, []);
 
+  const logOut = async () => {
+    try {
+      await signOut(auth);
+      updateUser(null);
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      updateUser(user);
+    });
+
+    return () => unsubscribe();
+  }, [updateUser]);
 
   return (
-    <AuthContext.Provider
-      value={{
-        auth: authValue,
-        updateUser,
-      }}
-    >
+    <AuthContext.Provider value={{ user, isLoading, isSubscribed, updateUser, logOut }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
- */
 
 export default AuthProvider;

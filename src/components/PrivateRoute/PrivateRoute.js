@@ -1,14 +1,11 @@
 // src/components/PrivateRoute.js
 import React from "react";
 import { Redirect, Route } from "react-router";
-import useAuth, { useCurrentUser } from "../../hooks/useAuth";
+import useAuth from "../../hooks/useAuth";
 import Loading from "../Loading/Loading";
 
 const PrivateRoute = ({ children, ...rest }) => {
   const { user, isLoading, isSubscribed } = useAuth();
-  // const { user } = useCurrentUser();
-
-  // console.log(user);
 
   if (isLoading) {
     return (
@@ -18,8 +15,6 @@ const PrivateRoute = ({ children, ...rest }) => {
     );
   }
 
-  console.log("USER", user);
-
   return (
     <Route {...rest}>
       {({ location }) =>
@@ -27,9 +22,7 @@ const PrivateRoute = ({ children, ...rest }) => {
           isSubscribed ? (
             children
           ) : (
-            <Redirect
-              to={{ pathname: "/subscribe", state: { from: location } }}
-            />
+            <Redirect to={{ pathname: "/subscribe", state: { from: location } }} />
           )
         ) : (
           <Redirect to={{ pathname: "/login", state: { from: location } }} />
