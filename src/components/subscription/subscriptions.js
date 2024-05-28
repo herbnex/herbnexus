@@ -82,7 +82,7 @@ const Subscription = ({ clientSecret }) => {
       const { error: paymentError } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/subscribe`,
+          return_url: `${window.location.origin}/contact`,
         },
       });
 
@@ -252,6 +252,7 @@ const SubscriptionWrapper = () => {
   useEffect(() => {
     const createPaymentIntent = async () => {
       try {
+        if (!user) return; // Ensure user is available before creating payment intent
         const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
         setClientSecret(data.clientSecret);
         console.log("Client secret received:", data.clientSecret);
@@ -260,9 +261,7 @@ const SubscriptionWrapper = () => {
       }
     };
 
-    if (user) {
-      createPaymentIntent();
-    }
+    createPaymentIntent();
   }, [user]);
 
   return (
