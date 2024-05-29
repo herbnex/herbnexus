@@ -5,12 +5,10 @@ import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
-import { useHistory } from "react-router-dom";
 import "./Contact.css";
 
 const Contact = () => {
   const { user } = useAuth();
-  const history = useHistory();
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -43,24 +41,6 @@ const Contact = () => {
 
     checkIfDoctor();
   }, [user]);
-
-  useEffect(() => {
-    if (!user) return;
-
-    const checkSubscription = async () => {
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        if (!userData.isSubscribed) {
-          history.replace({ pathname: "/subscribe", state: { from: "/contact" } });
-        }
-      }
-    };
-
-    checkSubscription();
-  }, [user, history]);
 
   useEffect(() => {
     if (isDoctor) {
