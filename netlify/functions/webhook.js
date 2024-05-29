@@ -15,11 +15,15 @@ exports.handler = async (event) => {
   }
 
   switch (stripeEvent.type) {
-    case 'payment_intent.succeeded':
-      const paymentIntent = stripeEvent.data.object;
-      const userId = paymentIntent.metadata.userId;
+    case 'invoice.payment_succeeded':
+      const invoice = stripeEvent.data.object;
+      const customerId = invoice.customer;
 
       try {
+        // Retrieve the customer to get metadata
+        const customer = await stripe.customers.retrieve(customerId);
+        const userId = customer.metadata.userId;
+
         const userRef = db.collection("users").doc(userId);
         await userRef.set({
           isSubscribed: true,
@@ -32,7 +36,29 @@ exports.handler = async (event) => {
         return { statusCode: 500, body: "Internal Server Error" };
       }
       break;
-    // Add more event types as needed
+
+    case 'customer.subscription.deleted':
+      const subscription = stripeEvent.data.object;
+      const subCustomerId = subscription.customer;
+
+      try {
+        // Retrieve the customer to get metadata
+        const subCustomer = await stripe.customers.retrieve(subCustomerId);
+        const subUserId = subCustomer.metadata.userId;
+
+        const userRef = db.collection("users").doc(subUserId);
+        await userRef.set({
+          isSubscribed: false,
+          subscriptionEndDate: null,
+        }, { merge: true });
+
+        console.log(`Successfully updated subscription status for user ${subUserId}`);
+      } catch (error) {
+        console.error("Error updating subscription status:", error);
+        return { statusCode: 500, body: "Internal Server Error" };
+      }
+      break;
+
     default:
       console.log(`Unhandled event type ${stripeEvent.type}`);
   }
