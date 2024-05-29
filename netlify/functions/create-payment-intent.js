@@ -2,9 +2,9 @@ require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event) => {
-  try {
-    const { userId } = JSON.parse(event.body);
+  const { userId } = JSON.parse(event.body);
 
+  try {
     // Create a customer if not already exists
     const customer = await stripe.customers.create({
       metadata: { userId },
