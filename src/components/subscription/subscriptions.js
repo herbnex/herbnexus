@@ -186,6 +186,7 @@ const Subscription = ({ clientSecret }) => {
 const SubscriptionWrapper = () => {
   const [clientSecret, setClientSecret] = useState("");
   const { user } = useAuth();
+  const history = useHistory();
 
   useEffect(() => {
     const createPaymentIntent = async () => {
@@ -202,6 +203,36 @@ const SubscriptionWrapper = () => {
       createPaymentIntent();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!clientSecret) return;
+
+    const paymentIntentClientSecret = new URLSearchParams(window.location.search).get("payment_intent_client_secret");
+    if (paymentIntentClientSecret === clientSecret) {
+      (async () => {
+        const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+        if (paymentIntent && paymentIntent.status === "succeeded") {
+          try {
+            const response = await axios.post('/.netlify/functions/updateSubscription', {
+              userId: user.uid,
+              isSubscribed: true,
+              subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            });
+
+            if (response.status === 200) {
+              console.log("Subscription update successful", response.data);
+              await updateUser(user.uid);
+              history.replace('/contact');
+            } else {
+              throw new Error('Failed to update subscription');
+            }
+          } catch (updateError) {
+            console.error("Error updating subscription:", updateError);
+          }
+        }
+      })();
+    }
+  }, [clientSecret, user, history]);
 
   return (
     clientSecret && (
