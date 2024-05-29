@@ -192,7 +192,7 @@ const SubscriptionWrapper = () => {
   useEffect(() => {
     const createSubscription = async () => {
       try {
-        const { data } = await axios.post("/.netlify/functions/create-subscription", { userId: user.uid });
+        const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
         setClientSecret(data.clientSecret);
         console.log("Client secret received:", data.clientSecret);
       } catch (error) {
