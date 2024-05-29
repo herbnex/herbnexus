@@ -1,20 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useStripe, useElements, PaymentElement, Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import axios from 'axios';
 import { Container, Form, Button, Alert, Row, Col } from 'react-bootstrap';
-import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
 import { useHistory, useLocation } from 'react-router-dom';
 import './subscription.css';
 
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
-
-const Subscription = ({ clientSecret }) => {
+const Subscription = ({ clientSecret, user, updateUser }) => {
   const stripe = useStripe();
   const elements = useElements();
-  const { user, updateUser } = useAuth();
   const history = useHistory();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
@@ -25,29 +20,6 @@ const Subscription = ({ clientSecret }) => {
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
   const [zip, setZip] = useState('');
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    setErrorMessage(null);
-
-    if (!stripe || !elements) {
-      setLoading(false);
-      return;
-    }
-
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/subscribe?payment_intent_client_secret=${clientSecret}`,
-      },
-    });
-
-    if (error) {
-      setErrorMessage(error.message);
-      setLoading(false);
-    }
-  };
 
   const handlePaymentSuccess = useCallback(async () => {
     const paymentIntentClientSecret = new URLSearchParams(location.search).get('payment_intent_client_secret');
@@ -62,11 +34,6 @@ const Subscription = ({ clientSecret }) => {
       }
 
       if (paymentIntent && paymentIntent.status === 'succeeded') {
-        if (!user || !user.uid) {
-          setErrorMessage('User not authenticated.');
-          return;
-        }
-
         try {
           const response = await axios.post('/.netlify/functions/updateSubscription', {
             userId: user.uid,
@@ -100,6 +67,29 @@ const Subscription = ({ clientSecret }) => {
       handlePaymentSuccess();
     }
   }, [handlePaymentSuccess, location]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setErrorMessage(null);
+
+    if (!stripe || !elements) {
+      setLoading(false);
+      return;
+    }
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/subscribe`,
+      },
+    });
+
+    if (error) {
+      setErrorMessage(error.message);
+      setLoading(false);
+    }
+  };
 
   return (
     <Container className="subscription-container">
@@ -235,59 +225,44 @@ const Subscription = ({ clientSecret }) => {
   );
 };
 
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import axios from 'axios';
+import useAuth from '../../../src/hooks/useAuth';
+import Subscription from './Subscription';
+
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+
 const SubscriptionWrapper = () => {
   const [clientSecret, setClientSecret] = useState("");
   const { user, updateUser } = useAuth();
-  const history = useHistory();
-  const location = useLocation();
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     const createPaymentIntent = async () => {
+      if (!user) return;
       try {
-        const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user ? user.uid : null });
+        const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
         setClientSecret(data.clientSecret);
         console.log("Client secret received:", data.clientSecret);
       } catch (error) {
         console.error("Error creating payment intent:", error);
+        setErrorMessage("Error creating payment intent.");
       }
     };
 
-    if (user) {
-      createPaymentIntent();
-    }
+    createPaymentIntent();
   }, [user]);
 
-  useEffect(() => {
-    const redirectStatus = new URLSearchParams(location.search).get('redirect_status');
-    if (redirectStatus === 'succeeded') {
-      (async () => {
-        const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
-
-        if (paymentIntent && paymentIntent.status === "succeeded") {
-          try {
-            const response = await axios.post("/.netlify/functions/updateSubscription", {
-              userId: user.uid,
-              isSubscribed: true,
-              subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            });
-
-            if (response.status === 200) {
-              await updateUser(user.uid);
-              history.replace('/contact');
-            }
-          } catch (error) {
-            console.error("Error updating subscription:", error);
-          }
-        }
-      })();
-    }
-  }, [clientSecret, location.search, user.uid, history, updateUser]);
-
   return (
-    clientSecret && (
+    clientSecret ? (
       <Elements stripe={stripePromise} options={{ clientSecret }}>
-        <Subscription clientSecret={clientSecret} />
+        <Subscription clientSecret={clientSecret} user={user} updateUser={updateUser} />
       </Elements>
+    ) : (
+      <div>Loading...</div>
     )
   );
 };
