@@ -39,7 +39,7 @@ const Subscription = ({ clientSecret }) => {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `herbnexus.io/contact`,
+        return_url: `https://www.herbnexus.io/contact`,
       },
     });
 
