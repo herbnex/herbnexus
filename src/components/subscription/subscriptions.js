@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useStripe, useElements, PaymentElement, Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
@@ -48,6 +48,53 @@ const Subscription = ({ clientSecret }) => {
       setLoading(false);
     }
   };
+
+  const handlePaymentSuccess = useCallback(async () => {
+    const paymentIntentClientSecret = new URLSearchParams(location.search).get('payment_intent_client_secret');
+    if (!stripe || !paymentIntentClientSecret) return;
+
+    try {
+      const { paymentIntent, error } = await stripe.retrievePaymentIntent(paymentIntentClientSecret);
+
+      if (error) {
+        setErrorMessage(error.message || 'An error occurred while trying to make payment');
+        return;
+      }
+
+      if (paymentIntent && paymentIntent.status === 'succeeded') {
+        try {
+          const response = await axios.post('/.netlify/functions/updateSubscription', {
+            userId: user.uid,
+            isSubscribed: true,
+            subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          });
+
+          if (response.status === 200) {
+            console.log("Subscription update successful", response.data);
+            await updateUser(user.uid);
+            history.replace('/contact');
+          } else {
+            throw new Error('Failed to update subscription');
+          }
+        } catch (updateError) {
+          console.error("Error updating subscription:", updateError);
+          setErrorMessage('An error occurred while updating your subscription. Please try again.');
+        }
+      } else {
+        setErrorMessage('Payment was not successful.');
+      }
+    } catch (err) {
+      console.error("Error processing payment:", err);
+      setErrorMessage('An error occurred while processing your subscription. Please try again.');
+    }
+  }, [stripe, user.uid, location, history, updateUser]);
+
+  useEffect(() => {
+    const redirectStatus = new URLSearchParams(location.search).get('redirect_status');
+    if (redirectStatus === 'succeeded') {
+      handlePaymentSuccess();
+    }
+  }, [handlePaymentSuccess, location]);
 
   return (
     <Container className="subscription-container">
@@ -213,28 +260,26 @@ const SubscriptionWrapper = () => {
       (async () => {
         const stripe = await stripePromise;
         const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+
         if (paymentIntent && paymentIntent.status === "succeeded") {
           try {
-            const response = await axios.post('/.netlify/functions/updateSubscription', {
+            const response = await axios.post("/.netlify/functions/updateSubscription", {
               userId: user.uid,
               isSubscribed: true,
               subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
             });
 
             if (response.status === 200) {
-              console.log("Subscription update successful", response.data);
               await updateUser(user.uid);
               history.replace('/contact');
-            } else {
-              throw new Error('Failed to update subscription');
             }
-          } catch (updateError) {
-            console.error("Error updating subscription:", updateError);
+          } catch (error) {
+            console.error("Error updating subscription:", error);
           }
         }
       })();
     }
-  }, [clientSecret, user, history, location]);
+  }, [clientSecret, location.search, user.uid, history, updateUser]);
 
   return (
     clientSecret && (
