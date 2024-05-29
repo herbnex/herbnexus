@@ -62,6 +62,11 @@ const Subscription = ({ clientSecret }) => {
       }
 
       if (paymentIntent && paymentIntent.status === 'succeeded') {
+        if (!user || !user.uid) {
+          setErrorMessage('User not authenticated.');
+          return;
+        }
+
         try {
           const response = await axios.post('/.netlify/functions/updateSubscription', {
             userId: user.uid,
@@ -87,7 +92,7 @@ const Subscription = ({ clientSecret }) => {
       console.error("Error processing payment:", err);
       setErrorMessage('An error occurred while processing your subscription. Please try again.');
     }
-  }, [stripe, user.uid, location, history, updateUser]);
+  }, [stripe, user, location, history, updateUser]);
 
   useEffect(() => {
     const redirectStatus = new URLSearchParams(location.search).get('redirect_status');
@@ -239,7 +244,7 @@ const SubscriptionWrapper = () => {
   useEffect(() => {
     const createPaymentIntent = async () => {
       try {
-        const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
+        const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user ? user.uid : null });
         setClientSecret(data.clientSecret);
         console.log("Client secret received:", data.clientSecret);
       } catch (error) {
@@ -253,12 +258,9 @@ const SubscriptionWrapper = () => {
   }, [user]);
 
   useEffect(() => {
-    if (!clientSecret) return;
-
-    const paymentIntentClientSecret = new URLSearchParams(location.search).get("payment_intent_client_secret");
-    if (paymentIntentClientSecret === clientSecret) {
+    const redirectStatus = new URLSearchParams(location.search).get('redirect_status');
+    if (redirectStatus === 'succeeded') {
       (async () => {
-        const stripe = await stripePromise;
         const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
 
         if (paymentIntent && paymentIntent.status === "succeeded") {
