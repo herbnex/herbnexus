@@ -205,40 +205,40 @@ const SubscriptionWrapper = () => {
     }
   }, [user]);
 
-  useEffect(() => {
-    const handlePaymentSuccess = async () => {
-      const paymentIntentClientSecret = new URLSearchParams(location.search).get('payment_intent_client_secret');
-      if (!clientSecret || clientSecret !== paymentIntentClientSecret) return;
+  // useEffect(() => {
+  //   const handlePaymentSuccess = async () => {
+  //     const paymentIntentClientSecret = new URLSearchParams(location.search).get('payment_intent_client_secret');
+  //     if (!clientSecret || clientSecret !== paymentIntentClientSecret) return;
 
-      try {
-        const stripe = await stripePromise;
-        const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
-        if (paymentIntent && paymentIntent.status === 'succeeded') {
-          try {
-            const response = await axios.post('/.netlify/functions/updateSubscription', {
-              userId: user.uid,
-              isSubscribed: true,
-              subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            });
+  //     try {
+  //       const stripe = await stripePromise;
+  //       const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+  //       if (paymentIntent && paymentIntent.status === 'succeeded') {
+  //         try {
+  //           const response = await axios.post('/.netlify/functions/updateSubscription', {
+  //             userId: user.uid,
+  //             isSubscribed: true,
+  //             subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+  //           });
 
-            if (response.status === 200) {
-              console.log("Subscription update successful", response.data);
-              await updateUser(user.uid);
-              history.replace('/contact');
-            } else {
-              throw new Error('Failed to update subscription');
-            }
-          } catch (updateError) {
-            console.error("Error updating subscription:", updateError);
-          }
-        }
-      } catch (error) {
-        console.error("Error processing payment:", error);
-      }
-    };
+  //           if (response.status === 200) {
+  //             console.log("Subscription update successful", response.data);
+  //             await updateUser(user.uid);
+  //             history.replace('/contact');
+  //           } else {
+  //             throw new Error('Failed to update subscription');
+  //           }
+  //         } catch (updateError) {
+  //           console.error("Error updating subscription:", updateError);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Error processing payment:", error);
+  //     }
+  //   };
 
-    handlePaymentSuccess();
-  }, [clientSecret, user, history, location]);
+  //   handlePaymentSuccess();
+  // }, [clientSecret, user, history, location]);
 
   return (
     clientSecret && (
