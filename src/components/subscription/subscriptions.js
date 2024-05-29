@@ -189,21 +189,21 @@ const SubscriptionWrapper = () => {
   const history = useHistory();
   const location = useLocation();
 
-  useEffect(() => {
-    const createPaymentIntent = async () => {
-      try {
-        const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
-        setClientSecret(data.clientSecret);
-        console.log("Client secret received:", data.clientSecret);
-      } catch (error) {
-        console.error("Error creating payment intent:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const createPaymentIntent = async () => {
+  //     try {
+  //       const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
+  //       setClientSecret(data.clientSecret);
+  //       console.log("Client secret received:", data.clientSecret);
+  //     } catch (error) {
+  //       console.error("Error creating payment intent:", error);
+  //     }
+  //   };
 
-    if (user) {
-      createPaymentIntent();
-    }
-  }, [user]);
+  //   if (user) {
+  //     createPaymentIntent();
+  //   }
+  // }, [user]);
 
   // useEffect(() => {
   //   if (!clientSecret) return;
