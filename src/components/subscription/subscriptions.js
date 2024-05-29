@@ -14,7 +14,7 @@ const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 const Subscription = ({ clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const history = useHistory();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
@@ -185,8 +185,9 @@ const Subscription = ({ clientSecret }) => {
 
 const SubscriptionWrapper = () => {
   const [clientSecret, setClientSecret] = useState("");
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const history = useHistory();
+  const location = useLocation();
 
   useEffect(() => {
     const createPaymentIntent = async () => {
@@ -207,9 +208,10 @@ const SubscriptionWrapper = () => {
   useEffect(() => {
     if (!clientSecret) return;
 
-    const paymentIntentClientSecret = new URLSearchParams(window.location.search).get("payment_intent_client_secret");
+    const paymentIntentClientSecret = new URLSearchParams(location.search).get("payment_intent_client_secret");
     if (paymentIntentClientSecret === clientSecret) {
       (async () => {
+        const stripe = await stripePromise;
         const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
         if (paymentIntent && paymentIntent.status === "succeeded") {
           try {
@@ -232,7 +234,7 @@ const SubscriptionWrapper = () => {
         }
       })();
     }
-  }, [clientSecret, user, history]);
+  }, [clientSecret, user, history, location]);
 
   return (
     clientSecret && (
