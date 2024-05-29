@@ -190,51 +190,55 @@ const SubscriptionWrapper = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const createPaymentIntent = async () => {
+    const createSubscription = async () => {
       try {
-        const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
+        const { data } = await axios.post("/.netlify/functions/create-subscription", { userId: user.uid });
         setClientSecret(data.clientSecret);
         console.log("Client secret received:", data.clientSecret);
       } catch (error) {
-        console.error("Error creating payment intent:", error);
+        console.error("Error creating subscription:", error);
       }
     };
 
     if (user) {
-      createPaymentIntent();
+      createSubscription();
     }
   }, [user]);
 
-  // useEffect(() => {
-  //   if (!clientSecret) return;
+  useEffect(() => {
+    const handlePaymentSuccess = async () => {
+      const paymentIntentClientSecret = new URLSearchParams(location.search).get('payment_intent_client_secret');
+      if (!clientSecret || clientSecret !== paymentIntentClientSecret) return;
 
-  //   const paymentIntentClientSecret = new URLSearchParams(location.search).get("payment_intent_client_secret");
-  //   if (paymentIntentClientSecret === clientSecret) {
-  //     (async () => {
-  //       const stripe = await stripePromise;
-  //       const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
-  //       if (paymentIntent && paymentIntent.status === "succeeded") {
-  //         try {
-  //           const response = await axios.post('/.netlify/functions/updateSubscription', {
-  //             userId: user.uid,
-  //             isSubscribed: true,
-  //             subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-  //           });
+      try {
+        const stripe = await stripePromise;
+        const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+        if (paymentIntent && paymentIntent.status === 'succeeded') {
+          try {
+            const response = await axios.post('/.netlify/functions/updateSubscription', {
+              userId: user.uid,
+              isSubscribed: true,
+              subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            });
 
-  //           if (response.status === 200) {
-  //             console.log("Subscription update successful", response.data);
-  //             await updateUser(user.uid);
-  //             history.replace('/contact');
-  //           } else {
-  //             throw new Error('Failed to update subscription');
-  //           }
-  //         } catch (updateError) {
-  //           console.error("Error updating subscription:", updateError);
-  //         }
-  //       }
-  //     })();
-  //   }
-  // }, [clientSecret, user, history, location]);
+            if (response.status === 200) {
+              console.log("Subscription update successful", response.data);
+              await updateUser(user.uid);
+              history.replace('/contact');
+            } else {
+              throw new Error('Failed to update subscription');
+            }
+          } catch (updateError) {
+            console.error("Error updating subscription:", updateError);
+          }
+        }
+      } catch (error) {
+        console.error("Error processing payment:", error);
+      }
+    };
+
+    handlePaymentSuccess();
+  }, [clientSecret, user, history, location]);
 
   return (
     clientSecret && (

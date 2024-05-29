@@ -1,23 +1,28 @@
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-exports.handler = async (event, context) => {
-  const { userId } = JSON.parse(event.body);
-
+exports.handler = async (event) => {
   try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: 5000, // Amount in cents
-      currency: 'usd',
-      automatic_payment_methods: {
-        enabled: true,
-      },
+    const { userId } = JSON.parse(event.body);
+
+    // Create a customer if not already exists
+    const customer = await stripe.customers.create({
       metadata: { userId },
+    });
+
+    // Create a subscription
+    const subscription = await stripe.subscriptions.create({
+      customer: customer.id,
+      items: [{ price: process.env.STRIPE_PRICE_ID }],
+      payment_behavior: 'default_incomplete',
+      expand: ['latest_invoice.payment_intent'],
     });
 
     return {
       statusCode: 200,
       body: JSON.stringify({
-        clientSecret: paymentIntent.client_secret,
+        subscriptionId: subscription.id,
+        clientSecret: subscription.latest_invoice.payment_intent.client_secret,
       }),
     };
   } catch (error) {
