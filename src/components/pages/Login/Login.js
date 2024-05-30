@@ -104,14 +104,14 @@ const Login = () => {
                 <i className="bi bi-google fs-2"></i> <br />
                 Google
               </button>
-              <button onClick={signInWithGithub} className="btn btn-success">
+              {/* <button onClick={signInWithGithub} className="btn btn-success">
                 <i className="bi bi-github fs-2"></i> <br />
                 Github
               </button>
               <button disabled className="btn btn-primary">
                 <i className="bi bi-facebook fs-2"></i> <br />
                 FaceBook
-              </button>
+              </button> */}
             </div>
           </Col>
         </Row>
