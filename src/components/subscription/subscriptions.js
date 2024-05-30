@@ -239,8 +239,12 @@ const SubscriptionWrapper = () => {
 
   // Fetch the updated user data after redirection
   useEffect(() => {
+    const fetchUpdatedUser = async () => {
+      await updateUser(user.uid);
+    };
+
     if (location.search.includes('payment_intent_client_secret')) {
-      updateUser(user.uid); // Fetch the updated user data
+      fetchUpdatedUser();
     }
   }, [location.search, updateUser, user.uid]);
 
