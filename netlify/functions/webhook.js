@@ -4,6 +4,8 @@ const { db } = require("../../src/Firebase/setupFirebaseAdmin");
 
 exports.handler = async (event) => {
   const sig = event.headers['stripe-signature'];
+  console.log(sig);
+ 
 
   let stripeEvent;
 
@@ -18,7 +20,7 @@ exports.handler = async (event) => {
     case 'invoice.payment_succeeded':
       const invoice = stripeEvent.data.object;
       const customerId = invoice.customer;
-      console.log(customerId);
+      // console.log(customerId);
       try {
         // Retrieve the customer to get metadata
         const customer = await stripe.customers.retrieve(customerId);
