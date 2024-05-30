@@ -236,6 +236,12 @@ const SubscriptionWrapper = () => {
     }
   }, [clientSecret, location.search]);
 
+  useEffect(() => {
+    if (location.search.includes('payment_intent_client_secret')) {
+      updateUser(user.uid); // Fetch the updated user data
+    }
+  }, [location.search]);
+
   return (
     clientSecret && (
       <Elements stripe={stripePromise} options={{ clientSecret }}>
