@@ -3,6 +3,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event) => {
   const { userId } = JSON.parse(event.body);
+  console.log(userId);
 
   try {
     // Create a customer if not already exists
@@ -16,6 +17,10 @@ exports.handler = async (event) => {
       items: [{ price: process.env.STRIPE_PRICE_ID }],
       payment_behavior: 'default_incomplete',
       expand: ['latest_invoice.payment_intent'],
+      metadata: {
+        userId,
+        description: "Subscription creation"
+      }
     });
 
     return {
