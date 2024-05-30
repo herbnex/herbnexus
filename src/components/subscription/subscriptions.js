@@ -236,11 +236,12 @@ const SubscriptionWrapper = () => {
     }
   }, [clientSecret, location.search]);
 
+  // Fetch the updated user data after redirection
   useEffect(() => {
     if (location.search.includes('payment_intent_client_secret')) {
       updateUser(user.uid); // Fetch the updated user data
     }
-  }, [location.search]);
+  }, [location.search, updateUser, user.uid]);
 
   return (
     clientSecret && (
