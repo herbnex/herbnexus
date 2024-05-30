@@ -229,7 +229,7 @@ const SubscriptionWrapper = () => {
   const handlePaymentSuccess = () => {
     setTimeout(() => {
       history.replace('/contact');
-    }, 2000); // 2 seconds delay before redirect
+    }, 5000); // 2 seconds delay before redirect
   };
 
   useEffect(() => {
