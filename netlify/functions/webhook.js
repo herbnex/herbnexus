@@ -18,7 +18,7 @@ exports.handler = async (event) => {
     case 'invoice.payment_succeeded':
       const invoice = stripeEvent.data.object;
       const customerId = invoice.customer;
-
+      console.log(customerId);
       try {
         // Retrieve the customer to get metadata
         const customer = await stripe.customers.retrieve(customerId);
