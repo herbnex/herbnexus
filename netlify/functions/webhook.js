@@ -5,7 +5,6 @@ const { db } = require("../../src/Firebase/setupFirebaseAdmin");
 exports.handler = async (event) => {
   const sig = event.headers['stripe-signature'];
   console.log(sig);
- 
 
   let stripeEvent;
 
@@ -20,11 +19,13 @@ exports.handler = async (event) => {
     case 'invoice.payment_succeeded':
       const invoice = stripeEvent.data.object;
       const customerId = invoice.customer;
-      // console.log(customerId);
+      console.log(`Invoice payment succeeded for customer ${customerId}`);
+
       try {
         // Retrieve the customer to get metadata
         const customer = await stripe.customers.retrieve(customerId);
         const userId = customer.metadata.userId;
+        console.log(`Metadata for customer ${customerId}:`, customer.metadata);
 
         const userRef = db.collection("users").doc(userId);
         await userRef.set({
@@ -42,11 +43,13 @@ exports.handler = async (event) => {
     case 'customer.subscription.deleted':
       const subscription = stripeEvent.data.object;
       const subCustomerId = subscription.customer;
+      console.log(`Subscription deleted for customer ${subCustomerId}`);
 
       try {
         // Retrieve the customer to get metadata
         const subCustomer = await stripe.customers.retrieve(subCustomerId);
         const subUserId = subCustomer.metadata.userId;
+        console.log(`Metadata for customer ${subCustomerId}:`, subCustomer.metadata);
 
         const userRef = db.collection("users").doc(subUserId);
         await userRef.set({
