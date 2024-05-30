@@ -45,23 +45,7 @@ const Subscription = ({ clientSecret, onPaymentSuccess }) => {
       setErrorMessage(error.message);
       setLoading(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      try {
-        const response = await axios.post('/.netlify/functions/updateSubscription', {
-          userId: user.uid,
-          isSubscribed: true,
-          subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        });
-
-        if (response.status === 200) {
-          console.log("Subscription update successful", response.data);
-          await updateUser(user.uid); // Ensure this updates the subscription status
-          onPaymentSuccess();
-        } else {
-          throw new Error('Failed to update subscription');
-        }
-      } catch (updateError) {
-        console.error("Error updating subscription:", updateError);
-      }
+      onPaymentSuccess();
     }
 
     setLoading(false);
@@ -207,6 +191,7 @@ const SubscriptionWrapper = () => {
   const history = useHistory();
   const location = useLocation();
   const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const createSubscription = async () => {
@@ -240,10 +225,13 @@ const SubscriptionWrapper = () => {
   useEffect(() => {
     const fetchUpdatedUser = async () => {
       await updateUser(user.uid);
+      setLoading(false);
     };
 
     if (location.search.includes('payment_intent_client_secret')) {
       fetchUpdatedUser();
+    } else {
+      setLoading(false);
     }
   }, [location.search, updateUser, user.uid]);
 
@@ -252,6 +240,10 @@ const SubscriptionWrapper = () => {
       history.push('/contact');
     }
   }, [isUserDataUpdated, location.search, history]);
+
+  if (loading) {
+    return <div>Loading...</div>; // Render a loading state while fetching user data
+  }
 
   return (
     clientSecret && (
