@@ -14,7 +14,7 @@ const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 const Subscription = ({ clientSecret, onPaymentSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
-  const { user, updateUser } = useAuth();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [contact, setContact] = useState('');
@@ -190,8 +190,6 @@ const SubscriptionWrapper = () => {
   const { user, updateUser } = useAuth();
   const history = useHistory();
   const location = useLocation();
-  const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const createSubscription = async () => {
@@ -211,7 +209,6 @@ const SubscriptionWrapper = () => {
 
   const handlePaymentSuccess = async () => {
     await updateUser(user.uid); // Ensure this updates the subscription status
-    setIsUserDataUpdated(true);
     history.push('/contact'); // Redirect to the contact page directly here
   };
 
@@ -221,22 +218,6 @@ const SubscriptionWrapper = () => {
       handlePaymentSuccess();
     }
   }, [clientSecret, location.search]);
-
-  // Fetch the updated user data after redirection
-  useEffect(() => {
-    const fetchUpdatedUser = async () => {
-      await updateUser(user.uid);
-      setLoading(false);
-    };
-
-    if (location.search.includes('payment_intent_client_secret')) {
-      fetchUpdatedUser();
-    } else {
-      setLoading(false);
-    }
-  }, [location.search, updateUser, user.uid]);
-
-  
 
   return (
     clientSecret && (
