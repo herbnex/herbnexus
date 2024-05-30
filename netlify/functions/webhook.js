@@ -4,28 +4,29 @@ const { db } = require("../../src/Firebase/setupFirebaseAdmin");
 
 exports.handler = async (event) => {
   const sig = event.headers['stripe-signature'];
-  console.log(sig);
+  console.log("Received webhook signature:", sig);
 
   let stripeEvent;
 
   try {
     stripeEvent = stripe.webhooks.constructEvent(event.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    console.log("Stripe event constructed:", stripeEvent);
   } catch (err) {
-    console.error('Webhook signature verification failed.', err.message);
+    console.error('Webhook signature verification failed:', err.message);
     return { statusCode: 400, body: `Webhook Error: ${err.message}` };
   }
 
   switch (stripeEvent.type) {
-    case 'invoice.payment_succeeded':
-      const invoice = stripeEvent.data.object;
-      const customerId = invoice.customer;
-      console.log(`Invoice payment succeeded for customer ${customerId}`);
+    case 'payment_intent.succeeded':
+      const paymentIntent = stripeEvent.data.object;
+      const customerId = paymentIntent.customer;
+      console.log(`Payment Intent succeeded for customer ${customerId}`);
 
       try {
         // Retrieve the customer to get metadata
         const customer = await stripe.customers.retrieve(customerId);
         const userId = customer.metadata.userId;
-        console.log(`Metadata for customer ${customerId}:`, customer.metadata);
+        console.log(`Customer metadata:`, customer.metadata);
 
         const userRef = db.collection("users").doc(userId);
         await userRef.set({
@@ -49,7 +50,7 @@ exports.handler = async (event) => {
         // Retrieve the customer to get metadata
         const subCustomer = await stripe.customers.retrieve(subCustomerId);
         const subUserId = subCustomer.metadata.userId;
-        console.log(`Metadata for customer ${subCustomerId}:`, subCustomer.metadata);
+        console.log(`Customer metadata:`, subCustomer.metadata);
 
         const userRef = db.collection("users").doc(subUserId);
         await userRef.set({
