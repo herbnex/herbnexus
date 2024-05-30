@@ -39,7 +39,7 @@ const Subscription = ({ clientSecret, onPaymentSuccess }) => {
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `https://develop--herbnexus.netlify.app/contact`,
+        return_url: `https://develop--herbnexus.netlify.app/`,
       },
     });
 
