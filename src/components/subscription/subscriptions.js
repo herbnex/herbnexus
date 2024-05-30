@@ -15,8 +15,6 @@ const Subscription = ({ clientSecret, onPaymentSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { user, updateUser } = useAuth();
-  const history = useHistory();
-  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [contact, setContact] = useState('');
@@ -250,10 +248,10 @@ const SubscriptionWrapper = () => {
   }, [location.search, updateUser, user.uid]);
 
   useEffect(() => {
-    if (isUserDataUpdated) {
+    if (isUserDataUpdated && new URLSearchParams(location.search).get('redirect_status') === 'succeeded') {
       history.push('/contact');
     }
-  }, [isUserDataUpdated, history]);
+  }, [isUserDataUpdated, location.search, history]);
 
   return (
     clientSecret && (
