@@ -8,7 +8,7 @@ import { generateChatId } from "../../../utils/generateChatId";
 import "./Contact.css";
 
 const Contact = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
