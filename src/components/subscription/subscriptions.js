@@ -56,9 +56,8 @@ const Subscription = ({ clientSecret, onPaymentSuccess }) => {
 
         if (response.status === 200) {
           console.log("Subscription update successful", response.data);
-          await updateUser(user.uid);
-          // Introduce a delay before redirecting
-          setTimeout(onPaymentSuccess, 2000);
+          await updateUser(user.uid); // Ensure this updates the subscription status
+          onPaymentSuccess();
         } else {
           throw new Error('Failed to update subscription');
         }
@@ -226,10 +225,9 @@ const SubscriptionWrapper = () => {
     }
   }, [user]);
 
-  const handlePaymentSuccess = () => {
-    setTimeout(() => {
-      history.replace('/contact');
-    }, 5000); // 2 seconds delay before redirect
+  const handlePaymentSuccess = async () => {
+    await updateUser(user.uid); // Ensure this updates the subscription status
+    history.replace('/contact');
   };
 
   useEffect(() => {
