@@ -52,6 +52,16 @@ const Contact = () => {
   }, [user, updateUser, history]);
 
   useEffect(() => {
+    const fetchUpdatedUserData = async () => {
+      await updateUser(user.uid); // Fetch the latest user data
+    };
+
+    if (user) {
+      fetchUpdatedUserData();
+    }
+  }, [user, updateUser]);
+
+  useEffect(() => {
     if (!user) {
       console.error("User is not authenticated!");
       return;
@@ -255,6 +265,7 @@ const Contact = () => {
     }, 300); // Delay to ensure layout has updated
   };
 
+ 
 
   return (
     <Container fluid className="chat-room">
