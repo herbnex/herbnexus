@@ -227,6 +227,7 @@ const SubscriptionWrapper = () => {
 
   const handlePaymentSuccess = async () => {
     await updateUser(user.uid); // Ensure this updates the subscription status
+    history.push('/contact'); // Redirect to the contact page
   };
 
   useEffect(() => {
