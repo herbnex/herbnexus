@@ -5,10 +5,12 @@ import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
+import { useHistory } from "react-router-dom";
 import "./Contact.css";
 
 const Contact = () => {
   const { user, updateUser } = useAuth();
+  const history = useHistory();
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -21,6 +23,30 @@ const Contact = () => {
   const textareaRef = useRef(null);
   const chatSectionRef = useRef(null);
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
+
+  useEffect(() => {
+    if (!user) {
+      console.error("User is not authenticated!");
+      return;
+    }
+
+    const checkSubscriptionStatus = async () => {
+      await updateUser(user.uid); // Fetch the latest user data
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        if (!userData.isSubscribed) {
+          history.push('/subscription'); // Redirect to subscription page if not subscribed
+        }
+      } else {
+        console.error("User document does not exist!");
+      }
+    };
+
+    checkSubscriptionStatus();
+  }, [user, updateUser, history]);
 
   useEffect(() => {
     if (!user) {
