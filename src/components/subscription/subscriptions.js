@@ -212,6 +212,7 @@ const SubscriptionWrapper = () => {
   const handlePaymentSuccess = async () => {
     await updateUser(user.uid); // Ensure this updates the subscription status
     setIsUserDataUpdated(true);
+    history.push('/contact'); // Redirect to the contact page directly here
   };
 
   useEffect(() => {
@@ -235,15 +236,7 @@ const SubscriptionWrapper = () => {
     }
   }, [location.search, updateUser, user.uid]);
 
-  useEffect(() => {
-    if (isUserDataUpdated && new URLSearchParams(location.search).get('redirect_status') === 'succeeded') {
-      history.push('/contact');
-    }
-  }, [isUserDataUpdated, location.search, history]);
-
-  if (loading) {
-    return <div>Loading...</div>; // Render a loading state while fetching user data
-  }
+  
 
   return (
     clientSecret && (
