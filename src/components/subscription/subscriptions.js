@@ -7,6 +7,7 @@ import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
 import { useHistory, useLocation } from 'react-router-dom';
+import { Navigate } from 'react-router';
 import './subscription.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
@@ -208,6 +209,7 @@ const SubscriptionWrapper = () => {
   const { user, updateUser } = useAuth();
   const history = useHistory();
   const location = useLocation();
+  const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
 
   useEffect(() => {
     const createSubscription = async () => {
@@ -227,7 +229,7 @@ const SubscriptionWrapper = () => {
 
   const handlePaymentSuccess = async () => {
     await updateUser(user.uid); // Ensure this updates the subscription status
-    history.push('/contact'); // Redirect to the contact page
+    setIsUserDataUpdated(true);
   };
 
   useEffect(() => {
@@ -252,6 +254,7 @@ const SubscriptionWrapper = () => {
     clientSecret && (
       <Elements stripe={stripePromise} options={{ clientSecret }}>
         <Subscription clientSecret={clientSecret} onPaymentSuccess={handlePaymentSuccess} />
+        {isUserDataUpdated && <Navigate to="/contact" />}
       </Elements>
     )
   );
