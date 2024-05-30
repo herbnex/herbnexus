@@ -227,7 +227,6 @@ const SubscriptionWrapper = () => {
 
   const handlePaymentSuccess = async () => {
     await updateUser(user.uid); // Ensure this updates the subscription status
-    window.location.reload(); // Manually refresh the page
   };
 
   useEffect(() => {
