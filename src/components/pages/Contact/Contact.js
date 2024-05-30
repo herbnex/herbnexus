@@ -11,6 +11,7 @@ import "./Contact.css";
 const Contact = () => {
   const { user, updateUser } = useAuth();
   const history = useHistory();
+  const [loading, setLoading] = useState(true);
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -39,6 +40,8 @@ const Contact = () => {
         const userData = userDocSnap.data();
         if (!userData.isSubscribed) {
           history.push('/subscription'); // Redirect to subscription page if not subscribed
+        } else {
+          setLoading(false); // Only set loading to false if the user is subscribed
         }
       } else {
         console.error("User document does not exist!");
@@ -251,6 +254,10 @@ const Contact = () => {
       }
     }, 300); // Delay to ensure layout has updated
   };
+
+  if (loading) {
+    return <div>Loading...</div>; // Render a loading state while fetching user data
+  }
 
   return (
     <Container fluid className="chat-room">
