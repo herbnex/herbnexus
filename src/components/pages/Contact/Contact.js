@@ -268,9 +268,7 @@ const Contact = () => {
     }, 300); // Delay to ensure layout has updated
   };
 
-  if (loading) {
-    return <div>Loading...</div>; // Render a loading state while fetching user data
-  }
+  
 
   return (
     <Container fluid className="chat-room">
