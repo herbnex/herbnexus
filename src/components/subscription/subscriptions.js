@@ -6,12 +6,11 @@ import { Container, Form, Button, Alert, Row, Col } from 'react-bootstrap';
 import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
-import { useHistory } from 'react-router-dom';
 import './subscription.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const Subscription = ({ clientSecret, onPaymentSuccess }) => {
+const Subscription = ({ clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { user } = useAuth();
@@ -36,19 +35,30 @@ const Subscription = ({ clientSecret, onPaymentSuccess }) => {
 
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
-      confirmParams: {
-        return_url: `https://develop--herbnexus.netlify.app/contact`,
-      },
     });
 
     if (error) {
       setErrorMessage(error.message);
       setLoading(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      onPaymentSuccess();
-    }
+      try {
+        const response = await axios.post('/.netlify/functions/confirmPayment', {
+          paymentIntentId: paymentIntent.id,
+          userId: user.uid,
+        });
 
-    setLoading(false);
+        if (response.status === 200) {
+          window.location.href = 'https://develop--herbnexus.netlify.app/contact'; // Client-side redirect
+        } else {
+          setErrorMessage('Failed to update subscription');
+          setLoading(false);
+        }
+      } catch (updateError) {
+        console.error("Error updating subscription:", updateError);
+        setErrorMessage('Failed to update subscription');
+        setLoading(false);
+      }
+    }
   };
 
   return (
@@ -187,7 +197,7 @@ const Subscription = ({ clientSecret, onPaymentSuccess }) => {
 
 const SubscriptionWrapper = () => {
   const [clientSecret, setClientSecret] = useState("");
-  const { user, updateUser } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     const createSubscription = async () => {
