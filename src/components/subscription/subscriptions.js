@@ -34,23 +34,20 @@ const Subscription = ({ clientSecret }) => {
     }
 
     try {
-      const { data } = await axios.post('/.netlify/functions/create-payment-intent', {
-        userId: user.uid,
-        returnUrl: `https://develop--herbnexus.netlify.app/confirm-payment`,
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `https://develop--herbnexus.netlify.app/contact`,
+        },
       });
 
-      const { clientSecret } = data;
-      const paymentIntent = await stripe.retrievePaymentIntent(clientSecret);
-
-      if (paymentIntent.error) {
-        setErrorMessage(paymentIntent.error.message);
+      if (error) {
+        setErrorMessage(error.message);
         setLoading(false);
-      } else {
-        window.location.href = data.url;
       }
     } catch (err) {
-      console.error('Error creating payment intent:', err);
-      setErrorMessage('Failed to create payment intent');
+      console.error('Error confirming payment:', err);
+      setErrorMessage('Failed to confirm payment');
       setLoading(false);
     }
   };

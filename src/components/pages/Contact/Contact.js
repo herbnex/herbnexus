@@ -27,11 +27,6 @@ const Contact = () => {
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
 
   useEffect(() => {
-    if (!user) {
-      console.error("User is not authenticated!");
-      return;
-    }
-
     const checkSubscriptionStatus = async () => {
       await updateUser(user.uid); // Fetch the latest user data
       const userDocRef = doc(db, "users", user.uid);
@@ -49,20 +44,10 @@ const Contact = () => {
       }
     };
 
-    checkSubscriptionStatus();
-  }, [user, updateUser, history]);
-
-  useEffect(() => {
-    const fetchUpdatedUserData = async () => {
-      await updateUser(user.uid); // Fetch the latest user data
-      setLoading(false); // Only set loading to false after fetching user data
-    };
-
-    const paymentIntentClientSecret = new URLSearchParams(location.search).get('payment_intent_client_secret');
-    if (paymentIntentClientSecret) {
-      fetchUpdatedUserData();
+    if (user) {
+      checkSubscriptionStatus();
     }
-  }, [user, updateUser, location.search]);
+  }, [user, updateUser, history]);
 
   useEffect(() => {
     if (!user) {

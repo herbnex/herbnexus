@@ -35,15 +35,6 @@ exports.handler = async (event) => {
         }, { merge: true });
 
         console.log(`Successfully updated subscription for user ${userId}`);
-        
-        // Redirect to the contact page
-        return {
-          statusCode: 302,
-          headers: {
-            Location: 'https://develop--herbnexus.netlify.app/contact'
-          },
-          body: JSON.stringify({ message: 'Redirecting to contact page' })
-        };
       } catch (error) {
         console.error("Error updating subscription:", error);
         return { statusCode: 500, body: "Internal Server Error" };
