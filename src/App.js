@@ -15,7 +15,8 @@ import Faq from './components/Faq/Faq';
 import About from './components/About/About';
 import Appointment from './components/pages/Appointment/Appointment';
 import Contact from './components/pages/Contact/Contact';
-import SubscriptionWrapper from './components/subscription/SubscriptionWrapper'; // Updated import
+import Subscription from './components/subscription/subscriptions';
+
 import ConfirmPayment from './components/subscription/ConfirmPayment'; // Import the ConfirmPayment component
 
 function App() {
@@ -55,13 +56,13 @@ function App() {
             <Signup />
           </Route>
           <Route path="/subscribe">
-            <SubscriptionWrapper /> {/* Updated component name */}
+            <Subscription /> {/* Updated component name */}
           </Route>
           <Route path="/confirm-payment">
             <ConfirmPayment /> {/* Add the new ConfirmPayment route */}
           </Route>
           <Route path="*">
-            <NotFound />
+            <NotFoud />
           </Route>
         </Switch>
         <Footer />
