@@ -28,6 +28,10 @@ const Contact = () => {
 
   useEffect(() => {
     const checkSubscriptionStatus = async () => {
+      if (!user) {
+        console.error("User is not authenticated!");
+        return;
+      }
       await updateUser(user.uid); // Fetch the latest user data
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
