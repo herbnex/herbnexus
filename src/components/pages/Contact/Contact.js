@@ -5,12 +5,13 @@ import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import "./Contact.css";
 
 const Contact = () => {
   const { user, updateUser } = useAuth();
   const history = useHistory();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
@@ -54,12 +55,14 @@ const Contact = () => {
   useEffect(() => {
     const fetchUpdatedUserData = async () => {
       await updateUser(user.uid); // Fetch the latest user data
+      setLoading(false); // Only set loading to false after fetching user data
     };
 
-    if (user) {
+    const paymentIntentClientSecret = new URLSearchParams(location.search).get('payment_intent_client_secret');
+    if (paymentIntentClientSecret) {
       fetchUpdatedUserData();
     }
-  }, [user, updateUser]);
+  }, [user, updateUser, location.search]);
 
   useEffect(() => {
     if (!user) {
@@ -265,7 +268,9 @@ const Contact = () => {
     }, 300); // Delay to ensure layout has updated
   };
 
- 
+  if (loading) {
+    return <div>Loading...</div>; // Render a loading state while fetching user data
+  }
 
   return (
     <Container fluid className="chat-room">
