@@ -268,8 +268,6 @@ const Contact = () => {
     }, 300); // Delay to ensure layout has updated
   };
 
-  
-
   return (
     <Container fluid className="chat-room">
       <Row>
