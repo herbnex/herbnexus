@@ -1,42 +1,82 @@
+require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { db } = require("../../src/Firebase/setupFirebaseAdmin");
 
 exports.handler = async (event) => {
+  const sig = event.headers['stripe-signature'];
+  console.log("Received webhook signature:", sig);
+
+  let stripeEvent;
+
   try {
-    const { paymentIntentId, userId } = JSON.parse(event.body);
+    stripeEvent = stripe.webhooks.constructEvent(event.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    console.log("Stripe event constructed:", stripeEvent);
+  } catch (err) {
+    console.error('Webhook signature verification failed:', err.message);
+    return { statusCode: 400, body: `Webhook Error: ${err.message}` };
+  }
 
-    // Confirm the payment
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  switch (stripeEvent.type) {
+    case 'payment_intent.succeeded':
+      const paymentIntent = stripeEvent.data.object;
+      const customerId = paymentIntent.customer;
+      console.log(`Payment Intent succeeded for customer ${customerId}`);
 
-    if (paymentIntent.status === 'succeeded') {
-      // Update user subscription status in Firestore
-      const userRef = db.collection("users").doc(userId);
-      await userRef.set(
-        {
+      try {
+        // Retrieve the customer to get metadata
+        const customer = await stripe.customers.retrieve(customerId);
+        const userId = customer.metadata.userId;
+        console.log(`Customer metadata:`, customer.metadata);
+
+        const userRef = db.collection("users").doc(userId);
+        await userRef.set({
           isSubscribed: true,
           subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        },
-        { merge: true }
-      );
+        }, { merge: true });
 
-      // Redirect to contact page
-      return {
-        statusCode: 302,
-        headers: {
-          Location: 'https://develop--herbnexus.netlify.app/contact',
-        },
-      };
-    } else {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Payment not successful' }),
-      };
-    }
-  } catch (error) {
-    console.error("Error confirming payment:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-    };
+        console.log(`Successfully updated subscription for user ${userId}`);
+        
+        // Redirect to the contact page
+        return {
+          statusCode: 302,
+          headers: {
+            Location: 'https://develop--herbnexus.netlify.app/contact'
+          },
+          body: JSON.stringify({ message: 'Redirecting to contact page' })
+        };
+      } catch (error) {
+        console.error("Error updating subscription:", error);
+        return { statusCode: 500, body: "Internal Server Error" };
+      }
+      break;
+
+    case 'customer.subscription.deleted':
+      const subscription = stripeEvent.data.object;
+      const subCustomerId = subscription.customer;
+      console.log(`Subscription deleted for customer ${subCustomerId}`);
+
+      try {
+        // Retrieve the customer to get metadata
+        const subCustomer = await stripe.customers.retrieve(subCustomerId);
+        const subUserId = subCustomer.metadata.userId;
+        console.log(`Customer metadata:`, subCustomer.metadata);
+
+        const userRef = db.collection("users").doc(subUserId);
+        await userRef.set({
+          isSubscribed: false,
+          subscriptionEndDate: null,
+        }, { merge: true });
+
+        console.log(`Successfully updated subscription status for user ${subUserId}`);
+      } catch (error) {
+        console.error("Error updating subscription status:", error);
+        return { statusCode: 500, body: "Internal Server Error" };
+      }
+      break;
+
+    default:
+      console.log(`Unhandled event type ${stripeEvent.type}`);
   }
+
+  return { statusCode: 200, body: "Success" };
 };
