@@ -62,7 +62,7 @@ function App() {
             <ConfirmPayment /> {/* Add the new ConfirmPayment route */}
           </Route>
           <Route path="*">
-            <NotFoud />
+            <NotFound />
           </Route>
         </Switch>
         <Footer />
