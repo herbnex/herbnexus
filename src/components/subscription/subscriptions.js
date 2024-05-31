@@ -36,13 +36,31 @@ const Subscription = ({ clientSecret }) => {
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `https://develop--herbnexus.netlify.app/confirm-payment?payment_intent=${paymentIntent.id}&user_id=${user.uid}`,
+        return_url: `https://develop--herbnexus.netlify.app/confirm-payment`,
       },
     });
 
     if (error) {
       setErrorMessage(error.message);
       setLoading(false);
+    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      try {
+        const response = await axios.post('/.netlify/functions/confirmPayment', {
+          paymentIntentId: paymentIntent.id,
+          userId: user.uid,
+        });
+
+        if (response.status === 200) {
+          window.location.href = 'https://develop--herbnexus.netlify.app/contact'; // Client-side redirect
+        } else {
+          setErrorMessage('Failed to update subscription');
+          setLoading(false);
+        }
+      } catch (updateError) {
+        console.error("Error updating subscription:", updateError);
+        setErrorMessage('Failed to update subscription');
+        setLoading(false);
+      }
     }
   };
 
