@@ -45,17 +45,12 @@ const Subscription = ({ clientSecret }) => {
       setLoading(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       try {
-        const response = await axios.post('/.netlify/functions/confirmPayment', {
+        await axios.post('/.netlify/functions/confirmPayment', {
           paymentIntentId: paymentIntent.id,
           userId: user.uid,
         });
 
-        if (response.status === 200) {
-          window.location.href = 'https://develop--herbnexus.netlify.app/contact'; // Client-side redirect
-        } else {
-          setErrorMessage('Failed to update subscription');
-          setLoading(false);
-        }
+        window.location.href = 'https://develop--herbnexus.netlify.app/contact'; // Client-side redirect
       } catch (updateError) {
         console.error("Error updating subscription:", updateError);
         setErrorMessage('Failed to update subscription');
