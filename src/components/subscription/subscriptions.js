@@ -6,11 +6,12 @@ import { Container, Form, Button, Alert, Row, Col } from 'react-bootstrap';
 import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
+import { useHistory } from 'react-router-dom';
 import './subscription.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const Subscription = ({ clientSecret }) => {
+const Subscription = ({ clientSecret, onPaymentSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { user } = useAuth();
@@ -43,7 +44,10 @@ const Subscription = ({ clientSecret }) => {
     if (error) {
       setErrorMessage(error.message);
       setLoading(false);
+    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      onPaymentSuccess();
     }
+
     setLoading(false);
   };
 
