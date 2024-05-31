@@ -25,7 +25,6 @@ exports.handler = async (event) => {
         headers: {
           Location: 'https://develop--herbnexus.netlify.app/contact',
         },
-        body: JSON.stringify({ success: true }),
       };
     } else {
       return {
