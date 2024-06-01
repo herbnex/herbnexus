@@ -189,6 +189,7 @@ const Subscription = ({ clientSecret }) => {
 const SubscriptionWrapper = () => {
   const [clientSecret, setClientSecret] = useState("");
   const { user } = useAuth();
+  const stripe = useStripe();
 
   useEffect(() => {
     const createSubscription = async () => {
