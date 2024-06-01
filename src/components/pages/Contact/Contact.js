@@ -26,32 +26,7 @@ const Contact = () => {
   const chatSectionRef = useRef(null);
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
 
-  useEffect(() => {
-    const checkSubscriptionStatus = async () => {
-      if (!user) {
-        console.error("User is not authenticated!");
-        return;
-      }
-      await updateUser(user.uid); // Fetch the latest user data
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        if (!userData.isSubscribed) {
-          history.push('/subscription'); // Redirect to subscription page if not subscribed
-        } else {
-          setLoading(false); // Only set loading to false if the user is subscribed
-        }
-      } else {
-        console.error("User document does not exist!");
-      }
-    };
-
-    if (user) {
-      checkSubscriptionStatus();
-    }
-  }, [user, updateUser, history]);
+  
 
   useEffect(() => {
     if (!user) {
