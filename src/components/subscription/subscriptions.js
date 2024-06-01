@@ -41,7 +41,7 @@ const SubscriptionForm = ({ clientSecret }) => {
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
         // Optimistically update user state
         updateUser({ ...user, isSubscribed: true });
-        window.location.href = 'https://develop--herbnexus.netlify.app/contact'; // Update with your actual URL
+        window.location.replace = 'https://develop--herbnexus.netlify.app/contact'; // Update with your actual URL
       }
     } catch (err) {
       console.error('Error confirming payment:', err);
