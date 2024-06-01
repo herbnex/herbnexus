@@ -41,8 +41,10 @@ const SubscriptionForm = ({ clientSecret }) => {
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
         // Optimistically update user state
         updateUser({ ...user, isSubscribed: true });
-        window.location.replace = 'https://develop--herbnexus.netlify.app/contact'; // Update with your actual URL
-      }
+        setTimeout(() => {
+          window.location.replace('https://develop--herbnexus.netlify.app/contact'); // Update with your actual URL
+        }, 3000); // 1-second delay before redirection
+            }
     } catch (err) {
       console.error('Error confirming payment:', err);
       setErrorMessage('An error occurred. Please try again.');
