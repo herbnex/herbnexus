@@ -21,12 +21,12 @@ const SubscriptionForm = ({ clientSecret }) => {
     event.preventDefault();
     setLoading(true);
     setErrorMessage(null);
-  
+
     if (!stripe || !elements) {
       setLoading(false);
       return;
     }
-  
+
     try {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
@@ -35,11 +35,11 @@ const SubscriptionForm = ({ clientSecret }) => {
         },
         redirect: 'if_required'
       });
-  
+
       if (error) {
         setErrorMessage(error.message);
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Handle successful payment here
+        // Optimistically update user state
         updateUser({ ...user, isSubscribed: true });
         window.location.href = 'https://develop--herbnexus.netlify.app/contact'; // Update with your actual URL
       }
