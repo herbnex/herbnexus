@@ -10,18 +10,42 @@ import './subscription.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const Subscription = ({ clientSecret }) => {
+const Subscription = () => {
   const stripe = useStripe();
   const elements = useElements();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [contact, setContact] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
-  const [zip, setZip] = useState('');
+  const [subscriptionSuccess, setSubscriptionSuccess] = useState(false);
+  const [clientSecret, setClientSecret] = useState("");
+
+  useEffect(() => {
+    const fetchClientSecret = async () => {
+      if (user) {
+        try {
+          const response = await axios.post(
+            "/.netlify/functions/create-payment-intent",
+            { userId: user.uid }
+          );
+          setClientSecret(response.data.clientSecret);
+        } catch (error) {
+          console.error("Error fetching client secret:", error);
+          setErrorMessage('An error occurred while initializing the payment process. Please try again.');
+        }
+      }
+    };
+    fetchClientSecret();
+  }, [user]);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const redirectStatus = queryParams.get('redirect_status');
+
+    if (redirectStatus === 'succeeded') {
+      setSubscriptionSuccess(true);
+      updateUser({ ...user, isSubscribed: true });
+    }
+  }, [user, updateUser]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -37,17 +61,17 @@ const Subscription = ({ clientSecret }) => {
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `https://develop--herbnexus.netlify.app/contact`,
+          return_url: `https://develop--herbnexus.netlify.app/contact`, // Update with your actual URL
         },
       });
 
       if (error) {
         setErrorMessage(error.message);
-        setLoading(false);
       }
     } catch (err) {
       console.error('Error confirming payment:', err);
-      setErrorMessage('Failed to confirm payment');
+      setErrorMessage('An error occurred. Please try again.');
+    } finally {
       setLoading(false);
     }
   };
@@ -91,9 +115,8 @@ const Subscription = ({ clientSecret }) => {
               <Form.Control
                 type="email"
                 placeholder="Email or phone number"
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-                required
+                value={user.email}
+                readOnly
               />
             </Form.Group>
             <Form.Group controlId="newsOffers">
@@ -109,9 +132,8 @@ const Subscription = ({ clientSecret }) => {
                   <Form.Control
                     type="text"
                     placeholder="First Name"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    required
+                    value={user.firstName}
+                    readOnly
                   />
                 </Form.Group>
               </Col>
@@ -121,9 +143,8 @@ const Subscription = ({ clientSecret }) => {
                   <Form.Control
                     type="text"
                     placeholder="Last Name"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    required
+                    value={user.lastName}
+                    readOnly
                   />
                 </Form.Group>
               </Col>
@@ -133,9 +154,8 @@ const Subscription = ({ clientSecret }) => {
               <Form.Control
                 type="text"
                 placeholder="Address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                required
+                value={user.address}
+                readOnly
               />
             </Form.Group>
             <Row>
@@ -145,9 +165,8 @@ const Subscription = ({ clientSecret }) => {
                   <Form.Control
                     type="text"
                     placeholder="City"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    required
+                    value={user.city}
+                    readOnly
                   />
                 </Form.Group>
               </Col>
@@ -157,9 +176,8 @@ const Subscription = ({ clientSecret }) => {
                   <Form.Control
                     type="text"
                     placeholder="ZIP Code"
-                    value={zip}
-                    onChange={(e) => setZip(e.target.value)}
-                    required
+                    value={user.zip}
+                    readOnly
                   />
                 </Form.Group>
               </Col>
@@ -169,7 +187,9 @@ const Subscription = ({ clientSecret }) => {
             </div>
             {clientSecret && (
               <Form.Group>
-                <PaymentElement />
+                <Elements stripe={stripePromise} options={{ clientSecret }}>
+                  <PaymentElement />
+                </Elements>
               </Form.Group>
             )}
             <Button
@@ -180,39 +200,15 @@ const Subscription = ({ clientSecret }) => {
               {loading ? "Processing..." : "Subscribe for $50/month"}
             </Button>
           </Form>
+          {subscriptionSuccess && (
+            <Alert variant="success" className="mt-3">
+              Thank you for subscribing! You now have access to our premium features.
+            </Alert>
+          )}
         </Col>
       </Row>
     </Container>
   );
 };
 
-const SubscriptionWrapper = () => {
-  const [clientSecret, setClientSecret] = useState("");
-  const { user } = useAuth();
-
-  useEffect(() => {
-    const createSubscription = async () => {
-      try {
-        const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
-        setClientSecret(data.clientSecret);
-        console.log("Client secret received:", data.clientSecret);
-      } catch (error) {
-        console.error("Error creating subscription:", error);
-      }
-    };
-
-    if (user) {
-      createSubscription();
-    }
-  }, [user]);
-
-  return (
-    clientSecret && (
-      <Elements stripe={stripePromise} options={{ clientSecret }}>
-        <Subscription clientSecret={clientSecret} />
-      </Elements>
-    )
-  );
-};
-
-export default SubscriptionWrapper;
+export default Subscription;
