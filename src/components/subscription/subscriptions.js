@@ -21,22 +21,27 @@ const SubscriptionForm = ({ clientSecret }) => {
     event.preventDefault();
     setLoading(true);
     setErrorMessage(null);
-
+  
     if (!stripe || !elements) {
       setLoading(false);
       return;
     }
-
+  
     try {
-      const { error } = await stripe.confirmPayment({
+      const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `https://develop--herbnexus.netlify.app/contact`, // Update with your actual URL
+          // Don't include return_url here
         },
+        redirect: 'if_required'
       });
-
+  
       if (error) {
         setErrorMessage(error.message);
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Handle successful payment here
+        updateUser({ ...user, isSubscribed: true });
+        window.location.href = 'https://develop--herbnexus.netlify.app/contact'; // Update with your actual URL
       }
     } catch (err) {
       console.error('Error confirming payment:', err);
