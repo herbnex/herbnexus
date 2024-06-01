@@ -13,11 +13,9 @@ import Signup from './components/pages/Signup/Signup';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import Faq from './components/Faq/Faq';
 import About from './components/About/About';
-import Appointment from './components/pages/Appointment/Appoinment';
+import Appointment from './components/pages/Appointment';
 import Contact from './components/pages/Contact/Contact';
 import Subscription from './components/subscription/subscriptions';
-
-import ConfirmPayment from './components/subscription/ConfirmPayment'; // Import the ConfirmPayment component
 
 function App() {
   return (
@@ -57,9 +55,6 @@ function App() {
           </Route>
           <Route path="/subscribe">
             <Subscription /> {/* Updated component name */}
-          </Route>
-          <Route path="/confirm-payment">
-            <ConfirmPayment /> {/* Add the new ConfirmPayment route */}
           </Route>
           <Route path="*">
             <NotFound />
