@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge, Alert } from "react-bootstrap";
+import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge } from "react-bootstrap";
 import { ref, set, onValue, push } from "firebase/database";
 import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
@@ -9,9 +9,10 @@ import { useHistory, useLocation } from "react-router-dom";
 import "./Contact.css";
 
 const Contact = () => {
-  const { user, updateUserSubscriptionStatus } = useAuth();
+  const { user, updateUser } = useAuth();
   const history = useHistory();
   const location = useLocation();
+  const [loading, setLoading] = useState(true);
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -19,12 +20,13 @@ const Contact = () => {
   const [message, setMessage] = useState('');
   const [isDoctor, setIsDoctor] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState(null);
   const typingTimeoutRef = useRef(null);
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
   const chatSectionRef = useRef(null);
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
+
+  
 
   useEffect(() => {
     if (!user) {
@@ -32,25 +34,27 @@ const Contact = () => {
       return;
     }
 
-    const queryParams = new URLSearchParams(location.search);
-    const paymentIntentClientSecret = queryParams.get('payment_intent_client_secret');
-    const redirectStatus = queryParams.get('redirect_status');
+    const checkIfDoctor = async () => {
+      const userDocRef = doc(db, "doctors", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
 
-    if (paymentIntentClientSecret && redirectStatus) {
-      handlePaymentStatus(redirectStatus);
-    }
-  }, [user, location.search]);
+      if (userDocSnap.exists()) {
+        setIsDoctor(true);
+      } else {
+        setIsDoctor(false);
+      }
+    };
 
-  const handlePaymentStatus = (status) => {
-    if (status === 'succeeded') {
-      setPaymentStatus('Payment succeeded');
-      // Update user subscription status
-      updateUserSubscriptionStatus(true);
+    checkIfDoctor();
+  }, [user]);
+
+  useEffect(() => {
+    if (isDoctor) {
+      fetchActiveUsers();
     } else {
-      setPaymentStatus('Payment failed or is still processing');
-      updateUserSubscriptionStatus(false);
+      fetchOnlineDoctors();
     }
-  };
+  }, [isDoctor, user]);
 
   const fetchOnlineDoctors = async () => {
     const doctorsRef = collection(db, "doctors");
@@ -82,22 +86,10 @@ const Contact = () => {
   };
 
   useEffect(() => {
-
     if (!user || !selectedParticipant) {
       return;
     }
-    const checkIfDoctor = async () => {
-      const userDocRef = doc(db, "doctors", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
 
-      if (userDocSnap.exists()) {
-        setIsDoctor(true);
-      } else {
-        setIsDoctor(false);
-      }
-    };
-
-    checkIfDoctor();
     const chatId = isDoctor
       ? generateChatId(selectedParticipant.id, user.displayName)
       : generateChatId(user.uid, selectedParticipant.name);
@@ -310,7 +302,6 @@ const Contact = () => {
           )}
         </Col>
       </Row>
-      {paymentStatus && <Alert variant="info">{paymentStatus}</Alert>}
     </Container>
   );
 };
