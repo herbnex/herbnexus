@@ -193,9 +193,22 @@ const SubscriptionWrapper = () => {
   useEffect(() => {
     const createSubscription = async () => {
       try {
-        const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
-        setClientSecret(data.clientSecret);
-        console.log("Client secret received:", data.clientSecret);
+        // Check if a Payment Intent already exists for the user
+        const existingIntent = await stripe.paymentIntents.list({
+          customer: user.uid,
+        });
+    
+        if (existingIntent.data.length > 0) {
+          // Use the existing client secret
+          const clientSecret = existingIntent.data[0].client_secret;
+          setClientSecret(clientSecret);
+          console.log("Using existing client secret:", clientSecret);
+        } else {
+          // Create a new Payment Intent if none exists
+          const { data } = await axios.post("/.netlify/functions/create-payment-intent", { userId: user.uid });
+          setClientSecret(data.clientSecret);
+          console.log("Client secret received:", data.clientSecret);
+        }
       } catch (error) {
         console.error("Error creating subscription:", error);
       }
