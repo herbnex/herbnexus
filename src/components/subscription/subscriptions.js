@@ -16,7 +16,6 @@ const SubscriptionForm = ({ clientSecret }) => {
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [subscriptionSuccess, setSubscriptionSuccess] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -74,7 +73,11 @@ const Subscription = () => {
             "/.netlify/functions/create-payment-intent",
             { userId: user.uid }
           );
-          setClientSecret(response.data.clientSecret);
+          if (response.data.clientSecret && response.data.clientSecret.includes('_secret_')) {
+            setClientSecret(response.data.clientSecret);
+          } else {
+            setErrorMessage('Invalid client secret format received.');
+          }
         } catch (error) {
           console.error("Error fetching client secret:", error);
           setErrorMessage('An error occurred while initializing the payment process. Please try again.');
@@ -123,9 +126,11 @@ const Subscription = () => {
             <p>Get 24/7 access to accredited herbal practitioners for only $50/month.</p>
           </div>
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-          <Elements stripe={stripePromise} options={{ clientSecret }}>
-            <SubscriptionForm clientSecret={clientSecret} />
-          </Elements>
+          {clientSecret && (
+            <Elements stripe={stripePromise} options={{ clientSecret }}>
+              <SubscriptionForm clientSecret={clientSecret} />
+            </Elements>
+          )}
         </Col>
       </Row>
     </Container>
