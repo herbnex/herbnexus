@@ -6,11 +6,25 @@ exports.handler = async (event) => {
   console.log("Received userId:", userId);
 
   try {
-    // Create a customer if not already exists
-    const customer = await stripe.customers.create({
-      metadata: { userId },
+    // Check if a customer already exists
+    const existingCustomers = await stripe.customers.list({
+      limit: 1,
+      query: {
+        metadata: { userId },
+      },
     });
-    console.log("Customer created with ID:", customer.id);
+
+    let customer;
+    if (existingCustomers.data.length > 0) {
+      customer = existingCustomers.data[0];
+      console.log("Existing customer found with ID:", customer.id);
+    } else {
+      // Create a new customer if none exists
+      customer = await stripe.customers.create({
+        metadata: { userId },
+      });
+      console.log("New customer created with ID:", customer.id);
+    }
 
     // Create a subscription
     const subscription = await stripe.subscriptions.create({
