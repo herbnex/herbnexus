@@ -9,9 +9,10 @@ exports.handler = async (event) => {
     // Check if a customer already exists
     const existingCustomers = await stripe.customers.list({
       limit: 1,
-      query: {
-        metadata: { userId },
-      },
+      // Remove the query object
+      // filter: { // Use filter if you need to filter by metadata
+      //   metadata: { userId },
+      // },
     });
 
     let customer;
