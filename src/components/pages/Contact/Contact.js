@@ -32,19 +32,6 @@ const Contact = () => {
       return;
     }
 
-    const checkIfDoctor = async () => {
-      const userDocRef = doc(db, "doctors", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (userDocSnap.exists()) {
-        setIsDoctor(true);
-      } else {
-        setIsDoctor(false);
-      }
-    };
-
-    checkIfDoctor();
-
     const queryParams = new URLSearchParams(location.search);
     const paymentIntentClientSecret = queryParams.get('payment_intent_client_secret');
     const redirectStatus = queryParams.get('redirect_status');
@@ -95,10 +82,22 @@ const Contact = () => {
   };
 
   useEffect(() => {
+
     if (!user || !selectedParticipant) {
       return;
     }
+    const checkIfDoctor = async () => {
+      const userDocRef = doc(db, "doctors", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
 
+      if (userDocSnap.exists()) {
+        setIsDoctor(true);
+      } else {
+        setIsDoctor(false);
+      }
+    };
+
+    checkIfDoctor();
     const chatId = isDoctor
       ? generateChatId(selectedParticipant.id, user.displayName)
       : generateChatId(user.uid, selectedParticipant.name);
