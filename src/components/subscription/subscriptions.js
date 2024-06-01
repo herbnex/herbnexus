@@ -10,42 +10,13 @@ import './subscription.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const Subscription = () => {
+const SubscriptionForm = ({ clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [subscriptionSuccess, setSubscriptionSuccess] = useState(false);
-  const [clientSecret, setClientSecret] = useState("");
-
-  useEffect(() => {
-    const fetchClientSecret = async () => {
-      if (user) {
-        try {
-          const response = await axios.post(
-            "/.netlify/functions/create-payment-intent",
-            { userId: user.uid }
-          );
-          setClientSecret(response.data.clientSecret);
-        } catch (error) {
-          console.error("Error fetching client secret:", error);
-          setErrorMessage('An error occurred while initializing the payment process. Please try again.');
-        }
-      }
-    };
-    fetchClientSecret();
-  }, [user]);
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const redirectStatus = queryParams.get('redirect_status');
-
-    if (redirectStatus === 'succeeded') {
-      setSubscriptionSuccess(true);
-      updateUser({ ...user, isSubscribed: true });
-    }
-  }, [user, updateUser]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -77,6 +48,52 @@ const Subscription = () => {
   };
 
   return (
+    <Form onSubmit={handleSubmit} className="subscription-form">
+      {clientSecret && <PaymentElement />}
+      <Button
+        type="submit"
+        disabled={!stripe || loading}
+        className="subscribe-button mt-3"
+      >
+        {loading ? "Processing..." : "Subscribe for $50/month"}
+      </Button>
+    </Form>
+  );
+};
+
+const Subscription = () => {
+  const { user, updateUser } = useAuth();
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [clientSecret, setClientSecret] = useState("");
+
+  useEffect(() => {
+    const fetchClientSecret = async () => {
+      if (user) {
+        try {
+          const response = await axios.post(
+            "/.netlify/functions/create-payment-intent",
+            { userId: user.uid }
+          );
+          setClientSecret(response.data.clientSecret);
+        } catch (error) {
+          console.error("Error fetching client secret:", error);
+          setErrorMessage('An error occurred while initializing the payment process. Please try again.');
+        }
+      }
+    };
+    fetchClientSecret();
+  }, [user]);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const redirectStatus = queryParams.get('redirect_status');
+
+    if (redirectStatus === 'succeeded') {
+      updateUser({ ...user, isSubscribed: true });
+    }
+  }, [user, updateUser]);
+
+  return (
     <Container className="subscription-container">
       <Row>
         <Col md={6} className="subscription-faq">
@@ -106,105 +123,9 @@ const Subscription = () => {
             <p>Get 24/7 access to accredited herbal practitioners for only $50/month.</p>
           </div>
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-          <Form onSubmit={handleSubmit} className="subscription-form">
-            <h5>
-              <FontAwesomeIcon icon={faEnvelope} /> Contact Information
-            </h5>
-            <Form.Group controlId="contact">
-              <Form.Label>Email or phone number</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Email or phone number"
-                value={user.email}
-                readOnly
-              />
-            </Form.Group>
-            <Form.Group controlId="newsOffers">
-              <Form.Check type="checkbox" label="Email me with news and offers" />
-            </Form.Group>
-            <h5>
-              <FontAwesomeIcon icon={faAddressCard} /> Shipping Address
-            </h5>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="firstName">
-                  <Form.Label>First Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="First Name"
-                    value={user.firstName}
-                    readOnly
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="lastName">
-                  <Form.Label>Last Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Last Name"
-                    value={user.lastName}
-                    readOnly
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Form.Group controlId="address">
-              <Form.Label>Address</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Address"
-                value={user.address}
-                readOnly
-              />
-            </Form.Group>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="city">
-                  <Form.Label>City</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="City"
-                    value={user.city}
-                    readOnly
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="zip">
-                  <Form.Label>ZIP Code</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="ZIP Code"
-                    value={user.zip}
-                    readOnly
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <div className="divider">
-              <span>Payment Details</span>
-            </div>
-            {clientSecret && (
-              <Form.Group>
-                <Elements stripe={stripePromise} options={{ clientSecret }}>
-                  <PaymentElement />
-                </Elements>
-              </Form.Group>
-            )}
-            <Button
-              type="submit"
-              disabled={!stripe || loading}
-              className="subscribe-button mt-3"
-            >
-              {loading ? "Processing..." : "Subscribe for $50/month"}
-            </Button>
-          </Form>
-          {subscriptionSuccess && (
-            <Alert variant="success" className="mt-3">
-              Thank you for subscribing! You now have access to our premium features.
-            </Alert>
-          )}
+          <Elements stripe={stripePromise} options={{ clientSecret }}>
+            <SubscriptionForm clientSecret={clientSecret} />
+          </Elements>
         </Col>
       </Row>
     </Container>
