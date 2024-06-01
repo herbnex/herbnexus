@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge } from "react-bootstrap";
+import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge, Alert } from "react-bootstrap";
 import { ref, set, onValue, push } from "firebase/database";
 import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
@@ -9,10 +9,9 @@ import { useHistory, useLocation } from "react-router-dom";
 import "./Contact.css";
 
 const Contact = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUserSubscriptionStatus } = useAuth();
   const history = useHistory();
   const location = useLocation();
-  const [loading, setLoading] = useState(true);
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -20,13 +19,12 @@ const Contact = () => {
   const [message, setMessage] = useState('');
   const [isDoctor, setIsDoctor] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState(null);
   const typingTimeoutRef = useRef(null);
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
   const chatSectionRef = useRef(null);
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
-
-  
 
   useEffect(() => {
     if (!user) {
@@ -46,15 +44,26 @@ const Contact = () => {
     };
 
     checkIfDoctor();
-  }, [user]);
 
-  useEffect(() => {
-    if (isDoctor) {
-      fetchActiveUsers();
-    } else {
-      fetchOnlineDoctors();
+    const queryParams = new URLSearchParams(location.search);
+    const paymentIntentClientSecret = queryParams.get('payment_intent_client_secret');
+    const redirectStatus = queryParams.get('redirect_status');
+
+    if (paymentIntentClientSecret && redirectStatus) {
+      handlePaymentStatus(redirectStatus);
     }
-  }, [isDoctor, user]);
+  }, [user, location.search]);
+
+  const handlePaymentStatus = (status) => {
+    if (status === 'succeeded') {
+      setPaymentStatus('Payment succeeded');
+      // Update user subscription status
+      updateUserSubscriptionStatus(true);
+    } else {
+      setPaymentStatus('Payment failed or is still processing');
+      updateUserSubscriptionStatus(false);
+    }
+  };
 
   const fetchOnlineDoctors = async () => {
     const doctorsRef = collection(db, "doctors");
@@ -302,6 +311,7 @@ const Contact = () => {
           )}
         </Col>
       </Row>
+      {paymentStatus && <Alert variant="info">{paymentStatus}</Alert>}
     </Container>
   );
 };
