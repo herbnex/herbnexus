@@ -5,12 +5,17 @@ import useAuth from "../../../hooks/useAuth";
 import Error from "../../Error/Error";
 import Loading from "../../Loading/Loading";
 import "./Signup.css";
+//import { auth } from "../../firebase.config";
 import { auth, db } from '../../../Firebase/firebase.config'; // Adjust the path as necessary
+
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore"; 
+//import { db } from "../../firebase.config"; // Ensure you export `db` from your Firebase config
 
 const Signup = () => {
-  const { user, signInWithGoogle, signInWithGithub, error, setError, isLoading } = useAuth();
+  const { user, signInWithGoogle, signInWithGithub, createAccountWithEmailPassword, error, setError, isLoading } =
+    useAuth();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,38 +25,44 @@ const Signup = () => {
 
   const refferer = location?.state?.from || { pathname: "/" };
 
+  console.log(refferer);
+
   const handleSignupSubmit = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-
+  
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        const userId = userCredential.user.uid; // Using UID as user ID
         // Update the user's profile with their name
-        updateProfile(userCredential.user, { displayName: name })
-          .then(() => {
-            // Save additional data to Firestore
-            const userRef = doc(db, "users", userId);
-            return setDoc(userRef, {
-              id: userId, // Store user ID
-              name: name,
-              email: email,
-              // Add additional fields as needed
-            });
-          })
-          .then(() => {
-            setName("");
-            setEmail("");
-            setPassword("");
-            setConfirmPassword("");
-            history.replace(refferer);
-          })
-          .catch((error) => setError(error.message));
+        updateProfile(userCredential.user, {
+          displayName: name,
+        }).then(() => {
+          // After the profile is updated, save additional data to Firestore
+          const userRef = doc(db, "users", userCredential.user.uid); // Reference to a new document in 'users' collection with user's UID
+          return setDoc(userRef, {
+            name: name,
+            email: email,
+            // Add additional fields as needed
+          });
+        })
+        .then(() => {
+          console.log("User data saved to Firestore!");
+          setName("");
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+          history.replace(refferer);
+        })
+        .catch((error) => {
+          setError(error.message);
+        });
       })
-      .catch((error) => setError(error.message));
+      .catch((error) => {
+        setError(error.message);
+      });
   };
 
   useEffect(() => {
@@ -72,6 +83,7 @@ const Signup = () => {
 
       <Container className="signup-panel">
         <Row>
+          {/* SIGN UP FORM  */}
           <Col xs={12} md={6}>
             <h1 className="title text-center">Sign Up</h1>
             <div className="signup d-flex flex-column justify-content-center h-100 pb-5">
@@ -135,6 +147,7 @@ const Signup = () => {
             </div>
           </Col>
 
+          {/* THIRD PARTY SIGN UP  */}
           <Col xs={12} md={1}>
             <div className="d-flex justify-content-center align-items-center my-3 pt-5 pb-3 h-100">
               <p>--OR--</p>
@@ -147,14 +160,14 @@ const Signup = () => {
                 <i className="bi bi-google fs-2"></i> <br />
                 Google
               </button>
-              {/* <button onClick={signInWithGithub} className="btn btn-success">
+              <button onClick={signInWithGithub} className="btn btn-success">
                 <i className="bi bi-github fs-2"></i> <br />
                 Github
               </button>
               <button disabled className="btn btn-primary">
                 <i className="bi bi-facebook fs-2"></i> <br />
                 FaceBook
-              </button> */}
+              </button>
             </div>
           </Col>
         </Row>
