@@ -26,13 +26,9 @@ const Login = () => {
     setValidationErrors(errors);
     if (Object.keys(errors).length > 0) return;
 
-    logInWithEmailandPassword(email, password).then(() => {
-      if (user) {
-        setEmail("");
-        setPassword("");
-        history.replace(refferer);
-      }
-    });
+    logInWithEmailandPassword(email, password);
+    setEmail("");
+    setPassword("");
   };
 
   useEffect(() => {
