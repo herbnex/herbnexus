@@ -2,6 +2,8 @@ import React, { useState, useEffect, createContext, useCallback, useRef } from '
 import { auth, db } from '../Firebase/firebase.config'; // Adjust the path as necessary
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
+import useFirebase from "../hooks/useFirebase";
+
 
 export const AuthContext = createContext();
 
@@ -10,6 +12,7 @@ const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const isMounted = useRef(true);
+  const firebaseAuth = useFirebase();
 
   const updateUser = useCallback(async (user) => {
     if (!isMounted.current) return; // Prevent state updates if component is unmounted
@@ -62,7 +65,7 @@ const AuthProvider = ({ children }) => {
   }, [updateUser]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isSubscribed, updateUser, logOut }}>
+    <AuthContext.Provider value={{ user, isLoading, isSubscribed, updateUser, logOut, firebaseAuth }}>
       {children}
     </AuthContext.Provider>
   );
