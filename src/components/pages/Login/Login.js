@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Col, Container, Form, Row, Button, FloatingLabel, Alert } from "react-bootstrap";
+import { Col, Container, Form, Row, Button, FloatingLabel, Alert, Spinner } from "react-bootstrap";
 import { NavLink, useLocation, useHistory } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import Error from "../../Error/Error";
-import Loading from "../../Loading/Loading";
 import "./Login.css";
 
 const Login = () => {
-  const { user, logInWithEmailandPassword, error, isLoading } = useAuth();
+  const { user, logInWithEmailandPassword, error, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
   const location = useLocation();
 
   const refferer = location?.state?.from || { pathname: "/" };
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
     let errors = {};
@@ -26,9 +26,15 @@ const Login = () => {
     setValidationErrors(errors);
     if (Object.keys(errors).length > 0) return;
 
-    logInWithEmailandPassword(email, password);
-    setEmail("");
-    setPassword("");
+    setIsLoading(true);
+    try {
+      await logInWithEmailandPassword(email, password);
+      if (user) {
+        history.replace(refferer);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -36,10 +42,6 @@ const Login = () => {
       history.replace(refferer);
     }
   }, [user, history, refferer]);
-
-  if (isLoading) {
-    return <Loading />;
-  }
 
   return (
     <div>
@@ -83,8 +85,15 @@ const Login = () => {
                   </FloatingLabel>
                 </Form.Group>
 
-                <Button variant="outline" className="btn-main rounded-pill p-3 w-100" type="submit">
-                  Log In
+                <Button variant="outline" className="btn-main rounded-pill p-3 w-100" type="submit" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Spinner animation="border" size="sm" className="me-2" />
+                      Signing in...
+                    </>
+                  ) : (
+                    "Log In"
+                  )}
                 </Button>
               </Form>
             </div>
