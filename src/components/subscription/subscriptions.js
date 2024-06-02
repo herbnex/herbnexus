@@ -6,6 +6,7 @@ import { Container, Form, Button, Alert, Row, Col, Spinner } from 'react-bootstr
 import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
+import Loading from '../../components/Loading/Loading'; // Adjust the path to your Loading component
 import './subscription.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
@@ -123,13 +124,7 @@ const Subscription = () => {
   }, [user, updateUser]);
 
   if (pageLoading) {
-    return (
-      <div className="page-loader">
-        <Spinner animation="border" role="status">
-          <span className="sr-only">Loading...</span>
-        </Spinner>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
