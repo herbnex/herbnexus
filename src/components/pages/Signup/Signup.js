@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Col, Container, Form, Row, Button, FloatingLabel } from "react-bootstrap";
+import { Col, Container, Form, Row, Button, FloatingLabel, Alert } from "react-bootstrap";
 import { NavLink, useLocation, useHistory } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import Error from "../../Error/Error";
@@ -10,45 +10,45 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore"; 
 
 const Signup = () => {
-  const { user, createAccountWithEmailPassword, error, setError, isLoading } = useAuth();
-
+  const { user, error, setError, isLoading } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [validationErrors, setValidationErrors] = useState({});
   const history = useHistory();
   const location = useLocation();
 
   const refferer = location?.state?.from || { pathname: "/" };
 
-  const handleSignupSubmit = (e) => {
+  const handleSignupSubmit = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
+
+    let errors = {};
+    if (!name) errors.name = "Name is required";
+    if (!email) errors.email = "Email is required";
+    if (!password) errors.password = "Password is required";
+    if (password !== confirmPassword) errors.confirmPassword = "Passwords do not match";
+
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: name });
+      const userRef = doc(db, "users", userCredential.user.uid);
+      await setDoc(userRef, { name, email });
+
+      setSuccessMessage("Account created successfully!");
+      setName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      history.replace(refferer);
+    } catch (error) {
+      setError(error.message);
     }
-  
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        updateProfile(userCredential.user, { displayName: name })
-          .then(() => {
-            const userRef = doc(db, "users", userCredential.user.uid);
-            return setDoc(userRef, { name, email });
-          })
-          .then(() => {
-            setName("");
-            setEmail("");
-            setPassword("");
-            setConfirmPassword("");
-            history.replace(refferer);
-          })
-          .catch((error) => {
-            setError(error.message);
-          });
-      })
-      .catch((error) => {
-        setError(error.message);
-      });
   };
 
   useEffect(() => {
@@ -69,10 +69,10 @@ const Signup = () => {
 
       <Container className="signup-panel">
         <Row>
-          {/* SIGN UP FORM  */}
           <Col xs={12} md={6}>
             <h1 className="title text-center">Sign Up</h1>
             <div className="signup d-flex flex-column justify-content-center h-100 pb-5">
+              {successMessage && <Alert variant="success">{successMessage}</Alert>}
               <Form onSubmit={handleSignupSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicName">
                   <FloatingLabel controlId="floatingName" label="Full Name" className="mb-3">
@@ -82,8 +82,10 @@ const Signup = () => {
                       className="rounded-pill ps-4"
                       type="text"
                       placeholder="Full Name"
+                      isInvalid={!!validationErrors.name}
                       required
                     />
+                    <Form.Control.Feedback type="invalid">{validationErrors.name}</Form.Control.Feedback>
                   </FloatingLabel>
                 </Form.Group>
 
@@ -95,8 +97,10 @@ const Signup = () => {
                       className="rounded-pill ps-4"
                       type="email"
                       placeholder="name@example.com"
+                      isInvalid={!!validationErrors.email}
                       required
                     />
+                    <Form.Control.Feedback type="invalid">{validationErrors.email}</Form.Control.Feedback>
                   </FloatingLabel>
                 </Form.Group>
 
@@ -108,8 +112,10 @@ const Signup = () => {
                       className="rounded-pill ps-4"
                       type="password"
                       placeholder="Password"
+                      isInvalid={!!validationErrors.password}
                       required
                     />
+                    <Form.Control.Feedback type="invalid">{validationErrors.password}</Form.Control.Feedback>
                   </FloatingLabel>
                 </Form.Group>
 
@@ -121,8 +127,10 @@ const Signup = () => {
                       className="rounded-pill ps-4"
                       type="password"
                       placeholder="Password"
+                      isInvalid={!!validationErrors.confirmPassword}
                       required
                     />
+                    <Form.Control.Feedback type="invalid">{validationErrors.confirmPassword}</Form.Control.Feedback>
                   </FloatingLabel>
                 </Form.Group>
 
@@ -135,7 +143,7 @@ const Signup = () => {
         </Row>
 
         <h6 className="my-5 pt-5 text-center">
-          Already have account? <NavLink to={{ pathname: "/login", state: { from: refferer } }}>Log In</NavLink> instead.
+          Already have an account? <NavLink to={{ pathname: "/login", state: { from: refferer } }}>Log In</NavLink> instead.
         </h6>
       </Container>
     </div>

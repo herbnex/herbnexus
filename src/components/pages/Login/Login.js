@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Col, Container, Form, Row, Button, FloatingLabel } from "react-bootstrap";
+import { Col, Container, Form, Row, Button, FloatingLabel, Alert } from "react-bootstrap";
 import { NavLink, useLocation, useHistory } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import Error from "../../Error/Error";
@@ -8,9 +8,9 @@ import "./Login.css";
 
 const Login = () => {
   const { user, logInWithEmailandPassword, error, isLoading } = useAuth();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [validationErrors, setValidationErrors] = useState({});
   const history = useHistory();
   const location = useLocation();
 
@@ -18,6 +18,14 @@ const Login = () => {
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
+
+    let errors = {};
+    if (!email) errors.email = "Email is required";
+    if (!password) errors.password = "Password is required";
+
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     logInWithEmailandPassword(email, password);
     setEmail("");
     setPassword("");
@@ -41,7 +49,6 @@ const Login = () => {
 
       <Container className="login-panel">
         <Row>
-          {/* LOGIN FORM  */}
           <Col xs={12} md={6}>
             <h1 className="title text-center">Login</h1>
             <div className="login d-flex flex-column justify-content-center h-100 pb-5">
@@ -54,8 +61,10 @@ const Login = () => {
                       className="rounded-pill ps-4"
                       type="email"
                       placeholder="name@example.com"
+                      isInvalid={!!validationErrors.email}
                       required
                     />
+                    <Form.Control.Feedback type="invalid">{validationErrors.email}</Form.Control.Feedback>
                   </FloatingLabel>
                 </Form.Group>
 
@@ -67,8 +76,10 @@ const Login = () => {
                       className="rounded-pill ps-4"
                       type="password"
                       placeholder="Password"
+                      isInvalid={!!validationErrors.password}
                       required
                     />
+                    <Form.Control.Feedback type="invalid">{validationErrors.password}</Form.Control.Feedback>
                   </FloatingLabel>
                 </Form.Group>
 
