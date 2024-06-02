@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext, useCallback, useRef } from 'react';
-import { auth, db } from '../Firebase/firebase.config'; // Adjust the path as necessary
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../Firebase/firebase.config'; // Adjust the path as necessary
 
 export const AuthContext = createContext();
 
@@ -49,6 +49,18 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const logInWithEmailandPassword = async (email, password) => {
+    setIsLoading(true);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      updateUser(userCredential.user);
+    } catch (error) {
+      console.error("Error logging in with email and password:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     isMounted.current = true;
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -62,7 +74,7 @@ const AuthProvider = ({ children }) => {
   }, [updateUser]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isSubscribed, updateUser, logOut }}>
+    <AuthContext.Provider value={{ user, isLoading, isSubscribed, updateUser, logOut, logInWithEmailandPassword }}>
       {children}
     </AuthContext.Provider>
   );
