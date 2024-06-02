@@ -31,9 +31,6 @@ const Login = () => {
     setLoginError(""); // Reset login error
     try {
       await logInWithEmailandPassword(email, password);
-      if (user) {
-        history.replace(refferer);
-      }
     } catch (error) {
       setLoginError("Incorrect email or password");
     } finally {
