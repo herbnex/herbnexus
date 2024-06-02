@@ -14,7 +14,7 @@ const SubscriptionForm = ({ clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { user, updateUser } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [redirecting, setRedirecting] = useState(false);
 
@@ -57,18 +57,7 @@ const SubscriptionForm = ({ clientSecret }) => {
 
   return (
     <Form onSubmit={handleSubmit} className="subscription-form">
-      {loading && (
-        <div className="payment-loader">
-          <Spinner animation="border" role="status">
-            <span className="sr-only">Loading...</span>
-          </Spinner>
-        </div>
-      )}
-      {clientSecret && (
-        <PaymentElement
-          onReady={() => setLoading(false)}
-        />
-      )}
+      {clientSecret && <PaymentElement />}
       <Button
         type="submit"
         disabled={!stripe || loading || redirecting}
@@ -92,6 +81,7 @@ const Subscription = () => {
   const { user, updateUser } = useAuth();
   const [errorMessage, setErrorMessage] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
+  const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
     const fetchClientSecret = async () => {
@@ -113,6 +103,14 @@ const Subscription = () => {
       }
     };
     fetchClientSecret();
+
+    // Set a timeout to simulate loading for 2 seconds
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 2000);
+
+    // Cleanup timeout on unmount
+    return () => clearTimeout(timer);
   }, [user]);
 
   useEffect(() => {
@@ -123,6 +121,16 @@ const Subscription = () => {
       updateUser({ ...user, isSubscribed: true });
     }
   }, [user, updateUser]);
+
+  if (pageLoading) {
+    return (
+      <div className="page-loader">
+        <Spinner animation="border" role="status">
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+      </div>
+    );
+  }
 
   return (
     <Container className="subscription-container">
