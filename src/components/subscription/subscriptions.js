@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useStripe, useElements, PaymentElement, Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
-import { Container, Form, Button, Alert, Row, Col } from 'react-bootstrap';
+import { Container, Form, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
@@ -16,6 +16,7 @@ const SubscriptionForm = ({ clientSecret }) => {
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [redirecting, setRedirecting] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -41,10 +42,11 @@ const SubscriptionForm = ({ clientSecret }) => {
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
         // Optimistically update user state
         updateUser({ ...user, isSubscribed: true });
+        setRedirecting(true);
         setTimeout(() => {
           window.location.replace('https://develop--herbnexus.netlify.app/contact'); // Update with your actual URL
-        }, 3000); // 1-second delay before redirection
-            }
+        }, 3000); // 3-second delay before redirection
+      }
     } catch (err) {
       console.error('Error confirming payment:', err);
       setErrorMessage('An error occurred. Please try again.');
@@ -63,6 +65,14 @@ const SubscriptionForm = ({ clientSecret }) => {
       >
         {loading ? "Processing..." : "Subscribe for $50/month"}
       </Button>
+      {redirecting && (
+        <div className="redirecting-message">
+          <Spinner animation="border" role="status">
+            <span className="sr-only">Redirecting...</span>
+          </Spinner>
+          <p>Payment successful! Redirecting to the contact page...</p>
+        </div>
+      )}
     </Form>
   );
 };
