@@ -8,9 +8,13 @@
   box-shadow: 0 0 1rem 5px #0005;
   background-color: #fff;
   padding: 1.5rem;
-  margin-top: -280px;
-  margin-bottom: 5rem;
+  margin: auto; /* Center horizontally */
   border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh; /* Adjust as necessary */
 }
 
 .signup {
