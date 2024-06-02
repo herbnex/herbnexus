@@ -6,11 +6,12 @@ import Error from "../../Error/Error";
 import "./Login.css";
 
 const Login = () => {
-  const { user, logInWithEmailandPassword, error, isLoading: authLoading } = useAuth();
+  const { user, logInWithEmailandPassword, error: authError, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const history = useHistory();
   const location = useLocation();
 
@@ -27,11 +28,14 @@ const Login = () => {
     if (Object.keys(errors).length > 0) return;
 
     setIsLoading(true);
+    setLoginError(""); // Reset login error
     try {
       await logInWithEmailandPassword(email, password);
       if (user) {
         history.replace(refferer);
       }
+    } catch (error) {
+      setLoginError("Incorrect email or password");
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +50,7 @@ const Login = () => {
   return (
     <div>
       <Container fluid className="login-heading">
-        {error && <Error />}
+        {authError && <Error />}
       </Container>
 
       <Container className="login-panel">
@@ -54,6 +58,7 @@ const Login = () => {
           <Col xs={12} md={6}>
             <h1 className="title text-center">Login</h1>
             <div className="login d-flex flex-column justify-content-center h-100 pb-5">
+              {loginError && <Alert variant="danger">{loginError}</Alert>}
               <Form onSubmit={handleLoginSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                   <FloatingLabel controlId="floatingInput" label="Email address" className="mb-3">
