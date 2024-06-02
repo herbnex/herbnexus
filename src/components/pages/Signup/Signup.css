@@ -8,11 +8,11 @@
   box-shadow: 0 0 1rem 5px #0005;
   background-color: #fff;
   padding: 1.5rem;
-  margin: -280px auto 5rem auto;
+  margin-top: -280px;
+  margin-bottom: 5rem;
   border-radius: 1rem;
-  max-width: 500px;
 }
 
 .signup {
-  padding: 0 1.5rem;
+  padding-right: 1.5rem;
 }
