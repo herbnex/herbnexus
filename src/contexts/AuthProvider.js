@@ -1,9 +1,8 @@
-import React, { useState, useEffect, createContext, useCallback, useRef } from 'react';
-import { auth, db } from '../Firebase/firebase.config'; // Adjust the path as necessary
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import useFirebase from "../hooks/useFirebase";
-
+import useFirebase from '../hooks/useFirebase';
+import { auth, db } from '../Firebase/firebase.config'; // Adjust the path as necessary
 
 export const AuthContext = createContext();
 
@@ -15,14 +14,14 @@ const AuthProvider = ({ children }) => {
   const firebaseAuth = useFirebase();
 
   const updateUser = useCallback(async (user) => {
-    if (!isMounted.current) return; // Prevent state updates if component is unmounted
+    if (!isMounted.current) return;
 
     if (user) {
       const userRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userRef);
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        if (isMounted.current) { // Check if still mounted before setting state
+        if (isMounted.current) {
           setUser({ ...user, ...userData });
           setIsSubscribed(userData.isSubscribed || false);
         }
@@ -59,13 +58,13 @@ const AuthProvider = ({ children }) => {
     });
 
     return () => {
-      isMounted.current = false; // Cleanup function to update the flag
+      isMounted.current = false;
       unsubscribe();
     };
   }, [updateUser]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isSubscribed, updateUser, logOut, firebaseAuth }}>
+    <AuthContext.Provider value={{ user, isLoading, isSubscribed, updateUser, logOut, ...firebaseAuth }}>
       {children}
     </AuthContext.Provider>
   );
