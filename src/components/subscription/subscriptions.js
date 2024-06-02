@@ -60,19 +60,19 @@ const SubscriptionForm = ({ clientSecret }) => {
       {clientSecret && <PaymentElement />}
       <Button
         type="submit"
-        disabled={!stripe || loading}
+        disabled={!stripe || loading || redirecting}
         className="subscribe-button mt-3"
       >
-        {loading ? "Processing..." : "Subscribe for $50/month"}
+        {loading || redirecting ? (
+          <>
+            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+            {redirecting ? "Redirecting..." : "Processing..."}
+          </>
+        ) : (
+          "Subscribe for $50/month"
+        )}
       </Button>
-      {redirecting && (
-        <div className="redirecting-message">
-          <Spinner animation="border" role="status">
-            <span className="sr-only">Redirecting...</span>
-          </Spinner>
-          <p>Payment successful! Redirecting to the contact page...</p>
-        </div>
-      )}
+      {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
     </Form>
   );
 };
