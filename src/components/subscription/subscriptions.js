@@ -43,7 +43,7 @@ const SubscriptionForm = ({ clientSecret }) => {
         updateUser({ ...user, isSubscribed: true });
         setTimeout(() => {
           window.location.replace('https://develop--herbnexus.netlify.app/contact'); // Update with your actual URL
-        }, 1000); // 1-second delay before redirection
+        }, 3000); // 1-second delay before redirection
             }
     } catch (err) {
       console.error('Error confirming payment:', err);
