@@ -17,6 +17,7 @@ const SubscriptionForm = ({ clientSecret }) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [redirecting, setRedirecting] = useState(false);
+  const [paymentElementLoaded, setPaymentElementLoaded] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -57,10 +58,19 @@ const SubscriptionForm = ({ clientSecret }) => {
 
   return (
     <Form onSubmit={handleSubmit} className="subscription-form">
-      {clientSecret && <PaymentElement />}
+      {!paymentElementLoaded && (
+        <div className="payment-loader">
+          <Spinner animation="border" role="status">
+            <span className="sr-only">Loading...</span>
+          </Spinner>
+        </div>
+      )}
+      {clientSecret && (
+        <PaymentElement onReady={() => setPaymentElementLoaded(true)} />
+      )}
       <Button
         type="submit"
-        disabled={!stripe || loading || redirecting}
+        disabled={!stripe || loading || redirecting || !paymentElementLoaded}
         className="subscribe-button mt-3"
       >
         {loading || redirecting ? (
