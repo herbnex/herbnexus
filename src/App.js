@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import './App.css';
 import Doctors from './components/pages/Doctors/Doctors';
@@ -18,19 +18,10 @@ import Contact from './components/pages/Contact/Contact';
 import Subscription from './components/subscription/subscriptions';
 
 function App() {
-  const [showLogin, setShowLogin] = useState(false);
-  const [showSignup, setShowSignup] = useState(false);
-
-  const handleShowLogin = () => setShowLogin(true);
-  const handleCloseLogin = () => setShowLogin(false);
-
-  const handleShowSignup = () => setShowSignup(true);
-  const handleCloseSignup = () => setShowSignup(false);
-
   return (
     <div className="App">
       <AuthProvider>
-        <NavBar onLoginClick={handleShowLogin} onSignupClick={handleShowSignup} />
+        <NavBar />
         <Switch>
           <Route exact path="/">
             <Home />
@@ -57,13 +48,13 @@ function App() {
             <Faq />
           </Route>
           <Route path="/login">
-            <Login show={showLogin} handleClose={handleCloseLogin} />
+            <Login />
           </Route>
           <Route path="/signup">
-            <Signup show={showSignup} handleClose={handleCloseSignup} />
+            <Signup />
           </Route>
           <Route path="/subscribe">
-            <Subscription />
+            <Subscription /> {/* Updated component name */}
           </Route>
           <Route path="*">
             <NotFound />

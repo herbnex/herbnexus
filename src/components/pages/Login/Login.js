@@ -5,13 +5,14 @@ import useAuth from "../../../hooks/useAuth";
 import Error from "../../Error/Error";
 import "./Login.css";
 
-const Login = ({ show, handleClose }) => {
+const Login = () => {
   const { user, logInWithEmailandPassword, error: authError, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const [show, setShow] = useState(true);
   const history = useHistory();
   const location = useLocation();
 
@@ -41,9 +42,10 @@ const Login = ({ show, handleClose }) => {
   useEffect(() => {
     if (user) {
       history.replace(refferer);
-      handleClose();
     }
-  }, [user, history, refferer, handleClose]);
+  }, [user, history, refferer]);
+
+  const handleClose = () => setShow(false);
 
   return (
     <Modal show={show} onHide={handleClose} centered>
