@@ -1,18 +1,21 @@
 .login-heading {
-  height: 400px;
   background-color: #453f85;
   text-align: center;
+  padding: 2rem 0;
 }
 
 .login-panel {
   box-shadow: 0 0 1rem 5px #0005;
   background-color: #fff;
-  padding: 1.5rem;
-  margin-top: -280px;
+  padding: 2rem; /* Increase padding if necessary */
+  margin: 0 auto; /* Center the panel */
+  margin-top: -100px; /* Adjust based on the design */
   margin-bottom: 5rem;
   border-radius: 1rem;
+  max-width: 500px; /* Set a max width */
+  width: 100%; /* Ensure it takes full width up to max-width */
 }
 
 .login {
-  padding-right: 1.5rem;
+  padding: 1rem;
 }
