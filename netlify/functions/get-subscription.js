@@ -1,33 +1,31 @@
 require('dotenv').config();
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { db } = require('../../src/Firebase/setupFirebaseAdmin');
 
 exports.handler = async (event) => {
   const { userId } = JSON.parse(event.body);
-  try {
-    const customer = await stripe.customers.list({
-      limit: 1,
-      metadata: { userId }
-    });
 
-    if (customer.data.length === 0) {
+  try {
+    const userDoc = await db.collection('users').doc(userId).get();
+    if (!userDoc.exists) {
       return {
-        statusCode: 200,
-        body: JSON.stringify({ subscription: null }),
+        statusCode: 404,
+        body: JSON.stringify({ error: 'User not found' }),
       };
     }
 
-    const subscription = await stripe.subscriptions.list({
-      customer: customer.data[0].id,
-      limit: 1,
-    });
+    const userData = userDoc.data();
+    const subscription = {
+      isSubscribed: userData.isSubscribed,
+      subscriptionEndDate: userData.subscriptionEndDate,
+    };
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ subscription: subscription.data[0] }),
+      body: JSON.stringify({ subscription }),
     };
   } catch (error) {
     return {
-      statusCode: 400,
+      statusCode: 500,
       body: JSON.stringify({ error: error.message }),
     };
   }

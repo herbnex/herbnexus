@@ -6,23 +6,26 @@ import useAuth from '../../hooks/useAuth';
 const ManageSubscription = () => {
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [subscription, setSubscription] = useState(null);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subscriptionEndDate, setSubscriptionEndDate] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchSubscription = async () => {
+    const fetchSubscriptionStatus = async () => {
       try {
         const response = await axios.post('/.netlify/functions/get-subscription', { userId: user.uid });
-        setSubscription(response.data.subscription);
+        const { subscription } = response.data;
+        setIsSubscribed(subscription.isSubscribed);
+        setSubscriptionEndDate(subscription.subscriptionEndDate);
       } catch (error) {
-        setError('Failed to fetch subscription details. Please try again.');
+        setError('Failed to fetch subscription status. Please try again.');
       } finally {
         setLoading(false);
       }
     };
 
     if (user) {
-      fetchSubscription();
+      fetchSubscriptionStatus();
     }
   }, [user]);
 
@@ -31,7 +34,8 @@ const ManageSubscription = () => {
     try {
       await axios.post('/.netlify/functions/cancel-subscription', { userId: user.uid });
       updateUser({ ...user, isSubscribed: false });
-      setSubscription(null);
+      setIsSubscribed(false);
+      setSubscriptionEndDate(null);
     } catch (error) {
       setError('Failed to cancel subscription. Please try again.');
     } finally {
@@ -48,10 +52,10 @@ const ManageSubscription = () => {
       <Card.Header>Manage Subscription</Card.Header>
       <Card.Body>
         {error && <Alert variant="danger">{error}</Alert>}
-        {subscription ? (
+        {isSubscribed ? (
           <>
             <Card.Text>
-              You are subscribed to the Herb Nexus plan. Your subscription will renew on {new Date(subscription.current_period_end * 1000).toLocaleDateString()}.
+              You are subscribed to the Herb Nexus plan. Your subscription will renew on {new Date(subscriptionEndDate).toLocaleDateString()}.
             </Card.Text>
             <Button variant="danger" onClick={handleCancelSubscription}>
               Cancel Subscription
