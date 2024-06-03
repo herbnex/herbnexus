@@ -5,7 +5,7 @@ import logo from "../../assets/logo-1.png";
 import useAuth from "../../hooks/useAuth";
 import "./NavBar.css";
 
-const NavBar = () => {
+const NavBar = ({ onLoginClick, onSignupClick }) => {
   const { user, logOut } = useAuth();
 
   return (
@@ -58,12 +58,16 @@ const NavBar = () => {
 
             {/* SHOW LOGIN OR LOGOUT BUTTON BASED ON LOGIN STATUS */}
             {!user ? (
-              <NavLink to="/login">
-                <Button variant="outline" className="rounded-pill btn-main p-2 px-3">
+              <>
+                <Button variant="outline" className="rounded-pill btn-main p-2 px-3" onClick={onLoginClick}>
                   <i className="bi bi-person"></i>
                   &nbsp;Login
                 </Button>
-              </NavLink>
+                <Button variant="outline" className="rounded-pill btn-main p-2 px-3" onClick={onSignupClick}>
+                  <i className="bi bi-person"></i>
+                  &nbsp;Sign Up
+                </Button>
+              </>
             ) : (
               <div className="user d-flex">
                 <Button onClick={logOut} variant="outline" className="rounded-pill btn-main p-2 px-3">

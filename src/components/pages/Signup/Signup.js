@@ -9,7 +9,7 @@ import { auth, db } from '../../../Firebase/firebase.config'; // Adjust the path
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore"; 
 
-const Signup = () => {
+const Signup = ({ show, handleClose }) => {
   const { user, error, setError, isLoading } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,7 +17,6 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
-  const [show, setShow] = useState(true);
   const history = useHistory();
   const location = useLocation();
 
@@ -47,6 +46,7 @@ const Signup = () => {
       setPassword("");
       setConfirmPassword("");
       history.replace(refferer);
+      handleClose();
     } catch (error) {
       setError(error.message);
     }
@@ -55,10 +55,9 @@ const Signup = () => {
   useEffect(() => {
     if (user) {
       history.replace(refferer);
+      handleClose();
     }
-  }, [user, history, refferer]);
-
-  const handleClose = () => setShow(false);
+  }, [user, history, refferer, handleClose]);
 
   if (isLoading) {
     return <Loading />;
