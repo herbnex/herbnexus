@@ -16,6 +16,8 @@ import About from './components/About/About';
 import Appointment from './components/pages/Appointment/Appoinment';
 import Contact from './components/pages/Contact/Contact';
 import Subscription from './components/subscription/subscriptions';
+import Dashboard from './components/pages/Dashboard/Dashboard';
+
 
 function App() {
   return (
@@ -59,6 +61,10 @@ function App() {
           <Route path="*">
             <NotFound />
           </Route>
+          <PrivateRoute path="/dashboard">
+            <Dashboard />
+          </PrivateRoute> 
+
         </Switch>
         <Footer />
       </AuthProvider>
