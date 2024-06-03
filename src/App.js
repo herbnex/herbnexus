@@ -59,12 +59,12 @@ function App() {
           <Route path="/subscribe">
             <Subscription /> {/* Updated component name */}
           </Route>
-          <Route path="*">
-            <NotFound />
-          </Route>
           <PrivateRoute path="/dashboard">
             <Dashboard />
           </PrivateRoute> 
+          <Route path="*">
+            <NotFound />
+          </Route>
         </Switch>
         <Footer />
       </AuthProvider>
