@@ -17,10 +17,7 @@ import Appointment from './components/pages/Appointment/Appoinment';
 import Contact from './components/pages/Contact/Contact';
 import Subscription from './components/subscription/subscriptions';
 import Dashboard from './components/Dashboard/Dashboard';
-import Profile from './components/Dashboard/Profile';
-import History from './components/Dashboard/History';
-import Messages from './components/Dashboard/Messages';
-import Settings from './components/Dashboard/Settings';
+
 
 
 function App() {
@@ -68,19 +65,6 @@ function App() {
           <PrivateRoute path="/dashboard">
             <Dashboard />
           </PrivateRoute> 
-          <PrivateRoute path="/profile">
-            <Profile />
-          </PrivateRoute> 
-          <PrivateRoute path="/history">
-            <History />
-          </PrivateRoute> 
-          <PrivateRoute path="/messages">
-            <Messages />
-          </PrivateRoute> 
-          <PrivateRoute path="/settings">
-            <Settings />
-          </PrivateRoute> 
-
         </Switch>
         <Footer />
       </AuthProvider>
