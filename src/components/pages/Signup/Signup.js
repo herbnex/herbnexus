@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Col, Container, Form, Row, Button, FloatingLabel, Alert } from "react-bootstrap";
+import { Col, Container, Form, Row, Button, FloatingLabel, Alert, Modal } from "react-bootstrap";
 import { NavLink, useLocation, useHistory } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import Error from "../../Error/Error";
@@ -17,6 +17,7 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
+  const [show, setShow] = useState(true);
   const history = useHistory();
   const location = useLocation();
 
@@ -57,96 +58,90 @@ const Signup = () => {
     }
   }, [user, history, refferer]);
 
+  const handleClose = () => setShow(false);
+
   if (isLoading) {
     return <Loading />;
   }
 
   return (
-    <div>
-      <Container fluid className="signup-heading">
+    <Modal show={show} onHide={handleClose} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Sign Up</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
         {error && <Error />}
-      </Container>
+        {successMessage && <Alert variant="success">{successMessage}</Alert>}
+        <Form onSubmit={handleSignupSubmit}>
+          <Form.Group className="mb-3" controlId="formBasicName">
+            <FloatingLabel controlId="floatingName" label="Full Name" className="mb-3">
+              <Form.Control
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="rounded-pill ps-4"
+                type="text"
+                placeholder="Full Name"
+                isInvalid={!!validationErrors.name}
+                required
+              />
+              <Form.Control.Feedback type="invalid">{validationErrors.name}</Form.Control.Feedback>
+            </FloatingLabel>
+          </Form.Group>
 
-      <Container className="signup-panel">
-        <Row>
-          <Col xs={12} md={6}>
-            <h1 className="title text-center">Sign Up</h1>
-            <div className="signup d-flex flex-column justify-content-center h-100 pb-5">
-              {successMessage && <Alert variant="success">{successMessage}</Alert>}
-              <Form onSubmit={handleSignupSubmit}>
-                <Form.Group className="mb-3" controlId="formBasicName">
-                  <FloatingLabel controlId="floatingName" label="Full Name" className="mb-3">
-                    <Form.Control
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="rounded-pill ps-4"
-                      type="text"
-                      placeholder="Full Name"
-                      isInvalid={!!validationErrors.name}
-                      required
-                    />
-                    <Form.Control.Feedback type="invalid">{validationErrors.name}</Form.Control.Feedback>
-                  </FloatingLabel>
-                </Form.Group>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <FloatingLabel controlId="floatingInput" label="Email address" className="mb-3">
+              <Form.Control
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="rounded-pill ps-4"
+                type="email"
+                placeholder="name@example.com"
+                isInvalid={!!validationErrors.email}
+                required
+              />
+              <Form.Control.Feedback type="invalid">{validationErrors.email}</Form.Control.Feedback>
+            </FloatingLabel>
+          </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                  <FloatingLabel controlId="floatingInput" label="Email address" className="mb-3">
-                    <Form.Control
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="rounded-pill ps-4"
-                      type="email"
-                      placeholder="name@example.com"
-                      isInvalid={!!validationErrors.email}
-                      required
-                    />
-                    <Form.Control.Feedback type="invalid">{validationErrors.email}</Form.Control.Feedback>
-                  </FloatingLabel>
-                </Form.Group>
+          <Form.Group className="mb-3" controlId="formBasicPassword">
+            <FloatingLabel controlId="floatingPassword" label="Password">
+              <Form.Control
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="rounded-pill ps-4"
+                type="password"
+                placeholder="Password"
+                isInvalid={!!validationErrors.password}
+                required
+              />
+              <Form.Control.Feedback type="invalid">{validationErrors.password}</Form.Control.Feedback>
+            </FloatingLabel>
+          </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <FloatingLabel controlId="floatingPassword" label="Password">
-                    <Form.Control
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="rounded-pill ps-4"
-                      type="password"
-                      placeholder="Password"
-                      isInvalid={!!validationErrors.password}
-                      required
-                    />
-                    <Form.Control.Feedback type="invalid">{validationErrors.password}</Form.Control.Feedback>
-                  </FloatingLabel>
-                </Form.Group>
+          <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
+            <FloatingLabel controlId="floatingConfirmPassword" label="Confirm Password">
+              <Form.Control
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="rounded-pill ps-4"
+                type="password"
+                placeholder="Password"
+                isInvalid={!!validationErrors.confirmPassword}
+                required
+              />
+              <Form.Control.Feedback type="invalid">{validationErrors.confirmPassword}</Form.Control.Feedback>
+            </FloatingLabel>
+          </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
-                  <FloatingLabel controlId="floatingConfirmPassword" label="Confirm Password">
-                    <Form.Control
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="rounded-pill ps-4"
-                      type="password"
-                      placeholder="Password"
-                      isInvalid={!!validationErrors.confirmPassword}
-                      required
-                    />
-                    <Form.Control.Feedback type="invalid">{validationErrors.confirmPassword}</Form.Control.Feedback>
-                  </FloatingLabel>
-                </Form.Group>
-
-                <Button variant="outline" className="btn-main rounded-pill p-3 w-100" type="submit">
-                  Sign Up
-                </Button>
-              </Form>
-            </div>
-          </Col>
-        </Row>
-
-        <h6 className="my-5 pt-5 text-center">
-          Already have an account? <NavLink to={{ pathname: "/login", state: { from: refferer } }}>Log In</NavLink> instead.
-        </h6>
-      </Container>
-    </div>
+          <Button variant="outline" className="btn-main rounded-pill p-3 w-100" type="submit">
+            Sign Up
+          </Button>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <NavLink to={{ pathname: "/login", state: { from: refferer } }}>Log In</NavLink>
+      </Modal.Footer>
+    </Modal>
   );
 };
 
