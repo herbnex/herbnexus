@@ -33,7 +33,7 @@ const SubscriptionForm = ({ clientSecret }) => {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          // Don't include return_url here
+          return_url: "https://develop--herbnexus.netlify.app/contact"
         },
         redirect: 'if_required'
       });
