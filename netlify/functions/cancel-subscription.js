@@ -23,7 +23,7 @@ exports.handler = async (event) => {
     }
 
     // Cancel the subscription
-    await stripe.subscriptions.cancel(subscriptionId);
+    await stripe.subscriptions.del(subscriptionId);
 
     // Update the user's subscription status in Firestore
     await userRef.set({
