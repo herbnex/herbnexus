@@ -30,7 +30,6 @@ exports.handler = async (event) => {
     // Update the user's subscription status in Firestore
     await userRef.set({
       isSubscribed: false,
-      subscriptionEndDate: null,
       cancel_at_period_end: true
     }, { merge: true });
 
