@@ -4,7 +4,7 @@ import { Redirect, Route } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import Loading from "../Loading/Loading";
 
-const PrivateRoute = ({ children, ...rest }) => {
+const PrivateRoute = ({ children, requireSubscription = true, ...rest }) => {
   const { user, isLoading, isSubscribed } = useAuth();
 
   if (isLoading) {
@@ -19,10 +19,10 @@ const PrivateRoute = ({ children, ...rest }) => {
     <Route {...rest}>
       {({ location }) =>
         user ? (
-          isSubscribed ? (
-            children
-          ) : (
+          requireSubscription && !isSubscribed ? (
             <Redirect to={{ pathname: "/subscribe", state: { from: location } }} />
+          ) : (
+            children
           )
         ) : (
           <Redirect to={{ pathname: "/login", state: { from: location } }} />

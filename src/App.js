@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useEffect } from "react";
 import { Switch, Route, useLocation } from "react-router-dom";
 import "./App.css";
@@ -19,66 +20,67 @@ import Subscription from "./components/subscription/subscriptions";
 import Dashboard from "./components/Dashboard/Dashboard";
 
 function ScrollToTop() {
-	const { pathname } = useLocation();
-	useEffect(() => {
-		if (window) {
-			window.scrollTo(0, 0);
-		}
-	}, [pathname]);
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if (window) {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname]);
 
-	return null;
+  return null;
 }
+
 function App() {
-	return (
-		<div className="App">
-			<AuthProvider>
-				<NavBar />
-				<ScrollToTop />
-				<Switch>
-					<Route exact path="/">
-						<Home />
-					</Route>
-					<Route path="/home">
-						<Home />
-					</Route>
-					<Route path="/doctors">
-						<Doctors />
-					</Route>
-					<PrivateRoute path="/doctor/:doctorId">
-						<Doctor />
-					</PrivateRoute>
-					<PrivateRoute path="/appointment">
-						<Appointment />
-					</PrivateRoute>
-					<Route path="/about">
-						<About />
-					</Route>
-					<PrivateRoute path="/contact">
-						<Contact />
-					</PrivateRoute>
-					<Route path="/faq">
-						<Faq />
-					</Route>
-					<Route path="/login">
-						<Login />
-					</Route>
-					<Route path="/signup">
-						<Signup />
-					</Route>
-					<Route path="/subscribe">
-						<Subscription /> {/* Updated component name */}
-					</Route>
-					<PrivateRoute path="/dashboard">
-						<Dashboard />
-					</PrivateRoute>
-					<Route path="*">
-						<NotFound />
-					</Route>
-				</Switch>
-				<Footer />
-			</AuthProvider>
-		</div>
-	);
+  return (
+    <div className="App">
+      <AuthProvider>
+        <NavBar />
+        <ScrollToTop />
+        <Switch>
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route path="/home">
+            <Home />
+          </Route>
+          <Route path="/doctors">
+            <Doctors />
+          </Route>
+          <PrivateRoute path="/doctor/:doctorId">
+            <Doctor />
+          </PrivateRoute>
+          <PrivateRoute path="/appointment">
+            <Appointment />
+          </PrivateRoute>
+          <Route path="/about">
+            <About />
+          </Route>
+          <PrivateRoute path="/contact">
+            <Contact />
+          </PrivateRoute>
+          <Route path="/faq">
+            <Faq />
+          </Route>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/signup">
+            <Signup />
+          </Route>
+          <Route path="/subscribe">
+            <Subscription /> {/* Updated component name */}
+          </Route>
+          <PrivateRoute path="/dashboard" requireSubscription={false}>
+            <Dashboard />
+          </PrivateRoute>
+          <Route path="*">
+            <NotFound />
+          </Route>
+        </Switch>
+        <Footer />
+      </AuthProvider>
+    </div>
+  );
 }
 
 export default App;
