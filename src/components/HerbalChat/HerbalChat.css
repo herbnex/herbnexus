@@ -58,6 +58,35 @@
 .mb-3 .btn {
   border-radius: 10px 0 0 10px;
 }
+/* Add this to your existing CSS */
+
+.minimized-chat-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.minimized-chat-icon.hidden {
+  display: none;
+}
+
+.herbal-chat-container.hidden {
+  display: none;
+}
+
+
 @media (max-width: 768px) {
   .herbal-chat-container {
     height: 50vh;
