@@ -12,7 +12,6 @@ const HerbalChat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const chatContainerRef = useRef(null);
-  const messagesEndRef = useRef(null);
   const chatMessagesRef = useRef(null);
 
   const handleSendMessage = async () => {
@@ -54,7 +53,7 @@ const HerbalChat = () => {
     const handleScroll = () => {
       if (chatContainerRef.current) {
         const rect = chatContainerRef.current.getBoundingClientRect();
-        if (rect.bottom < (window.innerHeight / 2) + 50) {
+        if (rect.bottom < window.innerHeight / 2) {
           setIsMinimized(true);
         } else {
           setIsMinimized(false);
@@ -74,7 +73,7 @@ const HerbalChat = () => {
 
   return (
     <>
-      <Container className={`chat-container ${isMinimized ? 'hidden' : ''}`} ref={chatContainerRef}>
+      <Container className={`herbal-chat-container ${isMinimized ? 'hidden' : ''}`} ref={chatContainerRef}>
         <div className="chat-window">
           <div className="chat-messages" ref={chatMessagesRef}>
             {messages.map((msg, index) => (
@@ -83,7 +82,6 @@ const HerbalChat = () => {
               </div>
             ))}
             {isLoading && <div className="loading">Bot is typing...</div>}
-            <div ref={messagesEndRef}></div>
           </div>
           <InputGroup className="mb-3">
             <Form.Control
