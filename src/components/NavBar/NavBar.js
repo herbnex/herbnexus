@@ -1,3 +1,4 @@
+// src/NavBar.js
 import React from "react";
 import { Container, Nav, Navbar, Button, NavDropdown } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
@@ -70,18 +71,20 @@ const NavBar = () => {
                 {/* AVATAR WITH DROPDOWN */}
                 <NavDropdown
                   title={
-                    <img
-                      title={user.email}
-                      src={user.photoURL ? user.photoURL : "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"}
-                      alt="user avatar"
-                      className="user-icon ms-3"
-                    />
+                    <button className="nav-dropdown-toggle">
+                      <img
+                        title={user.email}
+                        src={user.photoURL ? user.photoURL : "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"}
+                        alt="user avatar"
+                        className="user-icon"
+                      />
+                    </button>
                   }
                   id="user-nav-dropdown"
                   alignRight
                 >
                   <NavDropdown.ItemText>
-                    <div className="user-info text-center">
+                    <div className="user-info">
                       <h5 className="mb-0">{user.displayName ? user.displayName : "Anonymous"}</h5>
                       <small>{user.email}</small>
                     </div>
