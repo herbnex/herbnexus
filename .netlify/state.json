@@ -1,0 +1,19 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Surrey",
+			"country": {
+				"code": "CA",
+				"name": "Canada"
+			},
+			"subdivision": {
+				"code": "BC",
+				"name": "British Columbia"
+			},
+			"timezone": "America/Vancouver",
+			"latitude": 49.1865,
+			"longitude": -122.8772
+		},
+		"timestamp": 1717053643935
+	}
+}
