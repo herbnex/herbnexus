@@ -5,8 +5,8 @@ import axios from 'axios';
 import { Container, Form, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
-import Loading from '../../components/Loading/Loading'; // Adjust the path to your Loading component
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import Loading from '../../components/Loading/Loading';
 import './subscription.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
@@ -17,7 +17,6 @@ const SubscriptionForm = ({ clientSecret }) => {
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [redirecting, setRedirecting] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -49,18 +48,34 @@ const SubscriptionForm = ({ clientSecret }) => {
     }
   };
 
+  useEffect(() => {
+    if (!clientSecret) return;
+
+    const handleRedirect = async () => {
+      const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+
+      if (paymentIntent.status === 'succeeded') {
+        updateUser({ ...user, isSubscribed: true });
+      } else {
+        setErrorMessage('Payment was not successful. Please try again.');
+      }
+    };
+
+    handleRedirect();
+  }, [clientSecret, stripe, updateUser, user]);
+
   return (
     <Form onSubmit={handleSubmit} className="subscription-form">
       {clientSecret && <PaymentElement />}
       <Button
         type="submit"
-        disabled={!stripe || loading || redirecting}
+        disabled={!stripe || loading}
         className="subscribe-button mt-3"
       >
-        {loading || redirecting ? (
+        {loading ? (
           <>
             <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-            {redirecting ? "Redirecting..." : "Processing..."}
+            Processing...
           </>
         ) : (
           "Subscribe for $50/month"
@@ -98,23 +113,13 @@ const Subscription = () => {
     };
     fetchClientSecret();
 
-    // Set a timeout to simulate loading for 2 seconds
+    // Simulate loading for 2 seconds
     const timer = setTimeout(() => {
       setPageLoading(false);
     }, 2000);
 
-    // Cleanup timeout on unmount
     return () => clearTimeout(timer);
   }, [user]);
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const redirectStatus = queryParams.get('redirect_status');
-
-    if (redirectStatus === 'succeeded') {
-      updateUser({ ...user, isSubscribed: true });
-    }
-  }, [user, updateUser]);
 
   if (pageLoading) {
     return <Loading />;
