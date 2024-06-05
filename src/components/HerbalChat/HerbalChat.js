@@ -87,13 +87,20 @@ const HerbalChat = () => {
   }, [messages, isLoading]);
 
   return (
-    <Container className="herbal-chat-container">
-      <div className="chat-window" ref={chatWindowRef}>
-        <div className="chat-header">
-          <Button variant="link" onClick={toggleFullScreen} className="fullscreen-toggle">
-            {isFullScreen ? 'Exit Full Screen' : 'Full Screen'}
-          </Button>
+    <Container className={`herbal-chat-container ${isFullScreen ? 'full-screen-container' : ''}`}>
+      {isFullScreen && (
+        <div className="sidebar">
+          <div className="sidebar-header">
+            <Button variant="link" onClick={toggleFullScreen} className="fullscreen-toggle">
+              Exit Full Screen
+            </Button>
+          </div>
+          <div className="sidebar-content">
+            <p>Sidebar content goes here...</p>
+          </div>
         </div>
+      )}
+      <div className="chat-window" ref={chatWindowRef}>
         <div className="chat-messages" ref={chatMessagesRef}>
           {messages.map((msg, index) => (
             <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
