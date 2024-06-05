@@ -89,6 +89,11 @@ const HerbalChat = () => {
   return (
     <Container className="herbal-chat-container">
       <div className="chat-window" ref={chatWindowRef}>
+        <div className="chat-header">
+          <Button variant="link" onClick={toggleFullScreen} className="fullscreen-toggle">
+            {isFullScreen ? 'Exit Full Screen' : 'Full Screen'}
+          </Button>
+        </div>
         <div className="chat-messages" ref={chatMessagesRef}>
           {messages.map((msg, index) => (
             <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
@@ -108,9 +113,6 @@ const HerbalChat = () => {
           />
           <Button onClick={handleSendMessage}>Send</Button>
         </InputGroup>
-        <Button variant="link" onClick={toggleFullScreen} className="fullscreen-toggle">
-          {isFullScreen ? 'Exit Full Screen' : 'Full Screen'}
-        </Button>
       </div>
 
       <Modal show={showModal} onHide={handleCloseModal}>
