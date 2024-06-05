@@ -41,7 +41,7 @@ exports.handler = async (event) => {
       }
       break;
 
-    case 'customer.subscription.deleted':
+    case 'customer.subscription.updated':
       const subscription = stripeEvent.data.object;
       const subCustomerId = subscription.customer;
       console.log(`Subscription deleted for customer ${subCustomerId}`);
@@ -55,7 +55,6 @@ exports.handler = async (event) => {
         const userRef = db.collection("users").doc(subUserId);
         await userRef.set({
           isSubscribed: false,
-          subscriptionEndDate: null,
         }, { merge: true });
 
         console.log(`Successfully updated subscription status for user ${subUserId}`);
