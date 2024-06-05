@@ -12,6 +12,9 @@ exports.handler = async (event) => {
     });
     console.log("Customer created with ID:", customer.id);
 
+    const userRef = db.collection("users").doc(userId);
+    await userRef.set({ stripeCustomerId: customer.id }, { merge: true });
+
     // Create a subscription
     const subscription = await stripe.subscriptions.create({
       customer: customer.id,
