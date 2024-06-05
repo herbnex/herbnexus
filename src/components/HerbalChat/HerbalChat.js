@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Form, InputGroup, Container } from 'react-bootstrap';
 import axios from 'axios';
-import './HerbalChat.css';
+import './HerbalChat.css'; // Ensure this file has your CSS
 
 const HerbalChat = () => {
   const [messages, setMessages] = useState([
@@ -51,30 +51,30 @@ const HerbalChat = () => {
   };
 
   useEffect(() => {
-    if (chatMessagesRef.current) {
-      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
-    }
-  }, [messages, isLoading]);
-
-  useEffect(() => {
     const handleScroll = () => {
       if (chatContainerRef.current) {
         const rect = chatContainerRef.current.getBoundingClientRect();
-        if (rect.bottom < 0 || rect.top > window.innerHeight) {
-          if (!isMinimized) setIsMinimized(true);
+        if (rect.bottom < (window.innerHeight / 2) + 50) {
+          setIsMinimized(true);
         } else {
-          if (isMinimized) setIsMinimized(false);
+          setIsMinimized(false);
         }
       }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isMinimized]);
+  }, []);
+
+  useEffect(() => {
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
+  }, [messages, isLoading]);
 
   return (
     <>
-      <Container className={`herbal-chat-container ${isMinimized ? 'hidden' : ''}`} ref={chatContainerRef}>
+      <Container className={`chat-container ${isMinimized ? 'hidden' : ''}`} ref={chatContainerRef}>
         <div className="chat-window">
           <div className="chat-messages" ref={chatMessagesRef}>
             {messages.map((msg, index) => (
@@ -97,7 +97,11 @@ const HerbalChat = () => {
           </InputGroup>
         </div>
       </Container>
-      <div className={`minimized-chat-icon ${isMinimized ? '' : 'hidden'}`} onClick={() => setIsMinimized(false)}>
+      <div 
+        className={`minimized-chat-icon ${isMinimized ? '' : 'hidden'}`} 
+        onClick={() => setIsMinimized(false)}
+        style={{ cursor: 'pointer' }}
+      >
         💬
       </div>
     </>

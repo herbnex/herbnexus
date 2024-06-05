@@ -58,6 +58,13 @@
 .mb-3 .btn {
   border-radius: 10px 0 0 10px;
 }
+/* Add this style rule */
+.chat-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
 .minimized-chat-icon {
   position: fixed;
   bottom: 20px;
@@ -82,7 +89,7 @@
   visibility: hidden;
 }
 
-.herbal-chat-container.hidden {
+.chat-container.hidden {
   display: none;
 }
 
