@@ -14,53 +14,67 @@ import Faq from "./components/Faq/Faq";
 import About from "./components/About/About";
 import Appoinment from "./components/pages/Appointment/Appoinment";
 import Contact from "./components/pages/Contact/Contact";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+
+function ScrollToTop() {
+	const { pathname } = useLocation();
+	useEffect(() => {
+		if (window) {
+			window.scrollTo(0, 0);
+		}
+	}, [pathname]);
+
+	return null;
+}
 
 function App() {
-  return (
-    <div className="App">
-      <AuthProvider>
-        <Router>
-          <NavBar />
-          <Switch>
-            <Route exact path="/">
-              <Home></Home>
-            </Route>
-            <Route path="/home">
-              <Home></Home>
-            </Route>
-            <Route path="/doctors">
-              <Doctors></Doctors>
-            </Route>
-            <PrivateRoute path="/doctor/:doctorId">
-              <Doctor></Doctor>
-            </PrivateRoute>
-            <PrivateRoute path="/appointment">
-              <Appoinment></Appoinment>
-            </PrivateRoute>
-            <Route path="/about">
-              <About></About>
-            </Route>
-            <PrivateRoute path="/contact">
-              <Contact></Contact>
-            </PrivateRoute>
-            <Route path="/faq">
-              <Faq></Faq>
-            </Route>
-            <Route path="/login">
-              <Login></Login>
-            </Route>
-            <Route path="/signup">
-              <Signup></Signup>
-            </Route>
-            <Route path="*">
-              <NotFound></NotFound>
-            </Route>
-          </Switch>
-          <Footer></Footer>
-        </Router>
-      </AuthProvider>
-    </div>
-  );
+	return (
+		<div className="App">
+			<AuthProvider>
+				<Router>
+					<NavBar />
+					<ScrollToTop />
+					<Switch>
+						<Route exact path="/">
+							<Home></Home>
+						</Route>
+						<Route path="/home">
+							<Home></Home>
+						</Route>
+						<Route path="/doctors">
+							<Doctors></Doctors>
+						</Route>
+						<PrivateRoute path="/doctor/:doctorId">
+							<Doctor></Doctor>
+						</PrivateRoute>
+						<PrivateRoute path="/appointment">
+							<Appoinment></Appoinment>
+						</PrivateRoute>
+						<Route path="/about">
+							<About></About>
+						</Route>
+						<PrivateRoute path="/contact">
+							<Contact></Contact>
+						</PrivateRoute>
+						<Route path="/faq">
+							<Faq></Faq>
+						</Route>
+						<Route path="/login">
+							<Login></Login>
+						</Route>
+						<Route path="/signup">
+							<Signup></Signup>
+						</Route>
+						<Route path="*">
+							<NotFound></NotFound>
+						</Route>
+					</Switch>
+					<Footer></Footer>
+				</Router>
+			</AuthProvider>
+		</div>
+	);
 }
 
 export default App;
