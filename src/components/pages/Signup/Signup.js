@@ -1,171 +1,165 @@
 import React, { useState, useEffect } from "react";
-import { Col, Container, Form, Row, Button, FloatingLabel } from "react-bootstrap";
+import { Col, Container, Form, Row, Button, FloatingLabel, Alert } from "react-bootstrap";
 import { NavLink, useLocation, useHistory } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import Error from "../../Error/Error";
 import Loading from "../../Loading/Loading";
 import "./Signup.css";
-import { auth, db } from '../../../Firebase/firebase.config'; // Adjust the path as necessary
+import { auth, db } from "../../../Firebase/firebase.config"; // Adjust the path as necessary
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
 const Signup = () => {
-  const { user, signInWithGoogle, signInWithGithub, error, setError, isLoading } = useAuth();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const history = useHistory();
-  const location = useLocation();
+	const { user, error, setError, isLoading } = useAuth();
+	const [name, setName] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
+	const [successMessage, setSuccessMessage] = useState("");
+	const [validationErrors, setValidationErrors] = useState({});
+	const history = useHistory();
+	const location = useLocation();
 
-  const refferer = location?.state?.from || { pathname: "/" };
+	const refferer = location?.state?.from || { pathname: "/" };
 
-  const handleSignupSubmit = (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+	const handleSignupSubmit = async (e) => {
+		e.preventDefault();
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const userId = userCredential.user.uid; // Using UID as user ID
-        // Update the user's profile with their name
-        updateProfile(userCredential.user, { displayName: name })
-          .then(() => {
-            // Save additional data to Firestore
-            const userRef = doc(db, "users", userId);
-            return setDoc(userRef, {
-              id: userId, // Store user ID
-              name: name,
-              email: email,
-              // Add additional fields as needed
-            });
-          })
-          .then(() => {
-            setName("");
-            setEmail("");
-            setPassword("");
-            setConfirmPassword("");
-            history.replace(refferer);
-          })
-          .catch((error) => setError(error.message));
-      })
-      .catch((error) => setError(error.message));
-  };
+		let errors = {};
+		if (!name) errors.name = "Name is required";
+		if (!email) errors.email = "Email is required";
+		if (!password) errors.password = "Password is required";
+		if (password !== confirmPassword) errors.confirmPassword = "Passwords do not match";
 
-  useEffect(() => {
-    if (user) {
-      history.replace(refferer);
-    }
-  }, [user]);
+		setValidationErrors(errors);
+		if (Object.keys(errors).length > 0) return;
 
-  if (isLoading) {
-    return <Loading></Loading>;
-  }
+		try {
+			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+			await updateProfile(userCredential.user, { displayName: name });
+			const userRef = doc(db, "users", userCredential.user.uid);
+			await setDoc(userRef, { name, email });
 
-  return (
-    <div>
-      <Container fluid className="signup-heading">
-        {error && <Error></Error>}
-      </Container>
+			setSuccessMessage("Account created successfully!");
+			setName("");
+			setEmail("");
+			setPassword("");
+			setConfirmPassword("");
+			history.replace(refferer);
+		} catch (error) {
+			setError(error.message);
+		}
+	};
 
-      <Container className="signup-panel">
-        <Row>
-          <Col xs={12} md={6}>
-            <h1 className="title text-center">Sign Up</h1>
-            <div className="signup d-flex flex-column justify-content-center h-100 pb-5">
-              <Form onSubmit={handleSignupSubmit}>
-                <Form.Group className=" mb-3" controlId="formBasicName">
-                  <FloatingLabel controlId="floatingName" label="Full Name" className="mb-3">
-                    <Form.Control
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="rounded-pill ps-4"
-                      type="text"
-                      placeholder="Full Name"
-                      required
-                    />
-                  </FloatingLabel>
-                </Form.Group>
+	useEffect(() => {
+		if (user) {
+			history.replace(refferer);
+		}
+	}, [user, history, refferer]);
 
-                <Form.Group className=" mb-3" controlId="formBasicEmail">
-                  <FloatingLabel controlId="floatingInput" label="Email address" className="mb-3">
-                    <Form.Control
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="rounded-pill ps-4"
-                      type="email"
-                      placeholder="name@example.com"
-                      required
-                    />
-                  </FloatingLabel>
-                </Form.Group>
+	if (isLoading) {
+		return <Loading />;
+	}
 
-                <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <FloatingLabel controlId="floatingPassword" label="Password">
-                    <Form.Control
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="rounded-pill ps-4"
-                      type="password"
-                      placeholder="Password"
-                      required
-                    />
-                  </FloatingLabel>
-                </Form.Group>
+	return (
+		<div>
+			<Container fluid className="signup-heading">
+				{error && <Error />}
+			</Container>
 
-                <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
-                  <FloatingLabel controlId="floatingConfirmPassword" label="Confirm Password">
-                    <Form.Control
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="rounded-pill ps-4"
-                      type="password"
-                      placeholder="Password"
-                      required
-                    />
-                  </FloatingLabel>
-                </Form.Group>
+			<div className="signup-panel">
+				<div>
+					<div>
+						<h1 className="fw-semibold fs-2 signup-title text-center">Create Account</h1>
+						<div className="mt-5 pb-3">
+							{successMessage && <Alert variant="success">{successMessage}</Alert>}
+							<Form onSubmit={handleSignupSubmit}>
+								<Form.Group className="mb-3" controlId="formBasicName">
+									<FloatingLabel controlId="floatingName" label="Full Name" className="mb-3">
+										<Form.Control
+											value={name}
+											onChange={(e) => setName(e.target.value)}
+											className="rounded-pill ps-3"
+											type="text"
+											placeholder="Full Name"
+											isInvalid={!!validationErrors.name}
+											required
+										/>
+										<Form.Control.Feedback type="invalid">{validationErrors.name}</Form.Control.Feedback>
+									</FloatingLabel>
+								</Form.Group>
 
-                <Button variant="outline" className="btn-main rounded-pill p-3 w-100" type="submit">
-                  Sign Up
-                </Button>
-              </Form>
-            </div>
-          </Col>
+								<Form.Group className="mb-3" controlId="formBasicEmail">
+									<FloatingLabel controlId="floatingInput" label="Email address" className="mb-3">
+										<Form.Control
+											value={email}
+											onChange={(e) => setEmail(e.target.value)}
+											className="rounded-pill ps-3"
+											type="email"
+											placeholder="name@example.com"
+											isInvalid={!!validationErrors.email}
+											required
+										/>
+										<Form.Control.Feedback type="invalid">{validationErrors.email}</Form.Control.Feedback>
+									</FloatingLabel>
+								</Form.Group>
 
-          <Col xs={12} md={1}>
-            <div className="d-flex justify-content-center align-items-center my-3 pt-5 pb-3 h-100">
-              <p>--OR--</p>
-            </div>
-          </Col>
-          <Col xs={12} md={5}>
-            <h1 className="title text-center fw-bold">Sign Up With</h1>
-            <div className="d-flex justify-content-around align-items-center h-100 pb-5">
-              <button onClick={signInWithGoogle} className="btn btn-danger">
-                <i className="bi bi-google fs-2"></i> <br />
-                Google
-              </button>
-              <button onClick={signInWithGithub} className="btn btn-success">
-                <i className="bi bi-github fs-2"></i> <br />
-                Github
-              </button>
-              <button disabled className="btn btn-primary">
-                <i className="bi bi-facebook fs-2"></i> <br />
-                FaceBook
-              </button>
-            </div>
-          </Col>
-        </Row>
+								<Form.Group className="mb-3" controlId="formBasicPassword">
+									<FloatingLabel controlId="floatingPassword" label="Password">
+										<CustomPasswordField password={password} setPassword={setPassword} />
+										<Form.Control.Feedback type="invalid">{validationErrors.password}</Form.Control.Feedback>
+									</FloatingLabel>
+								</Form.Group>
 
-        <h6 className="my-5 pt-5 text-center">
-          Already have account? <NavLink to={{ pathname: "/login", state: { from: refferer } }}>Log In</NavLink>{" "}
-          instead.
-        </h6>
-      </Container>
-    </div>
-  );
+								<Form.Group className="mb-3" controlId="formBasicConfirmPassword">
+									<FloatingLabel controlId="floatingConfirmPassword" label="Confirm Password">
+										<CustomPasswordField password={confirmPassword} setPassword={setConfirmPassword} />
+										<Form.Control.Feedback type="invalid">
+											{validationErrors.confirmPassword}
+										</Form.Control.Feedback>
+									</FloatingLabel>
+								</Form.Group>
+
+								<Button variant="outline" className="btn-main rounded-pill p-3 w-100" type="submit">
+									Sign Up
+								</Button>
+							</Form>
+						</div>
+					</div>
+				</div>
+
+				<h6 className="my-2 text-center">
+					Already have an account? <NavLink to={{ pathname: "/login", state: { from: refferer } }}>Login</NavLink>{" "}
+				</h6>
+			</div>
+		</div>
+	);
 };
 
 export default Signup;
+
+const CustomPasswordField = ({ password, setPassword }) => {
+	const [showPassword, setShowPassword] = useState(false);
+
+	const togglePasswordVisibility = () => {
+		setShowPassword(!showPassword);
+	};
+
+	return (
+		<>
+			<Form.Control
+				value={password}
+				onChange={(e) => setPassword(e.target.value)}
+				className="rounded-pill ps-3 pe-5"
+				type={showPassword ? "text" : "password"}
+				placeholder="Password"
+				required
+			/>
+			<span
+				className="position-absolute top-50 end-0 translate-middle inline-block px-1 fs-5 fp-text"
+				onClick={togglePasswordVisibility}>
+				{showPassword ? <i class="bi bi-eye"></i> : <i class="bi bi-eye-slash"></i>}
+			</span>
+		</>
+	);
+};

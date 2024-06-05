@@ -1,11 +1,83 @@
-import React, { createContext } from "react";
-import useFirebase from "../hooks/useFirebase";
+import React, { useState, useEffect, createContext, useCallback, useRef } from 'react';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../Firebase/firebase.config'; // Adjust the path as necessary
 
 export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const firebaseAuth = useFirebase();
-  return <AuthContext.Provider value={firebaseAuth}>{children}</AuthContext.Provider>;
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const isMounted = useRef(true);
+
+  const updateUser = useCallback(async (user) => {
+    if (!isMounted.current) return; // Prevent state updates if component is unmounted
+
+    if (user) {
+      const userRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        if (isMounted.current) { // Check if still mounted before setting state
+          setUser({ ...user, ...userData });
+          setIsSubscribed(userData.isSubscribed || false);
+        }
+      } else {
+        if (isMounted.current) {
+          setUser(user);
+          setIsSubscribed(false);
+        }
+      }
+    } else {
+      if (isMounted.current) {
+        setUser(null);
+        setIsSubscribed(false);
+      }
+    }
+    if (isMounted.current) {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const logOut = async () => {
+    try {
+      await signOut(auth);
+      updateUser(null);
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
+  const logInWithEmailandPassword = async (email, password) => {
+    setIsLoading(true);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      updateUser(userCredential.user);
+    } catch (error) {
+      console.error("Error logging in with email and password:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    isMounted.current = true;
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      updateUser(user);
+    });
+
+    return () => {
+      isMounted.current = false; // Cleanup function to update the flag
+      unsubscribe();
+    };
+  }, [updateUser]);
+
+  return (
+    <AuthContext.Provider value={{ user, isLoading, isSubscribed, updateUser, logOut, logInWithEmailandPassword }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;
