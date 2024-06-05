@@ -5,8 +5,8 @@ import axios from 'axios';
 import { Container, Form, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import Loading from '../../components/Loading/Loading';
+import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
+import Loading from '../../components/Loading/Loading'; // Adjust the path to your Loading component
 import './subscription.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
@@ -17,6 +17,7 @@ const SubscriptionForm = ({ clientSecret }) => {
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [redirecting, setRedirecting] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -32,14 +33,21 @@ const SubscriptionForm = ({ clientSecret }) => {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: "https://herbnexus.io/contact"
+          // return_url: "https://develop--herbnexus.netlify.app/contact"
         },
         redirect: 'if_required'
       });
 
       if (error) {
         setErrorMessage(error.message);
-      } 
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Optimistically update user state
+        updateUser({ ...user, isSubscribed: true });
+        setRedirecting(true);
+        setTimeout(() => {
+          window.location.replace('https://develop--herbnexus.netlify.app/contact'); // Update with your actual URL
+        }, 3000); // 3-second delay before redirection
+      }
     } catch (err) {
       console.error('Error confirming payment:', err);
       setErrorMessage('An error occurred. Please try again.');
@@ -48,34 +56,18 @@ const SubscriptionForm = ({ clientSecret }) => {
     }
   };
 
-  useEffect(() => {
-    if (!clientSecret) return;
-
-    const handleRedirect = async () => {
-      const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
-
-      if (paymentIntent.status === 'succeeded') {
-        updateUser({ ...user, isSubscribed: true });
-      } else {
-        setErrorMessage('Payment was not successful. Please try again.');
-      }
-    };
-
-    handleRedirect();
-  }, [clientSecret, stripe, updateUser, user]);
-
   return (
     <Form onSubmit={handleSubmit} className="subscription-form">
       {clientSecret && <PaymentElement />}
       <Button
         type="submit"
-        disabled={!stripe || loading}
+        disabled={!stripe || loading || redirecting}
         className="subscribe-button mt-3"
       >
-        {loading ? (
+        {loading || redirecting ? (
           <>
             <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-            Processing...
+            {redirecting ? "Redirecting..." : "Processing..."}
           </>
         ) : (
           "Subscribe for $50/month"
@@ -113,13 +105,23 @@ const Subscription = () => {
     };
     fetchClientSecret();
 
-    // Simulate loading for 2 seconds
+    // Set a timeout to simulate loading for 2 seconds
     const timer = setTimeout(() => {
       setPageLoading(false);
     }, 2000);
 
+    // Cleanup timeout on unmount
     return () => clearTimeout(timer);
   }, [user]);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const redirectStatus = queryParams.get('redirect_status');
+
+    if (redirectStatus === 'succeeded') {
+      updateUser({ ...user, isSubscribed: true });
+    }
+  }, [user, updateUser]);
 
   if (pageLoading) {
     return <Loading />;

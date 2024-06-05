@@ -6,29 +6,37 @@ exports.handler = async (event) => {
   console.log("Received userId:", userId);
 
   try {
+    // Create a customer if not already exists
     const customer = await stripe.customers.create({
       metadata: { userId },
     });
     console.log("Customer created with ID:", customer.id);
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: 5000, // Amount in cents ($50)
-      currency: 'usd',
+    // Create a subscription
+    const subscription = await stripe.subscriptions.create({
       customer: customer.id,
-      automatic_payment_methods: {
-        enabled: true,
-      },
+      items: [{ price: process.env.STRIPE_PRICE_ID }],
+      payment_behavior: 'default_incomplete',
+      expand: ['latest_invoice.payment_intent'],
+      metadata: {
+        userId,
+        description: "Subscription creation"
+      }
     });
-    console.log("Created PaymentIntent:", paymentIntent.id);
+
+    console.log("Subscription created with ID:", subscription.id);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ clientSecret: paymentIntent.client_secret }),
+      body: JSON.stringify({
+        subscriptionId: subscription.id,
+        clientSecret: subscription.latest_invoice.payment_intent.client_secret,
+      }),
     };
   } catch (error) {
     console.error("Error creating payment intent:", error);
     return {
-      statusCode: 500,
+      statusCode: 400,
       body: JSON.stringify({ error: error.message }),
     };
   }
