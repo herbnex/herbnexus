@@ -53,9 +53,9 @@ function App() {
 					<Route path="/about">
 						<About />
 					</Route>
-					<Route path="/contact">
+					<PrivateRoute path="/contact">
 						<Contact />
-					</Route>
+					</PrivateRoute>
 					<Route path="/faq">
 						<Faq />
 					</Route>
@@ -68,9 +68,9 @@ function App() {
 					<Route path="/subscribe">
 						<Subscription /> {/* Updated component name */}
 					</Route>
-					<Route path="/dashboard">
+					<PrivateRoute path="/dashboard">
 						<Dashboard />
-					</Route>
+					</PrivateRoute>
 					<Route path="*">
 						<NotFound />
 					</Route>
