@@ -59,18 +59,14 @@ const HerbalChat = () => {
 
     // Enter full-screen mode
     if (!isFullScreen && chatWindowRef.current) {
-      if (chatWindowRef.current.requestFullscreen) {
-        chatWindowRef.current.requestFullscreen();
-      } else if (chatWindowRef.current.mozRequestFullScreen) { /* Firefox */
-        chatWindowRef.current.mozRequestFullScreen();
-      } else if (chatWindowRef.current.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-        chatWindowRef.current.webkitRequestFullscreen();
-      } else if (chatWindowRef.current.msRequestFullscreen) { /* IE/Edge */
-        chatWindowRef.current.msRequestFullscreen();
-      }
+      chatWindowRef.current.classList.add('full-screen');
       setShowModal(true);
       setIsFullScreen(true);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
   };
 
   useEffect(() => {
@@ -103,7 +99,7 @@ const HerbalChat = () => {
         </InputGroup>
       </div>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>Privacy Policy and Legal Terms and Conditions</Modal.Title>
         </Modal.Header>
@@ -163,7 +159,7 @@ const HerbalChat = () => {
           <Form.Check type="checkbox" label="I have read and understood the Legal Terms and Conditions." />
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Continue</Button>
+          <Button variant="secondary" onClick={handleCloseModal}>Continue</Button>
         </Modal.Footer>
       </Modal>
     </Container>
