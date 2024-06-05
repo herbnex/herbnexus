@@ -1,9 +1,11 @@
 // src/components/UserProfile/UserProfile.js
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Spinner } from 'react-bootstrap';
-import { db } from '../../firebase'; // Import the Firebase Firestore instance
 import useAuth from '../../hooks/useAuth'; // Assuming you have a hook to get the authenticated user
 import './UserProfile.css';
+
+const { db } = require("../../../src/Firebase/setupFirebaseAdmin");
+
 
 const UserProfile = () => {
   const { user } = useAuth(); // Get the authenticated user
