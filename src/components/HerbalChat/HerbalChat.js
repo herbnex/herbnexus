@@ -87,7 +87,7 @@ const HerbalChat = () => {
   }, [messages, isLoading]);
 
   return (
-    <Container className={`herbal-chat-container ${isFullScreen ? 'full-screen-container' : ''}`}>
+    <div className={`herbal-chat-container ${isFullScreen ? 'full-screen-container' : ''}`}>
       {isFullScreen && (
         <div className="sidebar">
           <div className="sidebar-header">
@@ -100,26 +100,35 @@ const HerbalChat = () => {
           </div>
         </div>
       )}
-      <div className="chat-window" ref={chatWindowRef}>
-        <div className="chat-messages" ref={chatMessagesRef}>
-          {messages.map((msg, index) => (
-            <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
-              <strong>{msg.user === 'You' ? 'You' : 'Bot'}: </strong> {msg.text}
-            </div>
-          ))}
-          {isLoading && <div className="loading">Bot is typing...</div>}
-          <div ref={messagesEndRef}></div>
+      <div className="chat-area">
+        <div className="chat-header">
+          {isFullScreen && (
+            <Button variant="link" onClick={toggleFullScreen} className="fullscreen-toggle">
+              Exit Full Screen
+            </Button>
+          )}
         </div>
-        <InputGroup className="mb-3">
-          <Form.Control
-            as="textarea"
-            rows={1}
-            placeholder="Type your message..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-          <Button onClick={handleSendMessage}>Send</Button>
-        </InputGroup>
+        <div className="chat-window" ref={chatWindowRef}>
+          <div className="chat-messages" ref={chatMessagesRef}>
+            {messages.map((msg, index) => (
+              <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
+                <strong>{msg.user === 'You' ? 'You' : 'Bot'}: </strong> {msg.text}
+              </div>
+            ))}
+            {isLoading && <div className="loading">Bot is typing...</div>}
+            <div ref={messagesEndRef}></div>
+          </div>
+          <InputGroup className="mb-3">
+            <Form.Control
+              as="textarea"
+              rows={1}
+              placeholder="Type your message..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
+            <Button onClick={handleSendMessage}>Send</Button>
+          </InputGroup>
+        </div>
       </div>
 
       <Modal show={showModal} onHide={handleCloseModal}>
@@ -185,7 +194,7 @@ const HerbalChat = () => {
           <Button variant="secondary" onClick={handleCloseModal}>Continue</Button>
         </Modal.Footer>
       </Modal>
-    </Container>
+    </div>
   );
 };
 
