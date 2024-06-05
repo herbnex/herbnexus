@@ -1,18 +1,40 @@
 .login-heading {
-  height: 400px;
-  background-color: #453f85;
-  text-align: center;
+	height: 400px;
+	background-color: #453f85;
+	text-align: center;
 }
 
 .login-panel {
-  box-shadow: 0 0 1rem 5px #0005;
-  background-color: #fff;
-  padding: 1.5rem;
-  margin-top: -280px;
-  margin-bottom: 5rem;
-  border-radius: 1rem;
+	box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+	background-color: #fff;
+	padding: 2.5rem 2rem;
+	margin: 0 auto;
+	margin-top: -280px;
+	margin-bottom: 5rem;
+	border-radius: 0.5rem;
+	width: 500px;
 }
 
 .login {
-  padding-right: 1.5rem;
+	padding-right: 1.5rem;
+}
+
+.login-title {
+	font-family: "Poppins", sans-serif;
+}
+
+.fp-text {
+	cursor: pointer;
+}
+.login-panel .form-floating label {
+	padding-left: 20px;
+}
+
+@media only screen and (max-width: 500px) {
+	.login-panel {
+		width: 100%;
+		box-shadow: none;
+		border-radius: 0;
+		padding: 2rem 1rem;
+	}
 }
