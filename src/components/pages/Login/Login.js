@@ -86,7 +86,7 @@ const Login = () => {
 											value={password}
 											onChange={(e) => setPassword(e.target.value)}
 											className="rounded-pill ps-3"
-											type="password"
+											type={showPassword ? "text" : "password"}
 											placeholder="Password"
 											isInvalid={!!validationErrors.password}
 											required
