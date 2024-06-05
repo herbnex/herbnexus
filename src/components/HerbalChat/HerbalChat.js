@@ -97,11 +97,9 @@ const HerbalChat = () => {
           </InputGroup>
         </div>
       </Container>
-      {isMinimized && (
-        <div className="minimized-chat-icon" onClick={() => setIsMinimized(false)}>
-          💬
-        </div>
-      )}
+      <div className={`minimized-chat-icon ${isMinimized ? '' : 'hidden'}`} onClick={() => setIsMinimized(false)}>
+        💬
+      </div>
     </>
   );
 };
