@@ -11,6 +11,8 @@ const HerbalChat = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const chatWindowRef = useRef(null);
   const messagesEndRef = useRef(null);
   const chatMessagesRef = useRef(null);
 
@@ -56,14 +58,18 @@ const HerbalChat = () => {
     }
 
     // Enter full-screen mode
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen();
-    } else if (document.documentElement.mozRequestFullScreen) { /* Firefox */
-      document.documentElement.mozRequestFullScreen();
-    } else if (document.documentElement.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-      document.documentElement.webkitRequestFullscreen();
-    } else if (document.documentElement.msRequestFullscreen) { /* IE/Edge */
-      document.documentElement.msRequestFullscreen();
+    if (!isFullScreen && chatWindowRef.current) {
+      if (chatWindowRef.current.requestFullscreen) {
+        chatWindowRef.current.requestFullscreen();
+      } else if (chatWindowRef.current.mozRequestFullScreen) { /* Firefox */
+        chatWindowRef.current.mozRequestFullScreen();
+      } else if (chatWindowRef.current.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+        chatWindowRef.current.webkitRequestFullscreen();
+      } else if (chatWindowRef.current.msRequestFullscreen) { /* IE/Edge */
+        chatWindowRef.current.msRequestFullscreen();
+      }
+      setShowModal(true);
+      setIsFullScreen(true);
     }
   };
 
@@ -75,7 +81,7 @@ const HerbalChat = () => {
 
   return (
     <Container className="herbal-chat-container">
-      <div className="chat-window">
+      <div className="chat-window" ref={chatWindowRef}>
         <div className="chat-messages" ref={chatMessagesRef}>
           {messages.map((msg, index) => (
             <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
