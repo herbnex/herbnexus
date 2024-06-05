@@ -13,6 +13,7 @@
   flex-direction: column;
   height: 500px;
   overflow: hidden;
+  border-radius: 10px;
 }
 
 .chat-window.full-screen {
@@ -25,12 +26,15 @@
   background-color: white;
   box-shadow: none;
   border-radius: 0;
+  padding: 20px;
 }
 
 .chat-messages {
   flex-grow: 1;
   padding: 10px;
   overflow-y: auto;
+  background: #f9f9f9;
+  border-radius: 10px;
 }
 
 .chat-message {
@@ -70,6 +74,14 @@
 
 .mb-3 .btn {
   border-radius: 10px 0 0 10px;
+}
+
+.fullscreen-toggle {
+  margin-top: 10px;
+  align-self: center;
+  cursor: pointer;
+  text-decoration: underline;
+  color: #007bff;
 }
 
 @media (max-width: 768px) {

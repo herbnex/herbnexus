@@ -65,6 +65,17 @@ const HerbalChat = () => {
     }
   };
 
+  const toggleFullScreen = () => {
+    if (isFullScreen) {
+      chatWindowRef.current.classList.remove('full-screen');
+      setIsFullScreen(false);
+    } else {
+      chatWindowRef.current.classList.add('full-screen');
+      setShowModal(true);
+      setIsFullScreen(true);
+    }
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
   };
@@ -97,6 +108,9 @@ const HerbalChat = () => {
           />
           <Button onClick={handleSendMessage}>Send</Button>
         </InputGroup>
+        <Button variant="link" onClick={toggleFullScreen} className="fullscreen-toggle">
+          {isFullScreen ? 'Exit Full Screen' : 'Full Screen'}
+        </Button>
       </div>
 
       <Modal show={showModal} onHide={handleCloseModal}>
