@@ -61,16 +61,16 @@ const HerbalChat = () => {
       if (chatContainerRef.current) {
         const rect = chatContainerRef.current.getBoundingClientRect();
         if (rect.bottom < 0 || rect.top > window.innerHeight) {
-          setIsMinimized(true);
+          if (!isMinimized) setIsMinimized(true);
         } else {
-          setIsMinimized(false);
+          if (isMinimized) setIsMinimized(false);
         }
       }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isMinimized]);
 
   return (
     <>
