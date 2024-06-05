@@ -14,6 +14,7 @@
   height: 500px;
   overflow: hidden;
   border-radius: 10px;
+  background-color: #f9f9f9;
 }
 
 .chat-window.full-screen {
@@ -23,17 +24,19 @@
   width: 100%;
   height: 100%;
   z-index: 1000;
-  background-color: white;
-  box-shadow: none;
+  background-color: #1e1e1e;
+  color: white;
   border-radius: 0;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-messages {
   flex-grow: 1;
   padding: 10px;
   overflow-y: auto;
-  background: #f9f9f9;
+  background: #282c34;
   border-radius: 10px;
 }
 
@@ -46,16 +49,17 @@
 
 .user-message {
   align-self: flex-end;
-  background-color: #d1e7dd;
-  color: #0f5132;
+  background-color: #61dafb;
+  color: #282c34;
   text-align: right;
 }
 
 .bot-message {
   align-self: flex-start;
-  background-color: #f8d7da;
-  color: #842029;
+  background-color: #282c34;
+  color: #61dafb;
   text-align: left;
+  border: 1px solid #61dafb;
 }
 
 .loading {
@@ -81,7 +85,7 @@
   align-self: center;
   cursor: pointer;
   text-decoration: underline;
-  color: #007bff;
+  color: #61dafb;
 }
 
 @media (max-width: 768px) {
