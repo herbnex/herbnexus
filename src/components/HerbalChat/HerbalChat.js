@@ -10,10 +10,8 @@ const HerbalChat = () => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef(null);
   const chatMessagesRef = useRef(null);
-  const chatContainerRef = useRef(null);
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
@@ -22,8 +20,9 @@ const HerbalChat = () => {
     setIsLoading(true);
 
     try {
+      // Send the user's message and the chat history to OpenAI to get the next question
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: 'You are a knowledgeable and empathetic herbal doctor. Ask one short, specific question about the patient\'s condition at a time, and then provide a detailed herbal protocol step-by-step, including the herbs to take, dosage, and duration. Provide intermediate steps for both questions and answers.' },
           ...newMessages.map(msg => ({
@@ -56,62 +55,30 @@ const HerbalChat = () => {
     }
   }, [messages, isLoading]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (chatContainerRef.current) {
-        const { top } = chatContainerRef.current.getBoundingClientRect();
-        if (top < 0 && !isMinimized) {
-          setIsMinimized(true);
-        } else if (top >= 0 && isMinimized) {
-          setIsMinimized(false);
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isMinimized]);
-
-  const handleMinimizedIconClick = () => {
-    setIsMinimized(false);
-    chatContainerRef.current.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
-    <>
-      <Container
-        className={`herbal-chat-container ${isMinimized ? 'hidden' : ''}`}
-        ref={chatContainerRef}
-      >
-        <div className="chat-window">
-          <div className="chat-messages" ref={chatMessagesRef}>
-            {messages.map((msg, index) => (
-              <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
-                <strong>{msg.user === 'You' ? 'You' : 'Bot'}: </strong> {msg.text}
-              </div>
-            ))}
-            {isLoading && <div className="loading">Bot is typing...</div>}
-            <div ref={messagesEndRef}></div>
-          </div>
-          <InputGroup className="mb-3">
-            <Form.Control
-              as="textarea"
-              rows={1}
-              placeholder="Type your message..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-            />
-            <Button onClick={handleSendMessage}>Send</Button>
-          </InputGroup>
+    <Container className="herbal-chat-container">
+      <div className="chat-window">
+        <div className="chat-messages" ref={chatMessagesRef}>
+          {messages.map((msg, index) => (
+            <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
+              <strong>{msg.user === 'You' ? 'You' : 'Bot'}: </strong> {msg.text}
+            </div>
+          ))}
+          {isLoading && <div className="loading">Bot is typing...</div>}
+          <div ref={messagesEndRef}></div>
         </div>
-      </Container>
-      <div
-        className={`minimized-icon ${isMinimized ? 'visible' : ''}`}
-        onClick={handleMinimizedIconClick}
-      >
-        Chat
+        <InputGroup className="mb-3">
+          <Form.Control
+            as="textarea"
+            rows={1}
+            placeholder="Type your message..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+          <Button onClick={handleSendMessage}>Send</Button>
+        </InputGroup>
       </div>
-    </>
+    </Container>
   );
 };
 

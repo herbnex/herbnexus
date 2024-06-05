@@ -58,56 +58,6 @@
 .mb-3 .btn {
   border-radius: 10px 0 0 10px;
 }
-
-.herbal-chat-container {
-  border: 1px solid #dcdcdc;
-  border-radius: 10px;
-  max-width: 400px;
-  margin: 0 auto;
-  background-color: #ffffff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, visibility 0.3s ease, opacity 0.3s ease;
-}
-
-.herbal-chat-container.fixed {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  margin: 0;
-  width: 300px;
-  max-width: none;
-  z-index: 1000;
-}
-
-.herbal-chat-container.hidden {
-  visibility: hidden;
-  opacity: 0;
-}
-
-.minimized-icon {
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  background-color: #0f5132;
-  border-radius: 50%;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 1000;
-}
-
-.minimized-icon.visible {
-  display: flex;
-}
-
-
-
-
 @media (max-width: 768px) {
   .herbal-chat-container {
     height: 50vh;
@@ -119,4 +69,3 @@
     max-height: 100%;
   }
 }
-
