@@ -33,7 +33,7 @@ const SubscriptionForm = ({ clientSecret }) => {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          // return_url: "https://develop--herbnexus.netlify.app/contact"
+          // return_url: "https://herbnexus.io/contact"
         },
         redirect: 'if_required'
       });
@@ -45,7 +45,7 @@ const SubscriptionForm = ({ clientSecret }) => {
         updateUser({ ...user, isSubscribed: true });
         setRedirecting(true);
         setTimeout(() => {
-          window.location.replace('https://develop--herbnexus.netlify.app/contact'); // Update with your actual URL
+          window.location.replace('https://herbnexus.io/contact'); // Update with your actual URL
         }, 3000); // 3-second delay before redirection
       }
     } catch (err) {
