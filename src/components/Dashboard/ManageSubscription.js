@@ -31,11 +31,16 @@ const ManageSubscription = () => {
 
   const handleCancelSubscription = async () => {
     setLoading(true);
+    setError(null); // Clear any previous errors
     try {
-      await axios.post('/.netlify/functions/cancel-subscription', { userId: user.uid });
-      updateUser({ ...user, isSubscribed: false });
-      setIsSubscribed(false);
-      setSubscriptionEndDate(null);
+      const response = await axios.post('/.netlify/functions/cancel-subscription', { userId: user.uid });
+      if (response.status === 200) {
+        updateUser({ ...user, isSubscribed: false });
+        setIsSubscribed(false);
+        setSubscriptionEndDate(null);
+      } else {
+        setError('Failed to cancel subscription. Please try again.');
+      }
     } catch (error) {
       setError('Failed to cancel subscription. Please try again.');
     } finally {

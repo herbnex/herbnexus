@@ -1,43 +1,50 @@
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { db } = require("../../src/Firebase/setupFirebaseAdmin");
 
 exports.handler = async (event) => {
   const { userId } = JSON.parse(event.body);
-  try {
-    const customer = await stripe.customers.list({
-      limit: 1,
-      metadata: { userId }
-    });
 
-    if (customer.data.length === 0) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Customer not found' }),
-      };
+  try {
+    // Fetch the user to get the Stripe customer ID
+    const userRef = db.collection("users").doc(userId);
+    const userDoc = await userRef.get();
+    
+    if (!userDoc.exists) {
+      return { statusCode: 404, body: "User not found" };
     }
 
+    const userData = userDoc.data();
+    const stripeCustomerId = userData.stripeCustomerId;
+
+    if (!stripeCustomerId) {
+      return { statusCode: 400, body: "Stripe customer ID not found" };
+    }
+
+    // Fetch subscriptions
     const subscriptions = await stripe.subscriptions.list({
-      customer: customer.data[0].id,
-      limit: 1,
+      customer: stripeCustomerId,
+      status: 'active',
+      limit: 1
     });
 
     if (subscriptions.data.length === 0) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Subscription not found' }),
-      };
+      return { statusCode: 400, body: "No active subscriptions found" };
     }
 
-    const subscription = await stripe.subscriptions.del(subscriptions.data[0].id);
+    // Cancel the subscription
+    const subscriptionId = subscriptions.data[0].id;
+    await stripe.subscriptions.del(subscriptionId);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ subscription }),
-    };
+    // Update the user's subscription status in Firestore
+    await userRef.set({
+      isSubscribed: false,
+      subscriptionEndDate: null,
+    }, { merge: true });
+
+    return { statusCode: 200, body: "Subscription canceled successfully" };
   } catch (error) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: error.message }),
-    };
+    console.error("Error cancelling subscription:", error);
+    return { statusCode: 500, body: "Internal Server Error" };
   }
 };
