@@ -44,9 +44,9 @@ const SubscriptionForm = ({ clientSecret }) => {
         // Optimistically update user state
         updateUser({ ...user, isSubscribed: true });
         setRedirecting(true);
-        setTimeout(() => {
-          window.location.replace('https://herbnexus.io/contact'); // Update with your actual URL
-        }, 3000); // 3-second delay before redirection
+        // setTimeout(() => {
+        //   window.location.replace('https://herbnexus.io/contact'); // Update with your actual URL
+        // }, 3000); // 3-second delay before redirection
       }
     } catch (err) {
       console.error('Error confirming payment:', err);
