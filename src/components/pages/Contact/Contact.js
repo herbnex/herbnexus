@@ -5,10 +5,14 @@ import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
+import { useHistory, useLocation } from "react-router-dom";
 import "./Contact.css";
 
 const Contact = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
+  const history = useHistory();
+  const location = useLocation();
+  const [loading, setLoading] = useState(true);
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -21,6 +25,8 @@ const Contact = () => {
   const textareaRef = useRef(null);
   const chatSectionRef = useRef(null);
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
+
+  
 
   useEffect(() => {
     if (!user) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Col, Container, Form, Row, Button, FloatingLabel } from "react-bootstrap";
+import { Col, Container, Form, Row, Button, FloatingLabel, Alert } from "react-bootstrap";
 import { NavLink, useLocation, useHistory } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import Error from "../../Error/Error";
@@ -10,64 +10,61 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
 const Signup = () => {
-	const { user, signInWithGoogle, signInWithGithub, error, setError, isLoading } = useAuth();
+	const { user, error, setError, isLoading } = useAuth();
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
+	const [successMessage, setSuccessMessage] = useState("");
+	const [validationErrors, setValidationErrors] = useState({});
 	const history = useHistory();
 	const location = useLocation();
 
 	const refferer = location?.state?.from || { pathname: "/" };
 
-	const handleSignupSubmit = (e) => {
+	const handleSignupSubmit = async (e) => {
 		e.preventDefault();
-		if (password !== confirmPassword) {
-			setError("Passwords do not match");
-			return;
-		}
 
-		createUserWithEmailAndPassword(auth, email, password)
-			.then((userCredential) => {
-				const userId = userCredential.user.uid; // Using UID as user ID
-				// Update the user's profile with their name
-				updateProfile(userCredential.user, { displayName: name })
-					.then(() => {
-						// Save additional data to Firestore
-						const userRef = doc(db, "users", userId);
-						return setDoc(userRef, {
-							id: userId, // Store user ID
-							name: name,
-							email: email,
-							// Add additional fields as needed
-						});
-					})
-					.then(() => {
-						setName("");
-						setEmail("");
-						setPassword("");
-						setConfirmPassword("");
-						history.replace(refferer);
-					})
-					.catch((error) => setError(error.message));
-			})
-			.catch((error) => setError(error.message));
+		let errors = {};
+		if (!name) errors.name = "Name is required";
+		if (!email) errors.email = "Email is required";
+		if (!password) errors.password = "Password is required";
+		if (password !== confirmPassword) errors.confirmPassword = "Passwords do not match";
+
+		setValidationErrors(errors);
+		if (Object.keys(errors).length > 0) return;
+
+		try {
+			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+			await updateProfile(userCredential.user, { displayName: name });
+			const userRef = doc(db, "users", userCredential.user.uid);
+			await setDoc(userRef, { name, email });
+
+			setSuccessMessage("Account created successfully!");
+			setName("");
+			setEmail("");
+			setPassword("");
+			setConfirmPassword("");
+			history.replace(refferer);
+		} catch (error) {
+			setError(error.message);
+		}
 	};
 
 	useEffect(() => {
 		if (user) {
 			history.replace(refferer);
 		}
-	}, [user]);
+	}, [user, history, refferer]);
 
 	if (isLoading) {
-		return <Loading></Loading>;
+		return <Loading />;
 	}
 
 	return (
 		<div>
 			<Container fluid className="signup-heading">
-				{error && <Error></Error>}
+				{error && <Error />}
 			</Container>
 
 			<div className="signup-panel">
@@ -75,8 +72,9 @@ const Signup = () => {
 					<div>
 						<h1 className="fw-semibold fs-2 signup-title text-center">Create Account</h1>
 						<div className="mt-5 pb-3">
+							{successMessage && <Alert variant="success">{successMessage}</Alert>}
 							<Form onSubmit={handleSignupSubmit}>
-								<Form.Group className=" mb-3" controlId="formBasicName">
+								<Form.Group className="mb-3" controlId="formBasicName">
 									<FloatingLabel controlId="floatingName" label="Full Name" className="mb-3">
 										<Form.Control
 											value={name}
@@ -84,12 +82,14 @@ const Signup = () => {
 											className="rounded-pill ps-3"
 											type="text"
 											placeholder="Full Name"
+											isInvalid={!!validationErrors.name}
 											required
 										/>
+										<Form.Control.Feedback type="invalid">{validationErrors.name}</Form.Control.Feedback>
 									</FloatingLabel>
 								</Form.Group>
 
-								<Form.Group className=" mb-3" controlId="formBasicEmail">
+								<Form.Group className="mb-3" controlId="formBasicEmail">
 									<FloatingLabel controlId="floatingInput" label="Email address" className="mb-3">
 										<Form.Control
 											value={email}
@@ -97,20 +97,26 @@ const Signup = () => {
 											className="rounded-pill ps-3"
 											type="email"
 											placeholder="name@example.com"
+											isInvalid={!!validationErrors.email}
 											required
 										/>
+										<Form.Control.Feedback type="invalid">{validationErrors.email}</Form.Control.Feedback>
 									</FloatingLabel>
 								</Form.Group>
 
 								<Form.Group className="mb-3" controlId="formBasicPassword">
 									<FloatingLabel controlId="floatingPassword" label="Password">
 										<CustomPasswordField password={password} setPassword={setPassword} />
+										<Form.Control.Feedback type="invalid">{validationErrors.password}</Form.Control.Feedback>
 									</FloatingLabel>
 								</Form.Group>
 
 								<Form.Group className="mb-3" controlId="formBasicConfirmPassword">
 									<FloatingLabel controlId="floatingConfirmPassword" label="Confirm Password">
 										<CustomPasswordField password={confirmPassword} setPassword={setConfirmPassword} />
+										<Form.Control.Feedback type="invalid">
+											{validationErrors.confirmPassword}
+										</Form.Control.Feedback>
 									</FloatingLabel>
 								</Form.Group>
 
@@ -120,34 +126,10 @@ const Signup = () => {
 							</Form>
 						</div>
 					</div>
-
-					{/* <div>
-						<div className="d-flex justify-content-center align-items-center my-3 pb-3 h-100">
-							<p>--OR--</p>
-						</div>
-					</div>
-					<div className="d-flex justify-content-center align-items-center gap-3">
-						<h1 className="signup-title fs-6 fw-medium">Signup with</h1>
-						<div className="d-flex gap-2">
-							<button
-								onClick={signInWithGoogle}
-								className="btn rounded-pill p-0 signup-icon-size btn-danger fs-6">
-								<i className="bi bi-google"></i> <br />
-							</button>
-							<button
-								onClick={signInWithGithub}
-								className="btn fs-6 p-0 signup-icon-size rounded-pill btn-success">
-								<i className="bi bi-github"></i> <br />
-							</button>
-							<button disabled className="btn fs-6 p-0 signup-icon-size btn-primary rounded-pill">
-								<i className="bi bi-facebook"></i> <br />
-							</button>
-						</div>
-					</div> */}
 				</div>
 
 				<h6 className="my-2 text-center">
-					Already have account? <NavLink to={{ pathname: "/login", state: { from: refferer } }}>Login</NavLink>{" "}
+					Already have an account? <NavLink to={{ pathname: "/login", state: { from: refferer } }}>Login</NavLink>{" "}
 				</h6>
 			</div>
 		</div>

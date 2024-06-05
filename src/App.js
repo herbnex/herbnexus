@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Switch, Route, useLocation } from "react-router-dom";
 import "./App.css";
 import Doctors from "./components/pages/Doctors/Doctors";
 import Doctor from "./components/pages/Doctor/Doctor";
@@ -12,10 +13,10 @@ import Signup from "./components/pages/Signup/Signup";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import Faq from "./components/Faq/Faq";
 import About from "./components/About/About";
-import Appoinment from "./components/pages/Appointment/Appoinment";
+import Appointment from "./components/pages/Appointment/Appoinment";
 import Contact from "./components/pages/Contact/Contact";
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import Subscription from "./components/subscription/subscriptions";
+import Dashboard from "./components/Dashboard/Dashboard";
 
 function ScrollToTop() {
 	const { pathname } = useLocation();
@@ -27,51 +28,54 @@ function ScrollToTop() {
 
 	return null;
 }
-
 function App() {
 	return (
 		<div className="App">
 			<AuthProvider>
-				<Router>
-					<NavBar />
-					<ScrollToTop />
-					<Switch>
-						<Route exact path="/">
-							<Home></Home>
-						</Route>
-						<Route path="/home">
-							<Home></Home>
-						</Route>
-						<Route path="/doctors">
-							<Doctors></Doctors>
-						</Route>
-						<PrivateRoute path="/doctor/:doctorId">
-							<Doctor></Doctor>
-						</PrivateRoute>
-						<PrivateRoute path="/appointment">
-							<Appoinment></Appoinment>
-						</PrivateRoute>
-						<Route path="/about">
-							<About></About>
-						</Route>
-						<PrivateRoute path="/contact">
-							<Contact></Contact>
-						</PrivateRoute>
-						<Route path="/faq">
-							<Faq></Faq>
-						</Route>
-						<Route path="/login">
-							<Login></Login>
-						</Route>
-						<Route path="/signup">
-							<Signup></Signup>
-						</Route>
-						<Route path="*">
-							<NotFound></NotFound>
-						</Route>
-					</Switch>
-					<Footer></Footer>
-				</Router>
+				<NavBar />
+				<ScrollToTop />
+				<Switch>
+					<Route exact path="/">
+						<Home />
+					</Route>
+					<Route path="/home">
+						<Home />
+					</Route>
+					<Route path="/doctors">
+						<Doctors />
+					</Route>
+					<PrivateRoute path="/doctor/:doctorId">
+						<Doctor />
+					</PrivateRoute>
+					<PrivateRoute path="/appointment">
+						<Appointment />
+					</PrivateRoute>
+					<Route path="/about">
+						<About />
+					</Route>
+					<PrivateRoute path="/contact">
+						<Contact />
+					</PrivateRoute>
+					<Route path="/faq">
+						<Faq />
+					</Route>
+					<Route path="/login">
+						<Login />
+					</Route>
+					<Route path="/signup">
+						<Signup />
+					</Route>
+					<Route path="/subscribe">
+						<Subscription /> {/* Updated component name */}
+					</Route>
+					<PrivateRoute path="/dashboard">
+						<Dashboard />
+					</PrivateRoute>
+					<Route path="*">
+						<NotFound />
+					</Route>
+				</Switch>
+				<Footer />
 			</AuthProvider>
 		</div>
 	);
