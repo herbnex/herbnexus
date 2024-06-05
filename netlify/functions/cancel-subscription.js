@@ -6,7 +6,7 @@ exports.handler = async (event) => {
   const { userId } = JSON.parse(event.body);
 
   try {
-    // Fetch the user to get the Stripe customer ID
+    // Fetch the user to get the Stripe customer ID and subscription ID
     const userRef = db.collection("users").doc(userId);
     const userDoc = await userRef.get();
     
@@ -16,24 +16,13 @@ exports.handler = async (event) => {
 
     const userData = userDoc.data();
     const stripeCustomerId = userData.stripeCustomerId;
+    const subscriptionId = userData.subscriptionId;
 
-    if (!stripeCustomerId) {
-      return { statusCode: 400, body: "Stripe customer ID not found" };
-    }
-
-    // Fetch subscriptions
-    const subscriptions = await stripe.subscriptions.list({
-      customer: stripeCustomerId,
-      status: 'active',
-      limit: 1
-    });
-
-    if (subscriptions.data.length === 0) {
-      return { statusCode: 400, body: "No active subscriptions found" };
+    if (!stripeCustomerId || !subscriptionId) {
+      return { statusCode: 400, body: "Stripe customer ID or subscription ID not found" };
     }
 
     // Cancel the subscription
-    const subscriptionId = subscriptions.data[0].id;
     await stripe.subscriptions.del(subscriptionId);
 
     // Update the user's subscription status in Firestore
