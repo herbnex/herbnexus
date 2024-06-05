@@ -23,12 +23,15 @@ exports.handler = async (event) => {
     }
 
     // Cancel the subscription
-    await stripe.subscriptions.del(subscriptionId);
+    await stripe.subscriptions.update(subscriptionId,{
+      cancel_at_period_end: true,
+    });
 
     // Update the user's subscription status in Firestore
     await userRef.set({
       isSubscribed: false,
       subscriptionEndDate: null,
+      cancel_at_period_end: true
     }, { merge: true });
 
     return { statusCode: 200, body: "Subscription canceled successfully" };
