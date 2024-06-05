@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Form, InputGroup, Container } from 'react-bootstrap';
 import axios from 'axios';
-import './HerbalChat.css'; // Ensure this file has your CSS
+import './HerbalChat.css';
 
 const HerbalChat = () => {
   const [messages, setMessages] = useState([
@@ -73,7 +73,11 @@ const HerbalChat = () => {
 
   return (
     <>
-      <Container className={`herbal-chat-container ${isMinimized ? 'hidden' : ''}`} ref={chatContainerRef}>
+      <Container 
+        className={`herbal-chat-container ${isMinimized ? 'minimized' : ''}`} 
+        ref={chatContainerRef}
+        style={isMinimized ? {position: 'fixed', bottom: '20px', right: '20px'} : {}}
+      >
         <div className="chat-window">
           <div className="chat-messages" ref={chatMessagesRef}>
             {messages.map((msg, index) => (
