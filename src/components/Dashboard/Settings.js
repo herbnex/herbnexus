@@ -1,18 +1,19 @@
 // src/components/Settings/Settings.js
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
-import useAuth from '../../hooks/useAuth';
-import { db } from '../../../src/Firebase/firebase.config';
+import { useAuth } from '../../hooks/useAuth';
+import { db } from '../../../Firebase/firebase.config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import './Settings.css';
 
 const Settings = () => {
-  const { user, updatePassword } = useAuth();
+  const { user, updateUserProfile, refreshUser } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [newPassword, setNewPassword] = useState('');
+  const [newEmail, setNewEmail] = useState('');
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -69,7 +70,23 @@ const Settings = () => {
     setSuccess(null);
 
     try {
-      await updatePassword(newPassword);
+      const idToken = await user.getIdToken();
+      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=[API_KEY]`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          idToken,
+          password: newPassword,
+          returnSecureToken: true
+        })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update password');
+      }
+      const data = await response.json();
+      refreshUser(data.idToken);  // Refresh the user with the new token
       setSuccess('Password updated successfully.');
     } catch (err) {
       setError('Failed to update password: ' + err.message);
@@ -78,12 +95,40 @@ const Settings = () => {
     }
   };
 
+  const handleChangeEmail = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const idToken = await user.getIdToken();
+      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=[API_KEY]`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          idToken,
+          email: newEmail,
+          returnSecureToken: true
+        })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update email');
+      }
+      const data = await response.json();
+      refreshUser(data.idToken);  // Refresh the user with the new token
+      setSuccess('Email updated successfully.');
+    } catch (err) {
+      setError('Failed to update email: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return <Spinner animation="border" />;
-  }
-
-  if (error) {
-    return <Alert variant="danger">{error}</Alert>;
   }
 
   return (
@@ -123,6 +168,24 @@ const Settings = () => {
 
           <Button variant="primary" type="submit">
             Update Profile
+          </Button>
+        </Form>
+
+        <hr />
+
+        <Form onSubmit={handleChangeEmail}>
+          <Form.Group controlId="formNewEmail">
+            <Form.Label>New Email</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="Enter new email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+            />
+          </Form.Group>
+
+          <Button variant="primary" type="submit">
+            Change Email
           </Button>
         </Form>
 
