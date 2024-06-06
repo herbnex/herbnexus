@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, Spinner, ListGroup, Form, Button, InputGroup } from 'react-bootstrap';
 import useAuth from '../../hooks/useAuth';
-import { db, database } from '../../../Firebase/firebase.config';
+import { db, database } from '../../../src/Firebase/firebase.config';
 import { doc, getDocs, collection, query, where } from 'firebase/firestore';
 import { ref, onValue, push, set } from 'firebase/database';
 import { generateChatId } from '../../../utils/generateChatId';
