@@ -88,7 +88,7 @@ const Settings = () => {
         throw new Error('Failed to update password');
       }
       const data = await response.json();
-      refreshUser(data.idToken);  // Refresh the user with the new token
+      await refreshUser(data.idToken);  // Refresh the user with the new token
       setSuccess('Password updated successfully.');
     } catch (err) {
       setError('Failed to update password: ' + err.message);
@@ -120,7 +120,7 @@ const Settings = () => {
         throw new Error('Failed to update email');
       }
       const data = await response.json();
-      refreshUser(data.idToken);  // Refresh the user with the new token
+      await refreshUser(data.idToken);  // Refresh the user with the new token
       setSuccess('Email updated successfully.');
     } catch (err) {
       setError('Failed to update email: ' + err.message);
@@ -214,4 +214,3 @@ const Settings = () => {
 };
 
 export default Settings;
-
