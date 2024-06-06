@@ -1,14 +1,11 @@
 // src/components/Messages/Messages.js
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, Spinner, ListGroup, Form, Button, InputGroup } from 'react-bootstrap';
+import { Card, Spinner, ListGroup, Form, Button, InputGroup, Row, Col } from 'react-bootstrap';
 import useAuth from '../../hooks/useAuth';
-import { db, database } from '../../../src/Firebase/firebase.config';
-import { doc, getDocs, collection, query, where } from 'firebase/firestore';
+import { database } from '../../../src/Firebase/firebase.config';
 import { ref, onValue, push, set } from 'firebase/database';
-import { generateChatId } from '../../../src/utils/generateChatId';
+//import { generateChatId } from '../../../utils/generateChatId';
 import './Messages.css';
-import { Row, Col } from 'react-bootstrap';
-
 
 const Messages = () => {
   const { user } = useAuth();
@@ -28,13 +25,15 @@ const Messages = () => {
     const fetchChatHistory = async () => {
       setLoading(true);
       try {
-        const chatQuery = query(collection(db, 'chats'), where('participants', 'array-contains', user.uid));
-        const chatSnapshot = await getDocs(chatQuery);
-        const chats = chatSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setChatHistory(chats);
+        const userChatsRef = ref(database, `users/${user.uid}/chats`);
+        onValue(userChatsRef, (snapshot) => {
+          const data = snapshot.val();
+          const chats = data ? Object.entries(data).map(([id, chat]) => ({ id, ...chat })) : [];
+          setChatHistory(chats);
+          setLoading(false);
+        });
       } catch (err) {
         console.error("Failed to fetch chat history:", err);
-      } finally {
         setLoading(false);
       }
     };
@@ -126,7 +125,7 @@ const Messages = () => {
                   onClick={() => handleSelectChat(chat)}
                 >
                   <div className="chat-participants">
-                    {chat.participantsNames.join(', ')}
+                    {chat.participants.join(', ')}
                   </div>
                 </ListGroup.Item>
               ))}
