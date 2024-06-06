@@ -2,9 +2,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, Spinner, ListGroup, Form, Button, InputGroup, Row, Col } from 'react-bootstrap';
 import useAuth from '../../hooks/useAuth';
-import { database } from '../../../src/Firebase/firebase.config';
+import { database } from '../../../Firebase/firebase.config';
 import { ref, onValue, push, set } from 'firebase/database';
-//import { generateChatId } from '../../../utils/generateChatId';
+import { generateChatId } from '../../../utils/generateChatId';
 import './Messages.css';
 
 const Messages = () => {
@@ -12,6 +12,7 @@ const Messages = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedChat, setSelectedChat] = useState(null);
+  const [msgList, setMsgList] = useState([]);
   const [message, setMessage] = useState('');
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
@@ -41,21 +42,37 @@ const Messages = () => {
     fetchChatHistory();
   }, [user]);
 
+  useEffect(() => {
+    if (!user || !selectedChat) {
+      return;
+    }
+
+    const chatId = generateChatId(selectedChat.id, user.displayName);
+    const chatRef = ref(database, `chats/${chatId}/messages`);
+
+    const unsubscribe = onValue(chatRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const messages = Object.values(data);
+        setMsgList(messages);
+        // Scroll to the bottom when new messages arrive
+        setTimeout(() => {
+          if (msgBoxRef.current) {
+            msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
+          }
+        }, 100);
+      } else {
+        setMsgList([]);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [user, selectedChat]);
+
   const handleSelectChat = (chat) => {
     setSelectedChat(chat);
-
-    const chatRef = ref(database, `chats/${chat.id}/messages`);
-    onValue(chatRef, (snapshot) => {
-      const data = snapshot.val();
-      const messages = data ? Object.values(data) : [];
-      setSelectedChat(prev => ({ ...prev, messages }));
-      // Scroll to the bottom when new messages arrive
-      setTimeout(() => {
-        if (msgBoxRef.current) {
-          msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
-        }
-      }, 100);
-    });
   };
 
   const handleSendMessage = async (e) => {
@@ -71,7 +88,8 @@ const Messages = () => {
       timestamp: new Date().toISOString()
     };
 
-    const chatRef = ref(database, `chats/${selectedChat.id}/messages`);
+    const chatId = generateChatId(selectedChat.id, user.displayName);
+    const chatRef = ref(database, `chats/${chatId}/messages`);
     const newMessageRef = push(chatRef);
 
     await set(newMessageRef, newMessage);
@@ -135,7 +153,7 @@ const Messages = () => {
             {selectedChat ? (
               <>
                 <div className="msg-box" ref={msgBoxRef}>
-                  {selectedChat.messages.map((msg, index) => (
+                  {msgList.map((msg, index) => (
                     <div key={index} className={`message ${msg.userId === user.uid ? "msg-self" : "msg-other"}`}>
                       <p>{msg.text}</p>
                       <small className="timestamp">{new Date(msg.timestamp).toLocaleString()}</small>
