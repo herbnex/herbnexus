@@ -1,23 +1,21 @@
-/* src/components/Dashboard/Messages.css */
-.messages-card {
-    max-width: 1000px;
-    margin: 20px auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* src/components/Messages/Messages.css */
+.chat-room {
+    height: 100%;
+    padding: 20px;
   }
   
-  .chat-list {
+  .participants-list {
     border-right: 1px solid #ddd;
   }
   
-  .chat-list .list-group-item {
+  .participants-list .list-group-item {
     cursor: pointer;
   }
   
-  .chat-window {
+  .chat-section {
     display: flex;
     flex-direction: column;
-    height: 500px;
+    height: 100%;
   }
   
   .msg-box {
@@ -27,7 +25,7 @@
     border-bottom: 1px solid #ddd;
   }
   
-  .message {
+  .message-container {
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 10px;
@@ -52,9 +50,11 @@
     margin-top: 5px;
   }
   
+  .show-timestamp .timestamp {
+    display: block;
+  }
+  
   .message-input-container {
-    padding: 10px;
-    background-color: #f7f7f7;
-    border-top: 1px solid #ddd;
+    display: none; /* Hide the message input area */
   }
   

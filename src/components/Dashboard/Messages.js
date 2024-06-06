@@ -1,21 +1,22 @@
 // src/components/Messages/Messages.js
-import React, { useState, useEffect, useRef } from 'react';
-import { Card, Spinner, ListGroup, Form, Button, InputGroup, Row, Col } from 'react-bootstrap';
-import useAuth from '../../hooks/useAuth';
-import { database } from '../../../src/Firebase/firebase.config';
-import { ref, onValue, push, set } from 'firebase/database';
-import { generateChatId } from '../../../src/utils/generateChatId';
-import './Messages.css';
+import React, { useState, useRef, useEffect } from "react";
+import { Container, Row, Col, ListGroup, Spinner, Badge } from "react-bootstrap";
+import { ref, onValue } from "firebase/database";
+import { database, db } from "../../../src/Firebase/firebase.config";
+import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
+import useAuth from "../../hooks/useAuth";
+import { generateChatId } from "../../../src/utils/generateChatId";
+import "./Messages.css";
 
 const Messages = () => {
   const { user } = useAuth();
-  const [chatHistory, setChatHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedChat, setSelectedChat] = useState(null);
+  const [onlineDoctors, setOnlineDoctors] = useState([]);
+  const [activeUsers, setActiveUsers] = useState([]);
+  const [selectedParticipant, setSelectedParticipant] = useState(null);
   const [msgList, setMsgList] = useState([]);
-  const [message, setMessage] = useState('');
+  const [isDoctor, setIsDoctor] = useState(false);
   const msgBoxRef = useRef(null);
-  const textareaRef = useRef(null);
 
   useEffect(() => {
     if (!user) {
@@ -23,37 +24,74 @@ const Messages = () => {
       return;
     }
 
-    const fetchChatHistory = async () => {
-      setLoading(true);
-      try {
-        const userChatsRef = ref(database, `users/${user.uid}/chats`);
-        onValue(userChatsRef, (snapshot) => {
-          const data = snapshot.val();
-          const chats = data ? Object.entries(data).map(([id, chat]) => ({ id, ...chat })) : [];
-          setChatHistory(chats);
-          setLoading(false);
-        });
-      } catch (err) {
-        console.error("Failed to fetch chat history:", err);
-        setLoading(false);
+    const checkIfDoctor = async () => {
+      const userDocRef = doc(db, "doctors", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        setIsDoctor(true);
+      } else {
+        setIsDoctor(false);
       }
     };
 
-    fetchChatHistory();
+    checkIfDoctor();
   }, [user]);
 
   useEffect(() => {
-    if (!user || !selectedChat) {
+    if (isDoctor) {
+      fetchActiveUsers();
+    } else {
+      fetchOnlineDoctors();
+    }
+  }, [isDoctor, user]);
+
+  const fetchOnlineDoctors = async () => {
+    const doctorsRef = collection(db, "doctors");
+    const q = query(doctorsRef, where("isOnline", "==", true));
+    const querySnapshot = await getDocs(q);
+    const doctors = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    console.log("Fetched online doctors:", doctors);
+
+    // Deduplicate doctors
+    const uniqueDoctors = doctors.filter((doctor, index, self) =>
+      index === self.findIndex((d) => d.id === doctor.id)
+    );
+
+    setOnlineDoctors(uniqueDoctors);
+  };
+
+  const fetchActiveUsers = async () => {
+    const usersRef = collection(db, "users");
+    const querySnapshot = await getDocs(usersRef);
+    const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    console.log("Fetched active users:", users);
+
+    // Deduplicate users
+    const uniqueUsers = users.filter((user, index, self) =>
+      index === self.findIndex((u) => u.id === user.id)
+    );
+
+    setActiveUsers(uniqueUsers);
+  };
+
+  useEffect(() => {
+    if (!user || !selectedParticipant) {
       return;
     }
 
-    const chatId = generateChatId(selectedChat.id, user.displayName);
+    const chatId = isDoctor
+      ? generateChatId(selectedParticipant.id, user.displayName)
+      : generateChatId(user.uid, selectedParticipant.name);
+
+    console.log("Generated Chat ID:", chatId);
     const chatRef = ref(database, `chats/${chatId}/messages`);
 
     const unsubscribe = onValue(chatRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const messages = Object.values(data);
+        console.log("Fetched messages:", messages);
         setMsgList(messages);
         // Scroll to the bottom when new messages arrive
         setTimeout(() => {
@@ -69,60 +107,18 @@ const Messages = () => {
     return () => {
       unsubscribe();
     };
-  }, [user, selectedChat]);
+  }, [user, selectedParticipant, isDoctor]);
 
-  const handleSelectChat = (chat) => {
-    setSelectedChat(chat);
-  };
+  const handleParticipantClick = (participant) => {
+    setSelectedParticipant(participant);
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!message.trim() || !selectedChat) {
-      return;
-    }
-
-    const newMessage = {
-      user: user.displayName || "Anonymous",
-      userId: user.uid,
-      text: message,
-      timestamp: new Date().toISOString()
-    };
-
-    const chatId = generateChatId(selectedChat.id, user.displayName);
-    const chatRef = ref(database, `chats/${chatId}/messages`);
-    const newMessageRef = push(chatRef);
-
-    await set(newMessageRef, newMessage);
-    setMessage('');
-    resetTextarea();
-
-    // Scroll to the bottom after sending a message
+    // Scroll to the chat section on small screens
     setTimeout(() => {
-      if (msgBoxRef.current) {
-        msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
+      const chatSection = chatSectionRef.current;
+      if (chatSection) {
+        chatSection.scrollIntoView({ behavior: 'smooth' });
       }
-    }, 100);
-  };
-
-  const handleTyping = (e) => {
-    setMessage(e.target.value);
-    autoResizeTextarea();
-  };
-
-  const autoResizeTextarea = () => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }
-  };
-
-  const resetTextarea = () => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = 'auto';
-      textarea.value = '';
-    }
+    }, 300); // Delay to ensure layout has updated
   };
 
   if (loading) {
@@ -130,60 +126,55 @@ const Messages = () => {
   }
 
   return (
-    <Card className="messages-card">
-      <Card.Header>Messages</Card.Header>
-      <Card.Body>
-        <Row>
-          <Col md={4} className="chat-list">
-            <ListGroup>
-              {chatHistory.map(chat => (
-                <ListGroup.Item
-                  key={chat.id}
-                  active={selectedChat && selectedChat.id === chat.id}
-                  onClick={() => handleSelectChat(chat)}
-                >
-                  <div className="chat-participants">
-                    {chat.participants.join(', ')}
+    <Container fluid className="chat-room">
+      <Row>
+        <Col md={4} className="participants-list">
+          <h3>{isDoctor ? "Users" : "Online Doctors"}</h3>
+          <ListGroup>
+            {(isDoctor ? activeUsers : onlineDoctors).map(participant => (
+              <ListGroup.Item
+                key={`${isDoctor ? "user" : "doctor"}-${participant.id}`}
+                active={selectedParticipant && selectedParticipant.id === participant.id}
+                onClick={() => handleParticipantClick(participant)}
+              >
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5>{participant.name}</h5>
+                    <p>{isDoctor ? participant.email : participant.speciality}</p>
                   </div>
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
-          </Col>
-          <Col md={8} className="chat-window">
-            {selectedChat ? (
-              <>
-                <div className="msg-box" ref={msgBoxRef}>
-                  {msgList.map((msg, index) => (
-                    <div key={index} className={`message ${msg.userId === user.uid ? "msg-self" : "msg-other"}`}>
-                      <p>{msg.text}</p>
-                      <small className="timestamp">{new Date(msg.timestamp).toLocaleString()}</small>
-                    </div>
-                  ))}
+                  <Badge bg="success">Online</Badge>
                 </div>
-                <Form onSubmit={handleSendMessage} className="message-input-container">
-                  <InputGroup className="mb-3">
-                    <Form.Control
-                      as="textarea"
-                      ref={textareaRef}
-                      rows={1}
-                      placeholder="Type your message..."
-                      value={message}
-                      onChange={handleTyping}
-                      aria-label="User message input"
-                      className="message-input"
-                      style={{ resize: 'none', overflow: 'auto' }}
-                    />
-                    <Button variant="outline-secondary" type="submit" className="message-send-button">Send</Button>
-                  </InputGroup>
-                </Form>
-              </>
-            ) : (
-              <h4>Select a chat to view messages</h4>
-            )}
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </Col>
+        <Col md={8} className="chat-section" ref={chatSectionRef}>
+          {selectedParticipant ? (
+            <>
+              <h4>Chat with {selectedParticipant.name}</h4>
+              <div className="msg-box" ref={msgBoxRef}>
+                {msgList.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`message-container ${msg.userId === user.uid ? "msg-self" : "msg-other"} ${visibleTimestamps[index] ? "show-timestamp" : ""}`}
+                    onClick={() => toggleTimestamp(index)}
+                  >
+                    <p title={msg.user}>{msg.text}</p>
+                    {visibleTimestamps[index] && (
+                      <span className={`timestamp ${msg.userId === user.uid ? "timestamp-left" : "timestamp-right"}`}>
+                        {formatTimestamp(msg.timestamp)}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <h4>Select a {isDoctor ? "user" : "doctor"} to view chat history</h4>
+          )}
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
