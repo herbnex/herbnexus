@@ -10,7 +10,6 @@ import "./Messages.css";
 
 const Messages = () => {
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -142,9 +141,7 @@ const Messages = () => {
     }, 3000); // Hide the timestamp after 3 seconds
   };
 
-  if (loading) {
-    return <Spinner animation="border" />;
-  }
+  
 
   return (
     <Container fluid className="chat-room">
