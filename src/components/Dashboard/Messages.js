@@ -2,9 +2,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, Spinner, ListGroup, Form, Button, InputGroup, Row, Col } from 'react-bootstrap';
 import useAuth from '../../hooks/useAuth';
-import { database } from '../../../Firebase/firebase.config';
+import { database } from '../../../src/Firebase/firebase.config';
 import { ref, onValue, push, set } from 'firebase/database';
-import { generateChatId } from '../../../utils/generateChatId';
+import { generateChatId } from '../../../src/utils/generateChatId';
 import './Messages.css';
 
 const Messages = () => {
