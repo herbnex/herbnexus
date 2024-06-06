@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Spinner } from 'react-bootstrap';
 import useAuth from '../../hooks/useAuth'; // Assuming you have a hook to get the authenticated user
 import './UserProfile.css';
+import { db } from "../../../src/Firebase/firebase.config";
 
-const { db } = require('../../../src/Firebase/setupFirebaseAdmin'); // Adjust the path as necessary
+
 
 const UserProfile = () => {
   const { user } = useAuth(); // Get the authenticated user
