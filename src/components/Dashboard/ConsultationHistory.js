@@ -1,7 +1,7 @@
 // src/components/ConsultationHistory/ConsultationHistory.js
 import React, { useState, useEffect } from 'react';
 import { Card, ListGroup, Spinner } from 'react-bootstrap';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../../src/hooks/useAuth';
 import { database } from '../../../src/Firebase/firebase.config';
 import { ref, onValue } from 'firebase/database';
 import './ConsultationHistory.css';
