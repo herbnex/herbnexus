@@ -18,22 +18,24 @@ const Dashboard = () => {
       </Row>
       <Row>
         <Col>
+
           <Tabs defaultActiveKey="subscription" id="dashboard-tabs" className="mb-3">
+          <Tab eventKey="profile" title="User Profile">
+              <UserProfile />
+            </Tab>
             <Tab eventKey="subscription" title="Manage Subscription">
               <ManageSubscription />
             </Tab>
             <Tab eventKey="appointments" title="Appointments">
               <Appointments />
             </Tab>
-            <Tab eventKey="profile" title="User Profile">
-              <UserProfile />
-            </Tab>
-            <Tab eventKey="history" title="Consultation History">
+           
+            {/* <Tab eventKey="history" title="Consultation History">
               <ConsultationHistory />
             </Tab>
             <Tab eventKey="messages" title="Messages">
               <Messages />
-            </Tab>
+            </Tab> */}
             <Tab eventKey="settings" title="Settings">
               <Settings />
             </Tab>
