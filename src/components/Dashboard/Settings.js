@@ -72,7 +72,7 @@ const Settings = () => {
     setSuccess(null);
 
     try {
-      const idToken = await user.getIdToken();
+      const idToken = await user.getIdToken(true);  // Get a fresh token
       const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${API_KEY}`, {
         method: 'POST',
         headers: {
@@ -104,7 +104,7 @@ const Settings = () => {
     setSuccess(null);
 
     try {
-      const idToken = await user.getIdToken();
+      const idToken = await user.getIdToken(true);  // Get a fresh token
       const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${API_KEY}`, {
         method: 'POST',
         headers: {
@@ -214,3 +214,4 @@ const Settings = () => {
 };
 
 export default Settings;
+
