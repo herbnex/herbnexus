@@ -17,6 +17,8 @@ const Messages = () => {
   const [msgList, setMsgList] = useState([]);
   const [isDoctor, setIsDoctor] = useState(false);
   const msgBoxRef = useRef(null);
+  const chatSectionRef = useRef(null);
+  const [visibleTimestamps, setVisibleTimestamps] = useState({});
 
   useEffect(() => {
     if (!user) {
@@ -119,6 +121,25 @@ const Messages = () => {
         chatSection.scrollIntoView({ behavior: 'smooth' });
       }
     }, 300); // Delay to ensure layout has updated
+  };
+
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+  };
+
+  const toggleTimestamp = (index) => {
+    setVisibleTimestamps((prev) => ({
+      ...prev,
+      [index]: true,
+    }));
+
+    setTimeout(() => {
+      setVisibleTimestamps((prev) => ({
+        ...prev,
+        [index]: false,
+      }));
+    }, 3000); // Hide the timestamp after 3 seconds
   };
 
   if (loading) {
