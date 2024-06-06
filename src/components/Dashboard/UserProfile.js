@@ -1,16 +1,17 @@
 // src/components/UserProfile/UserProfile.js
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Button, Spinner } from 'react-bootstrap';
+import { Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
 import useAuth from '../../hooks/useAuth'; // Assuming you have a hook to get the authenticated user
 import './UserProfile.css';
-import { db } from '../../../src/Firebase/firebase.config';
-import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../../Firebase/firebase.config';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const UserProfile = () => {
   const { user } = useAuth(); // Get the authenticated user
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -34,12 +35,38 @@ const UserProfile = () => {
     }
   }, [user]);
 
+  const handleUpdateProfile = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    const updatedProfileData = {
+      name: event.target.formDisplayName.value,
+      // Add other fields to update here if needed
+    };
+
+    try {
+      const userDocRef = doc(db, 'users', user.uid);
+      await updateDoc(userDocRef, updatedProfileData);
+      setProfileData((prevData) => ({
+        ...prevData,
+        ...updatedProfileData
+      }));
+      setSuccess('Profile updated successfully.');
+    } catch (err) {
+      setError('Failed to update profile: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return <Spinner animation="border" />;
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return <Alert variant="danger">{error}</Alert>;
   }
 
   return (
@@ -56,7 +83,7 @@ const UserProfile = () => {
           <p>Email: {profileData.email}</p>
           <p>Subscribed: {profileData.isSubscribed ? "Yes" : "No"}</p>
         </div>
-        <Form>
+        <Form className="user-profile-form" onSubmit={handleUpdateProfile}>
           <Form.Group controlId="formDisplayName">
             <Form.Label>Display Name</Form.Label>
             <Form.Control 
@@ -70,6 +97,8 @@ const UserProfile = () => {
             Update Profile
           </Button>
         </Form>
+        {success && <Alert variant="success" className="mt-3">{success}</Alert>}
+        {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
       </Card.Body>
     </Card>
   );
