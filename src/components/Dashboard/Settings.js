@@ -6,6 +6,8 @@ import { db } from '../../../src/Firebase/firebase.config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import './Settings.css';
 
+const API_KEY = process.env.REACT_APP_FIREBASE_API_KEY;
+
 const Settings = () => {
   const { user, updateUserProfile, refreshUser } = useAuth();
   const [profileData, setProfileData] = useState(null);
@@ -71,7 +73,7 @@ const Settings = () => {
 
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=[API_KEY]`, {
+      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${API_KEY}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -103,7 +105,7 @@ const Settings = () => {
 
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=[API_KEY]`, {
+      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${API_KEY}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
