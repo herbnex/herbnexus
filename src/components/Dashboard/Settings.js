@@ -1,40 +1,70 @@
 // src/components/Settings/Settings.js
-import React, { useState } from 'react';
-import { Card, Form, Button, Alert } from 'react-bootstrap';
-import useAuth from '../../hooks/useAuth';
-import { db } from '../../../src/Firebase/firebase.config';
-import { doc, updateDoc } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import { useAuth } from '../../hooks/useAuth';
+import { db } from '../../../Firebase/firebase.config';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import './Settings.css';
 
 const Settings = () => {
-  const { user, updateUserProfile, updatePassword } = useAuth();
-  const [displayName, setDisplayName] = useState(user.displayName || '');
-  const [email, setEmail] = useState(user.email || '');
-  const [newPassword, setNewPassword] = useState('');
-  const [notification, setNotification] = useState(user.notification || false);
+  const { user, updatePassword } = useAuth();
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
 
-  const handleUpdateProfile = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          setProfileData(userDoc.data());
+        } else {
+          setError('No user data found');
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchProfileData();
+    }
+  }, [user]);
+
+  const handleUpdateProfile = async (event) => {
+    event.preventDefault();
+    setLoading(true);
     setError(null);
     setSuccess(null);
 
-    try {
-      if (displayName !== user.displayName || notification !== user.notification) {
-        const userDocRef = doc(db, 'users', user.uid);
-        await updateDoc(userDocRef, { displayName, notification });
-        updateUserProfile({ displayName, notification });
-      }
+    const updatedProfileData = {
+      name: event.target.formDisplayName.value,
+      notification: event.target.formNotification.checked
+    };
 
+    try {
+      const userDocRef = doc(db, 'users', user.uid);
+      await updateDoc(userDocRef, updatedProfileData);
+      setProfileData((prevData) => ({
+        ...prevData,
+        ...updatedProfileData
+      }));
       setSuccess('Profile updated successfully.');
     } catch (err) {
       setError('Failed to update profile: ' + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setError(null);
     setSuccess(null);
 
@@ -43,8 +73,18 @@ const Settings = () => {
       setSuccess('Password updated successfully.');
     } catch (err) {
       setError('Failed to update password: ' + err.message);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Spinner animation="border" />;
+  }
+
+  if (error) {
+    return <Alert variant="danger">{error}</Alert>;
+  }
 
   return (
     <Card className="settings-card">
@@ -59,8 +99,7 @@ const Settings = () => {
             <Form.Control
               type="text"
               placeholder="Enter display name"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
+              defaultValue={profileData?.name || ''}
             />
           </Form.Group>
 
@@ -69,8 +108,7 @@ const Settings = () => {
             <Form.Control
               type="email"
               placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              defaultValue={profileData?.email || ''}
               disabled
             />
           </Form.Group>
@@ -79,8 +117,7 @@ const Settings = () => {
             <Form.Check
               type="checkbox"
               label="Enable Notifications"
-              checked={notification}
-              onChange={(e) => setNotification(e.target.checked)}
+              defaultChecked={profileData?.notification || false}
             />
           </Form.Group>
 
