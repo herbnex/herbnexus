@@ -1,8 +1,8 @@
 // src/components/Settings/Settings.js
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
-import { useAuth } from '../../hooks/useAuth';
-import { db } from '../../../Firebase/firebase.config';
+import useAuth from '../../hooks/useAuth';
+import { db } from '../../../src/Firebase/firebase.config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import './Settings.css';
 
