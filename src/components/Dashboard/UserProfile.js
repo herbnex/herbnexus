@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
 import useAuth from '../../hooks/useAuth'; // Assuming you have a hook to get the authenticated user
 import './UserProfile.css';
-import { db } from '../../../Firebase/firebase.config';
+import { db } from '../../../src/Firebase/firebase.config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const UserProfile = () => {
