@@ -3,9 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Spinner } from 'react-bootstrap';
 import useAuth from '../../hooks/useAuth'; // Assuming you have a hook to get the authenticated user
 import './UserProfile.css';
-import { db } from "../../../src/Firebase/firebase.config";
-
-
+import { db } from '../../../src/Firebase/firebase.config';
+import { doc, getDoc } from 'firebase/firestore';
 
 const UserProfile = () => {
   const { user } = useAuth(); // Get the authenticated user
@@ -16,8 +15,9 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const userDoc = await db.collection('users').doc(user.uid).get();
-        if (userDoc.exists) {
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
           setProfileData(userDoc.data());
         } else {
           setError('No user data found');
