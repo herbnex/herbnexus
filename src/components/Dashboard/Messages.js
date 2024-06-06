@@ -5,7 +5,7 @@ import useAuth from '../../hooks/useAuth';
 import { db, database } from '../../../src/Firebase/firebase.config';
 import { doc, getDocs, collection, query, where } from 'firebase/firestore';
 import { ref, onValue, push, set } from 'firebase/database';
-import { generateChatId } from '../../../utils/generateChatId';
+import { generateChatId } from '../../../src/utils/generateChatId';
 import './Messages.css';
 
 const Messages = () => {
