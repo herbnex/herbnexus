@@ -7,6 +7,8 @@ import { doc, getDocs, collection, query, where } from 'firebase/firestore';
 import { ref, onValue, push, set } from 'firebase/database';
 import { generateChatId } from '../../../src/utils/generateChatId';
 import './Messages.css';
+import { Row, Col } from 'react-bootstrap';
+
 
 const Messages = () => {
   const { user } = useAuth();
