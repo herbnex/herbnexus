@@ -90,18 +90,26 @@ const Settings = () => {
 
     try {
       if (!user) throw new Error("User not found");
+
+      // 1. Update Firebase Authentication email
       const auth = getAuth();
       await updateEmail(auth.currentUser, newEmail);
+
+      // 2. Update Firestore document immediately
       const userDocRef = doc(db, 'users', user.uid);
       await updateDoc(userDocRef, { email: newEmail });
-      setProfileData((prevData) => ({
-        ...prevData,
-        email: newEmail
-      }));
+
+      // 3. Update local state
+      setProfileData(prevData => ({ ...prevData, email: newEmail }));
       setNewEmail('');
       setSuccess('Email updated successfully.');
+
     } catch (err) {
       setError('Failed to update email: ' + err.message);
+      // Additional error handling for specific cases (e.g., email already in use)
+      if (err.code === 'auth/email-already-in-use') {
+        setError('Email already in use by another account.');
+      }
     } finally {
       setLoading(false);
     }
