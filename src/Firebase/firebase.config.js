@@ -2,6 +2,8 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
+import { getStorage } from "firebase/storage";
+
 
 // Firebase configuration object using environment variables
 const firebaseConfig = {
@@ -26,3 +28,6 @@ export const db = getFirestore(app);
 
 // Initialize Realtime Database and export
 export const database = getDatabase(app);
+
+// Initialize Firebase Storage and export
+export const storage = getStorage(app);
