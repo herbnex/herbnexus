@@ -3,6 +3,7 @@ import { Col, Container, Form, Row, Button, FloatingLabel, Alert, Spinner } from
 import { NavLink, useLocation, useHistory } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import Error from "../../Error/Error";
+import ForgotPasswordModal from './ForgotPasswordModal'; // Import the new component
 import "./Login.css";
 
 const Login = () => {
@@ -13,6 +14,7 @@ const Login = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [loginError, setLoginError] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
+	const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false); // New state for modal
 	const history = useHistory();
 	const location = useLocation();
 
@@ -47,6 +49,14 @@ const Login = () => {
 
 	const togglePasswordVisibility = () => {
 		setShowPassword(!showPassword);
+	};
+
+	const handleForgotPasswordClick = () => {
+		setShowForgotPasswordModal(true);
+	};
+
+	const handleForgotPasswordModalClose = () => {
+		setShowForgotPasswordModal(false);
 	};
 
 	return (
@@ -86,7 +96,7 @@ const Login = () => {
 											value={password}
 											onChange={(e) => setPassword(e.target.value)}
 											className="rounded-pill ps-3"
-											type="password"
+											type={showPassword ? "text" : "password"}
 											placeholder="Password"
 											isInvalid={!!validationErrors.password}
 											required
@@ -95,13 +105,13 @@ const Login = () => {
 										<span
 											className="position-absolute top-50 end-0 translate-middle inline-block px-1 fs-5 fp-text"
 											onClick={togglePasswordVisibility}>
-											{showPassword ? <i class="bi bi-eye"></i> : <i class="bi bi-eye-slash"></i>}
+											{showPassword ? <i className="bi bi-eye"></i> : <i className="bi bi-eye-slash"></i>}
 										</span>
 									</FloatingLabel>
 								</Form.Group>
 
 								<div className="my-3 d-flex w-auto justify-content-end">
-									<span className="text-main fp-text">Forgot Password?</span>
+									<span className="text-main fp-text" onClick={handleForgotPasswordClick}>Forgot Password?</span>
 								</div>
 
 								<Button
@@ -123,33 +133,11 @@ const Login = () => {
 					</div>
 				</div>
 
-				{/* <Col xs={12} md={1}>
-						<div className="d-flex justify-content-center align-items-center my-3 pt-5 pb-3 h-100">
-							<p>--OR--</p>
-						</div>
-					</Col>
-					<Col xs={12} md={5}>
-						<h1 className="title text-center fw-bold">Login with</h1>
-						<div className="d-flex justify-content-around align-items-center h-100 pb-5">
-							<button onClick={signInWithGoogle} className="btn btn-danger">
-								<i className="bi bi-google fs-2"></i> <br />
-								Google
-							</button>
-							<button onClick={signInWithGithub} className="btn btn-success">
-								<i className="bi bi-github fs-2"></i> <br />
-								Github
-							</button>
-							<button disabled className="btn btn-primary">
-								<i className="bi bi-facebook fs-2"></i> <br />
-								FaceBook
-							</button>
-						</div>
-					</Col> */}
-
 				<h6 className="my-2 text-center">
 					Don't have an account? <NavLink to={{ pathname: "/signup", state: { from: refferer } }}>Sign Up</NavLink>
 				</h6>
 			</div>
+			<ForgotPasswordModal show={showForgotPasswordModal} handleClose={handleForgotPasswordModalClose} />
 		</div>
 	);
 };
