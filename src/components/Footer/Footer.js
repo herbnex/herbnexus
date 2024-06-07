@@ -92,6 +92,11 @@ const Footer = () => {
                     Subscribe
                   </NavLink>
                 </li>
+                <li className="mb-2">
+                  <NavLink className="text-muted" to="/privacy-policy">
+                    Privacy Policy
+                  </NavLink>
+                </li>
               </ul>
             </div>
           </Col>

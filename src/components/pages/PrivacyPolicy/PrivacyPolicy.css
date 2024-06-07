@@ -1,0 +1,29 @@
+/* PrivacyPolicy.css */
+
+.privacy-policy {
+    margin-top: 20px;
+    padding: 20px;
+  }
+  
+  .privacy-policy h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .privacy-policy h4 {
+    margin-top: 20px;
+  }
+  
+  .privacy-policy p,
+  .privacy-policy ul {
+    margin-bottom: 15px;
+  }
+  
+  .privacy-policy ul {
+    padding-left: 20px;
+  }
+  
+  .privacy-policy ul li {
+    list-style-type: disc;
+  }
+  

@@ -18,6 +18,7 @@ import Appointment from "./components/pages/Appointment/Appoinment";
 import Contact from "./components/pages/Contact/Contact";
 import Subscription from "./components/subscription/subscriptions";
 import Dashboard from "./components/Dashboard/Dashboard";
+import PrivacyPolicy from "./components/pages/PrivacyPolicy/PrivacyPolicy";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -73,6 +74,9 @@ function App() {
           <PrivateRoute path="/dashboard" requireSubscription={false}>
             <Dashboard />
           </PrivateRoute>
+          <Route path="/privacy-policy">
+            <PrivacyPolicy /> 
+          </Route>
           <Route path="*">
             <NotFound />
           </Route>
