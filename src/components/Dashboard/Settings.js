@@ -1,15 +1,14 @@
-// src/components/Settings/Settings.js
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
-import useAuth from '../../hooks/useAuth';
-import { db } from '../../../src/Firebase/firebase.config';
+import { getAuth, updateEmail, updatePassword } from 'firebase/auth';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../../../src/Firebase/firebase.config';
 import './Settings.css';
 
-const API_KEY = process.env.REACT_APP_FIREBASE_API_KEY;
-
 const Settings = () => {
-  const { user, updateUserProfile, refreshUser } = useAuth();
+  const auth = getAuth();
+  const [user, loadingAuth] = useAuthState(auth);
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,24 +18,24 @@ const Settings = () => {
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      try {
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          setProfileData(userDoc.data());
-        } else {
-          setError('No user data found');
+      if (user) {
+        try {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            setProfileData(userDoc.data());
+          } else {
+            setError('No user data found');
+          }
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
         }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
       }
     };
 
-    if (user) {
-      fetchProfileData();
-    }
+    fetchProfileData();
   }, [user]);
 
   const handleUpdateProfile = async (event) => {
@@ -51,6 +50,7 @@ const Settings = () => {
     };
 
     try {
+      if (!user) throw new Error("User not found");
       const userDocRef = doc(db, 'users', user.uid);
       await updateDoc(userDocRef, updatedProfileData);
       setProfileData((prevData) => ({
@@ -72,23 +72,9 @@ const Settings = () => {
     setSuccess(null);
 
     try {
-      const idToken = await user.getIdToken(true);  // Get a fresh token
-      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${API_KEY}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          idToken,
-          password: newPassword,
-          returnSecureToken: true
-        })
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update password');
-      }
-      const data = await response.json();
-      await refreshUser(data.idToken);  // Refresh the user with the new token
+      if (!user) throw new Error("User not found");
+      await updatePassword(user, newPassword);
+      setNewPassword('');
       setSuccess('Password updated successfully.');
     } catch (err) {
       setError('Failed to update password: ' + err.message);
@@ -104,23 +90,9 @@ const Settings = () => {
     setSuccess(null);
 
     try {
-      const idToken = await user.getIdToken(true);  // Get a fresh token
-      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${API_KEY}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          idToken,
-          email: newEmail,
-          returnSecureToken: true
-        })
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update email');
-      }
-      const data = await response.json();
-      await refreshUser(data.idToken);  // Refresh the user with the new token
+      if (!user) throw new Error("User not found");
+      await updateEmail(user, newEmail);
+      setNewEmail('');
       setSuccess('Email updated successfully.');
     } catch (err) {
       setError('Failed to update email: ' + err.message);
@@ -129,7 +101,7 @@ const Settings = () => {
     }
   };
 
-  if (loading) {
+  if (loading || loadingAuth) {
     return <Spinner animation="border" />;
   }
 
