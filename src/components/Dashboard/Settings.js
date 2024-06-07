@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import { getAuth, updateEmail, updatePassword } from 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../src/Firebase/firebase.config';
+import useAuth from "../../../src/hooks/useAuth";
 import './Settings.css';
 
 const Settings = () => {
-  const auth = getAuth();
-  const [user, loadingAuth] = useAuthState(auth);
+  const [user, loadingAuth, authError] = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
