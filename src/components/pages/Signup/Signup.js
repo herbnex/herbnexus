@@ -8,7 +8,7 @@ import "./Signup.css";
 import { auth, db } from "../../../Firebase/firebase.config"; // Adjust the path as necessary
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { registerDoctor } from "./registerDoctors"; // Adjust the path as necessary
+import { registerDoctor } from "../Doctors/registerDoctors"; // Adjust the path as necessary
 
 const Signup = () => {
   const { user, error, setError, isLoading } = useAuth();
