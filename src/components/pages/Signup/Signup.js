@@ -8,7 +8,6 @@ import "./Signup.css";
 import { auth, db } from "../../../Firebase/firebase.config"; // Adjust the path as necessary
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { registerDoctor } from "../Doctors/registerDoctors"; // Adjust the path as necessary
 
 const Signup = () => {
   const { user, error, setError, isLoading } = useAuth();
@@ -51,16 +50,46 @@ const Signup = () => {
 
     try {
       if (isDoctorSignup) {
-        await registerDoctor({
-          id: name.toLowerCase().replace(/\s+/g, ''),
-          name,
-          speciality: doctorInfo.speciality,
-          bio: doctorInfo.bio,
-          degrees: doctorInfo.degrees,
-          office: doctorInfo.office,
-        });
+        // Doctor Signup Logic
+        const existingUser = await auth.getUserByEmail(email).catch(() => null);
+
+        if (existingUser) {
+          // Update existing doctor's data
+          console.log(`Updating existing doctor ${name} with email ${email}.`);
+          await db.collection('doctors').doc(existingUser.uid).set({
+            uid: existingUser.uid,
+            id: existingUser.uid,
+            name,
+            speciality: doctorInfo.speciality,
+            bio: doctorInfo.bio,
+            degrees: doctorInfo.degrees,
+            office: doctorInfo.office,
+            email,
+            isOnline: false,
+          });
+          console.log(`Doctor ${name} updated successfully.`);
+        } else {
+          // Create a user in Firebase Authentication
+          const userRecord = await createUserWithEmailAndPassword(auth, email, 'initialPassword');
+          await updateProfile(userRecord.user, { displayName: name });
+
+          // Save additional details to Firestore
+          await db.collection('doctors').doc(userRecord.user.uid).set({
+            uid: userRecord.user.uid,
+            id: userRecord.user.uid,
+            name,
+            speciality: doctorInfo.speciality,
+            bio: doctorInfo.bio,
+            degrees: doctorInfo.degrees,
+            office: doctorInfo.office,
+            email,
+            isOnline: false,
+          });
+          console.log(`Doctor ${name} registered successfully.`);
+        }
         setSuccessMessage("Doctor account created successfully!");
       } else {
+        // User Signup Logic
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(userCredential.user, { displayName: name });
         const userRef = doc(db, "users", userCredential.user.uid);
