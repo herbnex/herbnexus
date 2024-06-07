@@ -6,7 +6,7 @@ import Error from "../../Error/Error";
 import Loading from "../../Loading/Loading";
 import "./Signup.css";
 import { auth, db } from "../../../Firebase/firebase.config"; // Adjust the path as necessary
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, fetchSignInMethodsForEmail } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
 const Signup = () => {
@@ -49,44 +49,29 @@ const Signup = () => {
     if (Object.keys(errors).length > 0) return;
 
     try {
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+
+      if (signInMethods.length > 0) {
+        // Email already exists
+        throw new Error("Email already in use. Please use a different email.");
+      }
+
       if (isDoctorSignup) {
         // Doctor Signup Logic
-        const existingUser = await auth.getUserByEmail(email).catch(() => null);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, 'initialPassword');
+        await updateProfile(userCredential.user, { displayName: name });
 
-        if (existingUser) {
-          // Update existing doctor's data
-          console.log(`Updating existing doctor ${name} with email ${email}.`);
-          await db.collection('doctors').doc(existingUser.uid).set({
-            uid: existingUser.uid,
-            id: existingUser.uid,
-            name,
-            speciality: doctorInfo.speciality,
-            bio: doctorInfo.bio,
-            degrees: doctorInfo.degrees,
-            office: doctorInfo.office,
-            email,
-            isOnline: false,
-          });
-          console.log(`Doctor ${name} updated successfully.`);
-        } else {
-          // Create a user in Firebase Authentication
-          const userRecord = await createUserWithEmailAndPassword(auth, email, 'initialPassword');
-          await updateProfile(userRecord.user, { displayName: name });
-
-          // Save additional details to Firestore
-          await db.collection('doctors').doc(userRecord.user.uid).set({
-            uid: userRecord.user.uid,
-            id: userRecord.user.uid,
-            name,
-            speciality: doctorInfo.speciality,
-            bio: doctorInfo.bio,
-            degrees: doctorInfo.degrees,
-            office: doctorInfo.office,
-            email,
-            isOnline: false,
-          });
-          console.log(`Doctor ${name} registered successfully.`);
-        }
+        await setDoc(doc(db, 'doctors', userCredential.user.uid), {
+          uid: userCredential.user.uid,
+          id: userCredential.user.uid,
+          name,
+          speciality: doctorInfo.speciality,
+          bio: doctorInfo.bio,
+          degrees: doctorInfo.degrees,
+          office: doctorInfo.office,
+          email,
+          isOnline: false,
+        });
         setSuccessMessage("Doctor account created successfully!");
       } else {
         // User Signup Logic
