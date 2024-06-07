@@ -1,0 +1,29 @@
+/* TermsOfService.css */
+
+.terms-of-service {
+    margin-top: 20px;
+    padding: 20px;
+  }
+  
+  .terms-of-service h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .terms-of-service h4 {
+    margin-top: 20px;
+  }
+  
+  .terms-of-service p,
+  .terms-of-service ul {
+    margin-bottom: 15px;
+  }
+  
+  .terms-of-service ul {
+    padding-left: 20px;
+  }
+  
+  .terms-of-service ul li {
+    list-style-type: disc;
+  }
+  

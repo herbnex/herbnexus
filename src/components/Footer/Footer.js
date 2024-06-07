@@ -97,6 +97,11 @@ const Footer = () => {
                     Privacy Policy
                   </NavLink>
                 </li>
+                <li className="mb-2">
+                  <NavLink className="text-muted" to="/terms-of-service">
+                    Terms of Service
+                  </NavLink>
+                </li>
               </ul>
             </div>
           </Col>
