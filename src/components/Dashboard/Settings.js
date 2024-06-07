@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import { Card, Form, Button, Alert, Spinner, InputGroup } from 'react-bootstrap';
 import { getAuth, updateEmail, updatePassword } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../src/Firebase/firebase.config';
@@ -14,6 +14,7 @@ const Settings = () => {
   const [success, setSuccess] = useState(null);
   const [newPassword, setNewPassword] = useState('');
   const [newEmail, setNewEmail] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -91,6 +92,8 @@ const Settings = () => {
       if (!user) throw new Error("User not found");
       const auth = getAuth();
       await updateEmail(auth.currentUser, newEmail);
+      const userDocRef = doc(db, 'users', user.uid);
+      await updateDoc(userDocRef, { email: newEmail });
       setProfileData((prevData) => ({
         ...prevData,
         email: newEmail
@@ -102,6 +105,10 @@ const Settings = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   if (isLoading || loading) {
@@ -171,12 +178,17 @@ const Settings = () => {
         <Form onSubmit={handleChangePassword}>
           <Form.Group controlId="formNewPassword">
             <Form.Label>New Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Enter new password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
+            <InputGroup>
+              <Form.Control
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <Button variant="outline-secondary" onClick={toggleShowPassword}>
+                {showPassword ? "Hide" : "Show"}
+              </Button>
+            </InputGroup>
           </Form.Group>
 
           <Button variant="primary" type="submit">
