@@ -193,9 +193,6 @@ const Settings = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
-              <Button variant="outline-secondary" onClick={toggleShowPassword}>
-                {showPassword ? "Hide" : "Show"}
-              </Button>
             </InputGroup>
           </Form.Group>
 
