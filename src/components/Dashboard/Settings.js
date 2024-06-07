@@ -7,7 +7,7 @@ import useAuth from "../../../src/hooks/useAuth";
 import './Settings.css';
 
 const Settings = () => {
-  const [user, loadingAuth, authError] = useAuth();
+  const { user, loadingAuth } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
