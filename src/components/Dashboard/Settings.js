@@ -91,6 +91,10 @@ const Settings = () => {
       if (!user) throw new Error("User not found");
       const auth = getAuth();
       await updateEmail(auth.currentUser, newEmail);
+      setProfileData((prevData) => ({
+        ...prevData,
+        email: newEmail
+      }));
       setNewEmail('');
       setSuccess('Email updated successfully.');
     } catch (err) {
@@ -100,7 +104,7 @@ const Settings = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || loading) {
     return <Spinner animation="border" />;
   }
 
@@ -126,7 +130,7 @@ const Settings = () => {
             <Form.Control
               type="email"
               placeholder="Enter email"
-              defaultValue={profileData?.email || ''}
+              value={profileData?.email || ''}
               disabled
             />
           </Form.Group>
