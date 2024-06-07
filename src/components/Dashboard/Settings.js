@@ -7,9 +7,9 @@ import useAuth from "../../../src/hooks/useAuth";
 import './Settings.css';
 
 const Settings = () => {
-  const { user, loadingAuth } = useAuth();
+  const { user, isLoading } = useAuth();
   const [profileData, setProfileData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [newPassword, setNewPassword] = useState('');
@@ -28,8 +28,6 @@ const Settings = () => {
           }
         } catch (err) {
           setError(err.message);
-        } finally {
-          setLoading(false);
         }
       }
     };
@@ -72,7 +70,8 @@ const Settings = () => {
 
     try {
       if (!user) throw new Error("User not found");
-      await updatePassword(user, newPassword);
+      const auth = getAuth();
+      await updatePassword(auth.currentUser, newPassword);
       setNewPassword('');
       setSuccess('Password updated successfully.');
     } catch (err) {
@@ -90,7 +89,8 @@ const Settings = () => {
 
     try {
       if (!user) throw new Error("User not found");
-      await updateEmail(user, newEmail);
+      const auth = getAuth();
+      await updateEmail(auth.currentUser, newEmail);
       setNewEmail('');
       setSuccess('Email updated successfully.');
     } catch (err) {
@@ -100,7 +100,7 @@ const Settings = () => {
     }
   };
 
-  if (loading || loadingAuth) {
+  if (isLoading) {
     return <Spinner animation="border" />;
   }
 
