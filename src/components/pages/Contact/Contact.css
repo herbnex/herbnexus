@@ -1,39 +1,104 @@
-/* Contact.css */
-
-.contact-panel {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+.chat-panel {
   height: calc(100vh - 100px);
-  width: 100vw;
-  box-shadow: 0 0 1rem 5px #0005;
-  background-color: #fff;
-  padding: 1.5rem;
-  margin-top: 10px;
-  margin-bottom: 1rem;
-  border-radius: 1rem;
 }
 
-.contact {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background-color: #e6f7f5;
-  border-radius: 1rem;
-}
-
-.msg-box {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.chat-convo-section {
+  height: calc(100vh - 300px);
   overflow-y: auto;
-  padding: 1rem;
-  background-color: #ffffff;
-  border-radius: 1rem;
-  border: 1px solid #39cabb;
+}
+
+.chat-user-feed {
+  width: 350px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.chat-panel-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.chat-panel-title-search {
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.chat-user-item {
+  cursor: pointer;
+}
+
+.chat-small-text {
+  font-size: 12px;
+}
+
+.chat-regular-text {
+  font-size: 14px;
+}
+
+.chat-user-name {
+  font-weight: 600;
+}
+
+.chat-online-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgb(22, 205, 22);
+}
+
+.chat-message-text {
+  max-width: 500px;
+  word-wrap: break-word;
+}
+
+.chat-title-box {
+  height: 60px;
+}
+
+.chat-text-field-box {
+  height: 40px;
+}
+
+.chat-message-feed {
+  display: block;
+}
+
+.chat-convo-back {
+  display: none;
+}
+
+.chat-init-right {
+  display: block;
+}
+
+@media only screen and (max-width: 768px) {
+  .chat-message-feed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 999;
+    background-color: white;
+  }
+
+  .chat-user-feed {
+    width: 100%;
+  }
+
+  .chat-convo-section {
+    height: calc(100vh - 172px);
+  }
+
+  .chat-convo-back {
+    display: block;
+  }
+
+  .chat-init-right {
+    display: none;
+  }
 }
 
 .message-container {
