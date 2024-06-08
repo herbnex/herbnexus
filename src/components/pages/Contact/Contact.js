@@ -1,29 +1,42 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge, Spinner, Alert } from "react-bootstrap";
-import { ref, set, onValue, push, update } from "firebase/database";
-import { database, db } from "../../../Firebase/firebase.config";
-import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
-import useAuth from "../../../hooks/useAuth";
-import { generateChatId } from "../../../utils/generateChatId";
-import { useHistory, useLocation } from "react-router-dom";
-import SimplePeer from "simple-peer";
-import "./Contact.css";
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Container,
+  Grid,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  TextField,
+  IconButton,
+  Typography,
+  CircularProgress,
+  Alert,
+  Button,
+  Paper,
+} from '@mui/material';
+import { VideoCall, Search, Send } from '@mui/icons-material';
+import { ref, set, onValue, push } from 'firebase/database';
+import { database, db } from '../../../Firebase/firebase.config';
+import { doc, getDocs, collection, query, where, getDoc } from 'firebase/firestore';
+import useAuth from '../../../hooks/useAuth';
+import { generateChatId } from '../../../utils/generateChatId';
+import Peer from 'peerjs';
+import './Contact.css';
 
 const CustomAvatar = ({ name, imgUrl }) => {
   const nameParts = name?.split(" ");
   const initials = nameParts?.map((part) => part?.charAt(0).toUpperCase())?.join("");
 
   return (
-    <div className="custom-avatar-profile rounded-pill fs-6 bg-primary overflow-hidden text-white">
-      {imgUrl ? <img src={imgUrl} alt={"user profile"} className="object-fit-cover w-100 h-100" /> : initials}
-    </div>
+    <Avatar sx={{ bgcolor: 'primary.main' }}>
+      {imgUrl ? <img src={imgUrl} alt={"user profile"} style={{ width: '100%', height: '100%' }} /> : initials}
+    </Avatar>
   );
 };
 
 const Contact = () => {
   const { user, updateUser } = useAuth();
-  const history = useHistory();
-  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
@@ -38,12 +51,10 @@ const Contact = () => {
   const chatSectionRef = useRef(null);
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
   const [showChatConvo, setShowChatConvo] = useState(false);
-  const [selectedSpecialist, setSelectedSpecialist] = useState("");
+  const myVideo = useRef(null);
+  const userVideo = useRef(null);
+  const peerInstance = useRef(null);
   const [stream, setStream] = useState(null);
-  const [peer, setPeer] = useState(null);
-  const myVideo = useRef();
-  const userVideo = useRef();
-  const connectionRef = useRef();
 
   useEffect(() => {
     if (!user) {
@@ -78,53 +89,81 @@ const Contact = () => {
     const q = query(doctorsRef, where("isOnline", "==", true));
     const querySnapshot = await getDocs(q);
     const doctors = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    setOnlineDoctors(doctors);
+    console.log("Fetched online doctors:", doctors);
+
+    // Deduplicate doctors
+    const uniqueDoctors = doctors.filter(
+      (doctor, index, self) => index === self.findIndex((d) => d.id === doctor.id),
+    );
+
+    setOnlineDoctors(uniqueDoctors);
   };
 
   const fetchActiveUsers = async () => {
     const usersRef = collection(db, "users");
     const querySnapshot = await getDocs(usersRef);
     const users = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    setActiveUsers(users);
+    console.log("Fetched active users:", users);
+
+    // Deduplicate users
+    const uniqueUsers = users.filter((user, index, self) => index === self.findIndex((u) => u.id === user.id));
+
+    setActiveUsers(uniqueUsers);
   };
 
-  useEffect(() => {
-    if (!user || !selectedParticipant) {
-      return;
+  const handleParticipantClick = (participant) => {
+    setSelectedParticipant(participant);
+    setShowChatConvo(true);
+  };
+
+  const startCall = async () => {
+    if (!selectedParticipant) return;
+
+    const peer = new Peer(user.uid);
+
+    peer.on('open', (id) => {
+      console.log('My peer ID is:', id);
+    });
+
+    peer.on('call', (call) => {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+        setStream(stream);
+        myVideo.current.srcObject = stream;
+        myVideo.current.play();
+        call.answer(stream);
+        call.on('stream', (remoteStream) => {
+          userVideo.current.srcObject = remoteStream;
+          userVideo.current.play();
+        });
+      }).catch((err) => {
+        console.error('Failed to get local stream', err);
+      });
+    });
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+      setStream(stream);
+      myVideo.current.srcObject = stream;
+      myVideo.current.play();
+      const call = peer.call(selectedParticipant.uid, stream);
+      call.on('stream', (remoteStream) => {
+        userVideo.current.srcObject = remoteStream;
+        userVideo.current.play();
+      });
+    }).catch((err) => {
+      console.error('Failed to get local stream', err);
+    });
+
+    peerInstance.current = peer;
+  };
+
+  const endCall = () => {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
     }
-
-    const chatId = isDoctor
-      ? generateChatId(selectedParticipant.id, user.displayName)
-      : generateChatId(user.uid, selectedParticipant.name);
-
-    const chatRef = ref(database, `chats/${chatId}/messages`);
-    const typingRef = ref(database, `chats/${chatId}/typing`);
-
-    const unsubscribe = onValue(chatRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const messages = Object.values(data);
-        setMsgList(messages);
-        setTimeout(() => {
-          if (msgBoxRef.current) {
-            msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
-          }
-        }, 100);
-      } else {
-        setMsgList([]);
-      }
-    });
-
-    const typingUnsubscribe = onValue(typingRef, (snapshot) => {
-      const typingData = snapshot.val();
-      setOtherTyping(typingData && typingData.typing && typingData.typing !== user.uid);
-    });
-
-    return () => {
-      unsubscribe();
-      typingUnsubscribe();
-    };
-  }, [user, selectedParticipant, isDoctor]);
+    if (peerInstance.current) {
+      peerInstance.current.destroy();
+    }
+  };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -147,11 +186,13 @@ const Contact = () => {
     const newMessageRef = push(chatRef);
 
     await set(newMessageRef, newMessage);
+    console.log("Sent message:", newMessage);
     setMessage("");
     resetTextarea();
 
     await set(ref(database, `chats/${chatId}/typing`), { typing: false });
 
+    // Scroll to the bottom after sending a message
     setTimeout(() => {
       if (msgBoxRef.current) {
         msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
@@ -215,110 +256,7 @@ const Contact = () => {
         ...prev,
         [index]: false,
       }));
-    }, 3000);
-  };
-
-  const handleParticipantClick = (participant) => {
-    setSelectedParticipant(participant);
-    setShowChatConvo(true);
-
-    const chatId = isDoctor
-      ? generateChatId(participant.id, user.displayName)
-      : generateChatId(user.uid, participant.name);
-
-    const chatRef = ref(database, `chats/${chatId}/messages`);
-    onValue(chatRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const messages = Object.values(data);
-        setMsgList(messages);
-      } else {
-        setMsgList([]);
-      }
-    });
-
-    setTimeout(() => {
-      const chatSection = chatSectionRef.current;
-      if (chatSection) {
-        chatSection.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 300);
-  };
-
-  const startCall = () => {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-      setStream(stream);
-      myVideo.current.srcObject = stream;
-
-      const peer = new SimplePeer({
-        initiator: true,
-        trickle: false,
-        stream: stream,
-      });
-
-      peer.on("signal", (data) => {
-        const chatId = isDoctor
-          ? generateChatId(selectedParticipant.id, user.displayName)
-          : generateChatId(user.uid, selectedParticipant.name);
-
-        const callRef = ref(database, `calls/${chatId}`);
-        set(callRef, data);
-      });
-
-      peer.on("stream", (stream) => {
-        userVideo.current.srcObject = stream;
-      });
-
-      const chatId = isDoctor
-        ? generateChatId(selectedParticipant.id, user.displayName)
-        : generateChatId(user.uid, selectedParticipant.name);
-
-      const callRef = ref(database, `calls/${chatId}`);
-      onValue(callRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          peer.signal(data);
-        }
-      });
-
-      setPeer(peer);
-    });
-  };
-
-  const joinCall = () => {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-      setStream(stream);
-      myVideo.current.srcObject = stream;
-
-      const peer = new SimplePeer({
-        initiator: false,
-        trickle: false,
-        stream: stream,
-      });
-
-      const chatId = isDoctor
-        ? generateChatId(selectedParticipant.id, user.displayName)
-        : generateChatId(user.uid, selectedParticipant.name);
-
-      const callRef = ref(database, `calls/${chatId}`);
-      onValue(callRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          peer.signal(data);
-        }
-      });
-
-      peer.on("signal", (data) => {
-        update(callRef, data);
-      });
-
-      peer.on("stream", (stream) => {
-        userVideo.current.srcObject = stream;
-      });
-
-      connectionRef.current = peer;
-      setPeer(peer);
-    });
+    }, 3000); // Hide the timestamp after 3 seconds
   };
 
   const ChatMessageFeed = ({ texts, setShowChatConvo, backBtnClick }) => {
@@ -331,12 +269,11 @@ const Contact = () => {
               onClick={() => {
                 backBtnClick();
                 setShowChatConvo(false);
-              }}
-            >
+              }}>
               <i className="bi bi-arrow-left-circle"></i>
             </div>
             <div className="d-flex h-100 gap-2 align-items-center">
-              <CustomAvatar name={"John Doe"} />
+              <CustomAvatar name={"john doe"} />
               <div className="d-flex flex-column">
                 <span className="chat-regular-text chat-user-name">John Doe</span>
                 <span className="chat-small-text">Online</span>
@@ -344,6 +281,7 @@ const Contact = () => {
             </div>
           </div>
         </div>
+
         <div className="px-3 pb-5 h-auto">
           <div className="chat-convo-section">
             {texts?.map((text, index) => (
@@ -355,116 +293,178 @@ const Contact = () => {
               </div>
             ))}
           </div>
+
           <div className="mt-auto pt-4">
             <div className="d-flex gap-2 chat-text-field-box">
               <Form.Group className="flex-grow-1">
-                <Form.Control
-                  className="h-100 rounded-pill"
-                  placeholder="Type your message..."
-                  value={message}
-                  onChange={handleTyping}
-                  ref={textareaRef}
-                />
+                <Form.Control className="h-100 rounded-pill" placeholder="Type your message..." />
               </Form.Group>
-              <Button variant="info" className="text-white rounded-circle" onClick={handleSendMessage}>
+              <Button variant="info" className="text-white rounded-circle">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
                   height="16"
                   fill="currentColor"
                   className="bi bi-send-fill"
-                  viewBox="0 0 16 16"
-                >
+                  viewBox="0 0 16 16">
                   <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
                 </svg>
               </Button>
             </div>
-          </div>
-          <div className="video-container">
-            <video playsInline muted ref={myVideo} autoPlay className="video" />
-            <video playsInline ref={userVideo} autoPlay className="video" />
-          </div>
-          <div className="call-buttons">
-            <Button onClick={startCall}>Start Call</Button>
-            <Button onClick={joinCall}>Join Call</Button>
           </div>
         </div>
       </div>
     );
   };
 
-  return (
-    <Container fluid className="chat-room">
-      <Row>
-        <Col md={4} className="participants-list">
-          <h3>{isDoctor ? "Users" : "Online Doctors"}</h3>
-          <ListGroup>
-            {(isDoctor ? activeUsers : onlineDoctors).map((participant) => (
-              <ListGroup.Item
-                key={`${isDoctor ? "user" : "doctor"}-${participant.id}`}
-                active={selectedParticipant && selectedParticipant.id === participant.id}
-                onClick={() => handleParticipantClick(participant)}
-              >
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <h5>{participant.name}</h5>
-                    <p>{isDoctor ? participant.email : participant.speciality}</p>
-                  </div>
-                  <Badge bg="success">Online</Badge>
-                </div>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        </Col>
-        <Col md={8} className="chat-section" ref={chatSectionRef}>
-          <div className="d-flex chat-panel chat-regular-text border-top">
-            <div className="flex-shrink-0 border-end h-100 chat-user-feed bg-light pb-5">
-              <div className="">
-                <div className="border-bottom px-3 chat-title-box d-flex justify-content-between align-items-center">
-                  <span className="chat-panel-title">Messages</span>
-                  <span className="chat-panel-title-search">
-                    <i className="bi bi-search"></i>
-                  </span>
-                </div>
-                <div className="px-3 mt-2">
-                  <Form.Control type="text" className="border-0" placeholder="Search here..." autoFocus />
-                </div>
-              </div>
-              <div className="mt-4 px-2 ">
-                <div className="d-flex flex-column gap-3">
-                  {activeUsers.map((participant) => (
-                    <div
-                      key={participant.id}
-                      className="d-flex chat-user-item align-items-center gap-2 bg-white p-3 rounded-3"
-                      onClick={() => handleParticipantClick(participant)}
-                    >
-                      <CustomAvatar name={participant.name} imgUrl={participant.imgUrl} />
-                      <div className="d-flex flex-shrink-0 flex-column">
-                        <span className="chat-user-name">{participant.name}</span>
-                        <span className="chat-small-text">{participant.speciality}</span>
-                      </div>
-                      <span className="ms-auto chat-small-text">
-                        <span className="chat-online-indicator me-1"></span>online
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            {showChatConvo ? (
-              <ChatMessageFeed
-                texts={msgList}
-                backBtnClick={() => setSelectedParticipant(null)}
-                setShowChatConvo={setShowChatConvo}
-              />
-            ) : (
-              <div className="chat-init-right flex-grow-1">
-                <p className="text-center w-100 fs-5 pt-5">Click any specialist to start chat.</p>
-              </div>
+  const ChatUserItem = ({ name, imgUrl, field, lastSeen, isOnline, handleClick, selectedSpecialist }) => {
+    return (
+      <div
+        className={`d-flex chat-user-item align-items-center gap-2 bg-white p-3 rounded-3 ${
+          selectedSpecialist && selectedSpecialist === "eg" ? "border border-primary border-2 opacity-75" : ""
+        }`}
+        onClick={handleClick}>
+        <CustomAvatar name={name} imgUrl={""} />
+        <div className="d-flex flex-shrink-0 flex-column">
+          <span className="chat-user-name">{name}</span>
+          <span className="chat-small-text">{field}</span>
+        </div>
+        <span className="ms-auto chat-small-text">
+          {isOnline ? (
+            <>
+              <span className="chat-online-indicator me-1"></span>
+              online
+            </>
+          ) : (
+            lastSeen
+          )}
+        </span>
+      </div>
+    );
+  };
+
+  const ChatUserFeed = ({ setShowChatConvo, setSelectedSpecialist, selectedSpecialist }) => {
+    const [showSearch, setShowSearch] = useState(false);
+
+    const handleClick = () => {
+      setShowChatConvo(true);
+      setSelectedSpecialist("eg");
+    };
+
+    return (
+      <div className="flex-shrink-0 border-end h-100 chat-user-feed bg-light pb-5">
+        <div className="">
+          <div className="border-bottom px-3 chat-title-box d-flex justify-content-between align-items-center">
+            <span className="chat-panel-title">Messages</span>
+            {!showSearch && (
+              <span className="chat-panel-title-search" onClick={() => setShowSearch(true)}>
+                <i className="bi bi-search"></i>
+              </span>
             )}
           </div>
-        </Col>
-      </Row>
+          {showSearch && (
+            <div className="px-3 mt-2">
+              <Form.Control
+                type="text"
+                className="border-0"
+                placeholder="Search here..."
+                autoFocus
+                onBlur={() => setShowSearch(false)}
+              />
+            </div>
+          )}
+        </div>
+        <div className="mt-4 px-2 ">
+          <div className="d-flex flex-column gap-3">
+            <ChatUserItem
+              field={"herbalist"}
+              handleClick={() => {}}
+              lastSeen={"2hr"}
+              name={"John Doe"}
+              imgUrl={""}
+              isOnline={false}
+            />
+            <ChatUserItem
+              field={"herbalist"}
+              handleClick={handleClick}
+              selectedSpecialist={selectedSpecialist}
+              lastSeen={"2hr"}
+              name={"John Doe"}
+              imgUrl={""}
+              isOnline={true}
+            />
+            <ChatUserItem field={"herbalist"} lastSeen={"2hr"} name={"John Doe"} imgUrl={""} isOnline={true} />
+            {/* Add more ChatUserItem components as needed */}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const ChatPanel = () => {
+    return (
+      <div className="d-flex chat-panel chat-regular-text border-top">
+        <ChatUserFeed
+          setShowChatConvo={setShowChatConvo}
+          selectedSpecialist={selectedSpecialist}
+          setSelectedSpecialist={setSelectedSpecialist}
+        />
+        {showChatConvo ? (
+          <ChatMessageFeed
+            texts={dummyText}
+            backBtnClick={() => setSelectedSpecialist("")}
+            setShowChatConvo={setShowChatConvo}
+          />
+        ) : (
+          <div className="chat-init-right flex-grow-1">
+            <p className="text-center w-100 fs-5 pt-5">Click any specialist to start chat.</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <Container fluid className="chat-room">
+      <Grid container>
+        <Grid item xs={12} md={4} className="participants-list">
+          <Typography variant="h6">{isDoctor ? "Users" : "Online Doctors"}</Typography>
+          <List>
+            {(isDoctor ? activeUsers : onlineDoctors).map((participant) => (
+              <ListItem
+                key={`${isDoctor ? "user" : "doctor"}-${participant.id}`}
+                selected={selectedParticipant && selectedParticipant.id === participant.id}
+                onClick={() => handleParticipantClick(participant)}
+                button
+              >
+                <ListItemAvatar>
+                  <CustomAvatar name={participant.name} imgUrl={participant.imgUrl} />
+                </ListItemAvatar>
+                <ListItemText primary={participant.name} secondary={isDoctor ? participant.email : participant.speciality} />
+              </ListItem>
+            ))}
+          </List>
+        </Grid>
+        <Grid item xs={12} md={8} className="chat-section" ref={chatSectionRef}>
+          <ChatPanel />
+        </Grid>
+        <Grid item xs={12} className="video-section">
+          <Paper className="video-container">
+            <video ref={myVideo} className="video" autoPlay playsInline muted />
+            <video ref={userVideo} className="video" autoPlay playsInline />
+            {selectedParticipant && (
+              <div className="video-controls">
+                <Button variant="contained" color="primary" startIcon={<VideoCall />} onClick={startCall}>
+                  Start Call
+                </Button>
+                <Button variant="contained" color="secondary" onClick={endCall}>
+                  End Call
+                </Button>
+              </div>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
     </Container>
   );
 };
