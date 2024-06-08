@@ -15,12 +15,15 @@ const Settings = () => {
   const [newPassword, setNewPassword] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isDoctor, setIsDoctor] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       if (user) {
+        setIsDoctor(user.isDoctor);
         try {
-          const userDocRef = doc(db, 'users', user.uid);
+          const collection = isDoctor ? 'doctors' : 'users';
+          const userDocRef = doc(db, collection, user.uid);
           const userDoc = await getDoc(userDocRef);
           if (userDoc.exists()) {
             setProfileData(userDoc.data());
@@ -34,7 +37,7 @@ const Settings = () => {
     };
 
     fetchProfileData();
-  }, [user]);
+  }, [user, isDoctor]);
 
   const handleUpdateProfile = async (event) => {
     event.preventDefault();
@@ -49,7 +52,8 @@ const Settings = () => {
 
     try {
       if (!user) throw new Error("User not found");
-      const userDocRef = doc(db, 'users', user.uid);
+      const collection = isDoctor ? 'doctors' : 'users';
+      const userDocRef = doc(db, collection, user.uid);
       await updateDoc(userDocRef, updatedProfileData);
       setProfileData((prevData) => ({
         ...prevData,
@@ -91,22 +95,18 @@ const Settings = () => {
     try {
       if (!user) throw new Error("User not found");
 
-      // 1. Update Firebase Authentication email
       const auth = getAuth();
       await updateEmail(auth.currentUser, newEmail);
 
-      // 2. Update Firestore document immediately
-      const userDocRef = doc(db, 'users', user.uid);
+      const collection = isDoctor ? 'doctors' : 'users';
+      const userDocRef = doc(db, collection, user.uid);
       await updateDoc(userDocRef, { email: newEmail });
 
-      // 3. Update local state
       setProfileData(prevData => ({ ...prevData, email: newEmail }));
       setNewEmail('');
       setSuccess('Email updated successfully.');
-
     } catch (err) {
       setError('Failed to update email: ' + err.message);
-      // Additional error handling for specific cases (e.g., email already in use)
       if (err.code === 'auth/email-already-in-use') {
         setError('Email already in use by another account.');
       }

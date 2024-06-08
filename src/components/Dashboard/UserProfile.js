@@ -1,22 +1,23 @@
-// src/components/UserProfile/UserProfile.js
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
-import useAuth from '../../hooks/useAuth'; // Assuming you have a hook to get the authenticated user
+import useAuth from '../../hooks/useAuth';
 import './UserProfile.css';
 import { db } from '../../../src/Firebase/firebase.config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const UserProfile = () => {
-  const { user } = useAuth(); // Get the authenticated user
+  const { user } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [isDoctor, setIsDoctor] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const userDocRef = doc(db, 'users', user.uid);
+        const collection = isDoctor ? 'doctors' : 'users';
+        const userDocRef = doc(db, collection, user.uid);
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
           setProfileData(userDoc.data());
@@ -31,9 +32,11 @@ const UserProfile = () => {
     };
 
     if (user) {
+      // Assuming a method is available to check if the user is a doctor
+      setIsDoctor(user.isDoctor);
       fetchProfileData();
     }
-  }, [user]);
+  }, [user, isDoctor]);
 
   const handleUpdateProfile = async (event) => {
     event.preventDefault();
@@ -47,7 +50,8 @@ const UserProfile = () => {
     };
 
     try {
-      const userDocRef = doc(db, 'users', user.uid);
+      const collection = isDoctor ? 'doctors' : 'users';
+      const userDocRef = doc(db, collection, user.uid);
       await updateDoc(userDocRef, updatedProfileData);
       setProfileData((prevData) => ({
         ...prevData,
