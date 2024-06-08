@@ -390,7 +390,7 @@ const Contact = () => {
             <ChatMessageFeed
               texts={msgList}
               setShowChatConvo={setShowChatConvo}
-              backBtnClick={() => setSelectedSpecialist("")}
+              backBtnClick={() => setSelectedParticipant(null)}
             />
           ) : (
             <div className="chat-init-right flex-grow-1">
