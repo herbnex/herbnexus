@@ -6,7 +6,7 @@ import { db } from '../../Firebase/firebase.config'; // Correct import path
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const UserProfile = () => {
-  const { user, isDoctor, error, setError } = useAuth();
+  const { user, isDoctor, error, setError, updateUser } = useAuth(); // added updateUser
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updateError, setUpdateError] = useState(null);
@@ -55,6 +55,7 @@ const UserProfile = () => {
         ...updatedProfileData
       }));
       setSuccess('Profile updated successfully.');
+      await updateUser({ ...user, ...updatedProfileData }); // Refresh user data
     } catch (err) {
       setUpdateError('Failed to update profile: ' + err.message);
     } finally {

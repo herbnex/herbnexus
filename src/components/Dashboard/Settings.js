@@ -7,7 +7,7 @@ import useAuth from "../../hooks/useAuth"; // Correct import path
 import './Settings.css';
 
 const Settings = () => {
-  const { user, isDoctor, isLoading } = useAuth();
+  const { user, isDoctor, isLoading, updateUser } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -58,6 +58,8 @@ const Settings = () => {
         ...updatedProfileData
       }));
       setSuccess('Profile updated successfully.');
+      // Refresh user data
+      await updateUser({ ...user, ...updatedProfileData });
     } catch (err) {
       setError('Failed to update profile: ' + err.message);
     } finally {
@@ -94,8 +96,13 @@ const Settings = () => {
       if (!user) throw new Error("User not found");
       const auth = getAuth();
       await updateEmail(auth.currentUser, newEmail);
+      const collection = isDoctor ? 'doctors' : 'users';
+      const userDocRef = doc(db, collection, user.uid);
+      await updateDoc(userDocRef, { email: newEmail });
       setNewEmail('');
       setSuccess('Email updated successfully.');
+      // Refresh user data
+      await updateUser({ ...user, email: newEmail });
     } catch (err) {
       setError('Failed to update email: ' + err.message);
     } finally {
