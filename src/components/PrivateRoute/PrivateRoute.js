@@ -5,7 +5,7 @@ import useAuth from "../../hooks/useAuth";
 import Loading from "../Loading/Loading";
 
 const PrivateRoute = ({ children, requireSubscription = true, ...rest }) => {
-  const { user, isLoading, isSubscribed } = useAuth();
+  const { user, isLoading, isSubscribed, isDoctor } = useAuth();
 
   if (isLoading) {
     return (
@@ -19,7 +19,7 @@ const PrivateRoute = ({ children, requireSubscription = true, ...rest }) => {
     <Route {...rest}>
       {({ location }) =>
         user ? (
-          requireSubscription && !isSubscribed ? (
+          requireSubscription && !isSubscribed && !isDoctor ? (
             <Redirect to={{ pathname: "/subscribe", state: { from: location } }} />
           ) : (
             children
