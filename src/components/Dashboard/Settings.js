@@ -7,7 +7,7 @@ import useAuth from "../../../src/hooks/useAuth";
 import './Settings.css';
 
 const Settings = () => {
-  const { user, isLoading } = useAuth();
+  const { user, isDoctor, isLoading } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -15,12 +15,10 @@ const Settings = () => {
   const [newPassword, setNewPassword] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isDoctor, setIsDoctor] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       if (user) {
-        setIsDoctor(user.isDoctor);
         try {
           const collection = isDoctor ? 'doctors' : 'users';
           const userDocRef = doc(db, collection, user.uid);
@@ -94,29 +92,15 @@ const Settings = () => {
 
     try {
       if (!user) throw new Error("User not found");
-
       const auth = getAuth();
       await updateEmail(auth.currentUser, newEmail);
-
-      const collection = isDoctor ? 'doctors' : 'users';
-      const userDocRef = doc(db, collection, user.uid);
-      await updateDoc(userDocRef, { email: newEmail });
-
-      setProfileData(prevData => ({ ...prevData, email: newEmail }));
       setNewEmail('');
       setSuccess('Email updated successfully.');
     } catch (err) {
       setError('Failed to update email: ' + err.message);
-      if (err.code === 'auth/email-already-in-use') {
-        setError('Email already in use by another account.');
-      }
     } finally {
       setLoading(false);
     }
-  };
-
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
   };
 
   if (isLoading || loading) {
@@ -125,79 +109,63 @@ const Settings = () => {
 
   return (
     <Card className="settings-card">
-      <Card.Header>Settings</Card.Header>
+      <Card.Header className="settings-header">Settings</Card.Header>
       <Card.Body>
         {error && <Alert variant="danger">{error}</Alert>}
         {success && <Alert variant="success">{success}</Alert>}
-        
         <Form onSubmit={handleUpdateProfile}>
           <Form.Group controlId="formDisplayName">
             <Form.Label>Display Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter display name"
-              defaultValue={profileData?.name || ''}
+            <Form.Control 
+              type="text" 
+              placeholder="Enter display name" 
+              defaultValue={profileData?.name} 
             />
           </Form.Group>
-
-          <Form.Group controlId="formEmail">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter email"
-              value={profileData?.email || ''}
-              disabled
-            />
-          </Form.Group>
-
           <Form.Group controlId="formNotification">
-            <Form.Check
-              type="checkbox"
-              label="Enable Notifications"
-              defaultChecked={profileData?.notification || false}
+            <Form.Check 
+              type="checkbox" 
+              label="Receive Notifications" 
+              defaultChecked={profileData?.notification} 
             />
           </Form.Group>
-
           <Button variant="primary" type="submit">
             Update Profile
           </Button>
         </Form>
-
         <hr />
-
-        <Form onSubmit={handleChangeEmail}>
-          <Form.Group controlId="formNewEmail">
-            <Form.Label>New Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter new email"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-            />
-          </Form.Group>
-
-          <Button variant="primary" type="submit">
-            Change Email
-          </Button>
-        </Form>
-
-        <hr />
-
         <Form onSubmit={handleChangePassword}>
           <Form.Group controlId="formNewPassword">
             <Form.Label>New Password</Form.Label>
             <InputGroup>
-              <Form.Control
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter new password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+              <Form.Control 
+                type={showPassword ? "text" : "password"} 
+                placeholder="Enter new password" 
+                value={newPassword} 
+                onChange={(e) => setNewPassword(e.target.value)} 
               />
+              <Button variant="outline-secondary" onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? "Hide" : "Show"}
+              </Button>
             </InputGroup>
           </Form.Group>
-
           <Button variant="primary" type="submit">
             Change Password
+          </Button>
+        </Form>
+        <hr />
+        <Form onSubmit={handleChangeEmail}>
+          <Form.Group controlId="formNewEmail">
+            <Form.Label>New Email</Form.Label>
+            <Form.Control 
+              type="email" 
+              placeholder="Enter new email" 
+              value={newEmail} 
+              onChange={(e) => setNewEmail(e.target.value)} 
+            />
+          </Form.Group>
+          <Button variant="primary" type="submit">
+            Change Email
           </Button>
         </Form>
       </Card.Body>

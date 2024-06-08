@@ -6,12 +6,11 @@ import { db } from '../../../src/Firebase/firebase.config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const UserProfile = () => {
-  const { user } = useAuth();
+  const { user, isDoctor, error, setError } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [updateError, setUpdateError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [isDoctor, setIsDoctor] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -32,8 +31,6 @@ const UserProfile = () => {
     };
 
     if (user) {
-      // Assuming a method is available to check if the user is a doctor
-      setIsDoctor(user.isDoctor);
       fetchProfileData();
     }
   }, [user, isDoctor]);
@@ -41,7 +38,7 @@ const UserProfile = () => {
   const handleUpdateProfile = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setError(null);
+    setUpdateError(null);
     setSuccess(null);
 
     const updatedProfileData = {
@@ -59,7 +56,7 @@ const UserProfile = () => {
       }));
       setSuccess('Profile updated successfully.');
     } catch (err) {
-      setError('Failed to update profile: ' + err.message);
+      setUpdateError('Failed to update profile: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -79,13 +76,13 @@ const UserProfile = () => {
       <Card.Body>
         <div className="user-profile-info">
           <img 
-            src={profileData.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"} 
+            src={profileData?.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"} 
             alt="User Avatar" 
             className="user-profile-avatar"
           />
-          <h5>{profileData.name || "Anonymous"}</h5>
-          <p>Email: {profileData.email}</p>
-          <p>Subscribed: {profileData.isSubscribed ? "Yes" : "No"}</p>
+          <h5>{profileData?.name || "Anonymous"}</h5>
+          <p>Email: {profileData?.email}</p>
+          <p>Subscribed: {profileData?.isSubscribed ? "Yes" : "No"}</p>
         </div>
         <Form className="user-profile-form" onSubmit={handleUpdateProfile}>
           <Form.Group controlId="formDisplayName">
@@ -93,7 +90,7 @@ const UserProfile = () => {
             <Form.Control 
               type="text" 
               placeholder="Enter display name" 
-              defaultValue={profileData.name}
+              defaultValue={profileData?.name}
             />
           </Form.Group>
           {/* Add more form fields as needed */}
@@ -102,7 +99,7 @@ const UserProfile = () => {
           </Button>
         </Form>
         {success && <Alert variant="success" className="mt-3">{success}</Alert>}
-        {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+        {updateError && <Alert variant="danger" className="mt-3">{updateError}</Alert>}
       </Card.Body>
     </Card>
   );
