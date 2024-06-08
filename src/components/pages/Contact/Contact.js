@@ -8,14 +8,6 @@ import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
 import "./Contact.css";
 
-const dummyText = [
-  {
-    user1: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Provident, sequi.",
-    user2: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Provident, sequi.",
-  },
-  // Add more dummy text objects as needed
-];
-
 const CustomAvatar = ({ name, imgUrl }) => {
   const nameParts = name?.split(" ");
   const initials = nameParts?.map((part) => part?.charAt(0).toUpperCase())?.join("");
@@ -401,7 +393,7 @@ const Contact = () => {
         />
         {showChatConvo ? (
           <ChatMessageFeed
-            texts={dummyText}
+            texts={msgList} // Use actual messages from the database
             backBtnClick={() => setSelectedSpecialist("")}
             setShowChatConvo={setShowChatConvo}
           />
