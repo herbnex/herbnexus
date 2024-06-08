@@ -5,7 +5,6 @@ import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
-import { useHistory, useLocation } from "react-router-dom";
 import "./Contact.css";
 
 const CustomAvatar = ({ name, imgUrl }) => {
@@ -21,8 +20,6 @@ const CustomAvatar = ({ name, imgUrl }) => {
 
 const Contact = () => {
   const { user, updateUser } = useAuth();
-  const history = useHistory();
-  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
@@ -383,29 +380,6 @@ const Contact = () => {
     );
   };
 
-  const ChatPanel = () => {
-    return (
-      <div className="d-flex chat-panel chat-regular-text border-top">
-        <ChatUserFeed
-          setShowChatConvo={setShowChatConvo}
-          selectedSpecialist={selectedSpecialist}
-          setSelectedSpecialist={setSelectedSpecialist}
-        />
-        {showChatConvo ? (
-          <ChatMessageFeed
-            texts={msgList} // Use actual messages from the database
-            backBtnClick={() => setSelectedSpecialist("")}
-            setShowChatConvo={setShowChatConvo}
-          />
-        ) : (
-          <div className="chat-init-right flex-grow-1">
-            <p className="text-center w-100 fs-5 pt-5">Click any specialist to start chat.</p>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <Container fluid className="chat-room">
       <Row>
@@ -430,7 +404,22 @@ const Contact = () => {
           </ListGroup>
         </Col>
         <Col md={8} className="chat-section" ref={chatSectionRef}>
-          <ChatPanel />
+          <ChatPanel
+            showChatConvo={showChatConvo}
+            setShowChatConvo={setShowChatConvo}
+            selectedSpecialist={selectedSpecialist}
+            setSelectedSpecialist={setSelectedSpecialist}
+            msgList={msgList}
+            handleSendMessage={handleSendMessage}
+            handleTyping={handleTyping}
+            message={message}
+            textareaRef={textareaRef}
+            msgBoxRef={msgBoxRef}
+            otherTyping={otherTyping}
+            visibleTimestamps={visibleTimestamps}
+            toggleTimestamp={toggleTimestamp}
+            formatTimestamp={formatTimestamp}
+          />
         </Col>
       </Row>
     </Container>
