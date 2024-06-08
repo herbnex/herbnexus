@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Alert, Spinner, InputGroup } from 'react-bootstrap';
 import { getAuth, updateEmail, updatePassword } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../../src/Firebase/firebase.config';
-import useAuth from "../../../src/hooks/useAuth";
+import { db } from '../Firebase/firebase.config'; // Correct import path
+import useAuth from "../hooks/useAuth"; // Correct import path
 import './Settings.css';
 
 const Settings = () => {
@@ -107,26 +107,28 @@ const Settings = () => {
     return <Spinner animation="border" />;
   }
 
+  if (error) {
+    return <Alert variant="danger">{error}</Alert>;
+  }
+
   return (
     <Card className="settings-card">
-      <Card.Header className="settings-header">Settings</Card.Header>
+      <Card.Header className="settings-header">Account Settings</Card.Header>
       <Card.Body>
-        {error && <Alert variant="danger">{error}</Alert>}
-        {success && <Alert variant="success">{success}</Alert>}
         <Form onSubmit={handleUpdateProfile}>
           <Form.Group controlId="formDisplayName">
             <Form.Label>Display Name</Form.Label>
-            <Form.Control 
-              type="text" 
-              placeholder="Enter display name" 
-              defaultValue={profileData?.name} 
+            <Form.Control
+              type="text"
+              placeholder="Enter display name"
+              defaultValue={profileData?.name}
             />
           </Form.Group>
           <Form.Group controlId="formNotification">
             <Form.Check 
-              type="checkbox" 
-              label="Receive Notifications" 
-              defaultChecked={profileData?.notification} 
+              type="checkbox"
+              label="Email Notifications"
+              defaultChecked={profileData?.notification}
             />
           </Form.Group>
           <Button variant="primary" type="submit">
@@ -138,18 +140,18 @@ const Settings = () => {
           <Form.Group controlId="formNewPassword">
             <Form.Label>New Password</Form.Label>
             <InputGroup>
-              <Form.Control 
-                type={showPassword ? "text" : "password"} 
-                placeholder="Enter new password" 
-                value={newPassword} 
-                onChange={(e) => setNewPassword(e.target.value)} 
+              <Form.Control
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
               />
               <Button variant="outline-secondary" onClick={() => setShowPassword(!showPassword)}>
                 {showPassword ? "Hide" : "Show"}
               </Button>
             </InputGroup>
           </Form.Group>
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" className="mt-2">
             Change Password
           </Button>
         </Form>
@@ -157,17 +159,19 @@ const Settings = () => {
         <Form onSubmit={handleChangeEmail}>
           <Form.Group controlId="formNewEmail">
             <Form.Label>New Email</Form.Label>
-            <Form.Control 
-              type="email" 
-              placeholder="Enter new email" 
-              value={newEmail} 
-              onChange={(e) => setNewEmail(e.target.value)} 
+            <Form.Control
+              type="email"
+              placeholder="Enter new email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
             />
           </Form.Group>
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" className="mt-2">
             Change Email
           </Button>
         </Form>
+        {success && <Alert variant="success" className="mt-3">{success}</Alert>}
+        {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
       </Card.Body>
     </Card>
   );

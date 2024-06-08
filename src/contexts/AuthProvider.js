@@ -9,30 +9,45 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isDoctor, setIsDoctor] = useState(false);
   const isMounted = useRef(true);
 
-  const updateUser = useCallback(async (user) => {
+  const updateUser = useCallback(async (firebaseUser) => {
     if (!isMounted.current) return; // Prevent state updates if component is unmounted
 
-    if (user) {
-      const userRef = doc(db, 'users', user.uid);
+    if (firebaseUser) {
+      const userRef = doc(db, 'users', firebaseUser.uid);
+      const doctorRef = doc(db, 'doctors', firebaseUser.uid);
+
       const userDoc = await getDoc(userRef);
+      const doctorDoc = await getDoc(doctorRef);
+
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        if (isMounted.current) { // Check if still mounted before setting state
-          setUser({ ...user, ...userData });
+        if (isMounted.current) {
+          setUser({ ...firebaseUser, ...userData });
           setIsSubscribed(userData.isSubscribed || false);
+          setIsDoctor(false);
+        }
+      } else if (doctorDoc.exists()) {
+        const doctorData = doctorDoc.data();
+        if (isMounted.current) {
+          setUser({ ...firebaseUser, ...doctorData });
+          setIsSubscribed(doctorData.isSubscribed || false);
+          setIsDoctor(true);
         }
       } else {
         if (isMounted.current) {
-          setUser(user);
+          setUser(firebaseUser);
           setIsSubscribed(false);
+          setIsDoctor(false);
         }
       }
     } else {
       if (isMounted.current) {
         setUser(null);
         setIsSubscribed(false);
+        setIsDoctor(false);
       }
     }
     if (isMounted.current) {
@@ -63,8 +78,8 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     isMounted.current = true;
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      updateUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      updateUser(firebaseUser);
     });
 
     return () => {
@@ -74,7 +89,7 @@ const AuthProvider = ({ children }) => {
   }, [updateUser]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isSubscribed, updateUser, logOut, logInWithEmailandPassword }}>
+    <AuthContext.Provider value={{ user, isLoading, isSubscribed, isDoctor, updateUser, logOut, logInWithEmailandPassword }}>
       {children}
     </AuthContext.Provider>
   );
