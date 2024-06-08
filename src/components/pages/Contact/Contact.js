@@ -38,6 +38,7 @@ const Contact = () => {
   const chatSectionRef = useRef(null);
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
   const [showChatConvo, setShowChatConvo] = useState(false);
+  const [selectedSpecialist, setSelectedSpecialist] = useState("");
   const [stream, setStream] = useState(null);
   const [peer, setPeer] = useState(null);
   const myVideo = useRef();
@@ -221,6 +222,21 @@ const Contact = () => {
     setSelectedParticipant(participant);
     setShowChatConvo(true);
 
+    const chatId = isDoctor
+      ? generateChatId(participant.id, user.displayName)
+      : generateChatId(user.uid, participant.name);
+
+    const chatRef = ref(database, `chats/${chatId}/messages`);
+    onValue(chatRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const messages = Object.values(data);
+        setMsgList(messages);
+      } else {
+        setMsgList([]);
+      }
+    });
+
     setTimeout(() => {
       const chatSection = chatSectionRef.current;
       if (chatSection) {
@@ -253,7 +269,18 @@ const Contact = () => {
         userVideo.current.srcObject = stream;
       });
 
-      connectionRef.current = peer;
+      const chatId = isDoctor
+        ? generateChatId(selectedParticipant.id, user.displayName)
+        : generateChatId(user.uid, selectedParticipant.name);
+
+      const callRef = ref(database, `calls/${chatId}`);
+      onValue(callRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          peer.signal(data);
+        }
+      });
+
       setPeer(peer);
     });
   };
@@ -292,6 +319,78 @@ const Contact = () => {
       connectionRef.current = peer;
       setPeer(peer);
     });
+  };
+
+  const ChatMessageFeed = ({ texts, setShowChatConvo, backBtnClick }) => {
+    return (
+      <div className="flex-grow-1 chat-message-feed">
+        <div className="chat-title-box px-4 border-bottom">
+          <div className="d-flex align-items-center h-100 gap-3 ">
+            <div
+              className="fs-2 text-secondary chat-user-item chat-convo-back"
+              onClick={() => {
+                backBtnClick();
+                setShowChatConvo(false);
+              }}
+            >
+              <i className="bi bi-arrow-left-circle"></i>
+            </div>
+            <div className="d-flex h-100 gap-2 align-items-center">
+              <CustomAvatar name={"John Doe"} />
+              <div className="d-flex flex-column">
+                <span className="chat-regular-text chat-user-name">John Doe</span>
+                <span className="chat-small-text">Online</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="px-3 pb-5 h-auto">
+          <div className="chat-convo-section">
+            {texts?.map((text, index) => (
+              <div key={index}>
+                <p className="chat-message-text chat-regular-text bg-light p-2 rounded-3 my-3">{text.user1}</p>
+                <p className="ms-auto chat-message-text chat-regular-text bg-dark text-white p-2 rounded-3 my-3">
+                  {text.user2}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-auto pt-4">
+            <div className="d-flex gap-2 chat-text-field-box">
+              <Form.Group className="flex-grow-1">
+                <Form.Control
+                  className="h-100 rounded-pill"
+                  placeholder="Type your message..."
+                  value={message}
+                  onChange={handleTyping}
+                  ref={textareaRef}
+                />
+              </Form.Group>
+              <Button variant="info" className="text-white rounded-circle" onClick={handleSendMessage}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-send-fill"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
+                </svg>
+              </Button>
+            </div>
+          </div>
+          <div className="video-container">
+            <video playsInline muted ref={myVideo} autoPlay className="video" />
+            <video playsInline ref={userVideo} autoPlay className="video" />
+          </div>
+          <div className="call-buttons">
+            <Button onClick={startCall}>Start Call</Button>
+            <Button onClick={joinCall}>Join Call</Button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -333,97 +432,31 @@ const Contact = () => {
               </div>
               <div className="mt-4 px-2 ">
                 <div className="d-flex flex-column gap-3">
-                  <div className="d-flex chat-user-item align-items-center gap-2 bg-white p-3 rounded-3">
-                    <CustomAvatar name={"John Doe"} imgUrl={""} />
-                    <div className="d-flex flex-shrink-0 flex-column">
-                      <span className="chat-user-name">John Doe</span>
-                      <span className="chat-small-text">herbalist</span>
+                  {activeUsers.map((participant) => (
+                    <div
+                      key={participant.id}
+                      className="d-flex chat-user-item align-items-center gap-2 bg-white p-3 rounded-3"
+                      onClick={() => handleParticipantClick(participant)}
+                    >
+                      <CustomAvatar name={participant.name} imgUrl={participant.imgUrl} />
+                      <div className="d-flex flex-shrink-0 flex-column">
+                        <span className="chat-user-name">{participant.name}</span>
+                        <span className="chat-small-text">{participant.speciality}</span>
+                      </div>
+                      <span className="ms-auto chat-small-text">
+                        <span className="chat-online-indicator me-1"></span>online
+                      </span>
                     </div>
-                    <span className="ms-auto chat-small-text">
-                      <span className="chat-online-indicator me-1"></span>online
-                    </span>
-                  </div>
-                  <div className="d-flex chat-user-item align-items-center gap-2 bg-white p-3 rounded-3">
-                    <CustomAvatar name={"John Doe"} imgUrl={""} />
-                    <div className="d-flex flex-shrink-0 flex-column">
-                      <span className="chat-user-name">John Doe</span>
-                      <span className="chat-small-text">herbalist</span>
-                    </div>
-                    <span className="ms-auto chat-small-text">
-                      <span className="chat-online-indicator me-1"></span>online
-                    </span>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
             {showChatConvo ? (
-              <div className="flex-grow-1 chat-message-feed">
-                <div className="chat-title-box px-4 border-bottom">
-                  <div className="d-flex align-items-center h-100 gap-3 ">
-                    <div
-                      className="fs-2 text-secondary chat-user-item chat-convo-back"
-                      onClick={() => {
-                        setSelectedParticipant(null);
-                        setShowChatConvo(false);
-                      }}
-                    >
-                      <i className="bi bi-arrow-left-circle"></i>
-                    </div>
-                    <div className="d-flex h-100 gap-2 align-items-center">
-                      <CustomAvatar name={"John Doe"} />
-                      <div className="d-flex flex-column">
-                        <span className="chat-regular-text chat-user-name">John Doe</span>
-                        <span className="chat-small-text">Online</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="px-3 pb-5 h-auto">
-                  <div className="chat-convo-section">
-                    {msgList.map((text, index) => (
-                      <div key={index}>
-                        <p className="chat-message-text chat-regular-text bg-light p-2 rounded-3 my-3">{text.user1}</p>
-                        <p className="ms-auto chat-message-text chat-regular-text bg-dark text-white p-2 rounded-3 my-3">
-                          {text.user2}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-auto pt-4">
-                    <div className="d-flex gap-2 chat-text-field-box">
-                      <Form.Group className="flex-grow-1">
-                        <Form.Control
-                          className="h-100 rounded-pill"
-                          placeholder="Type your message..."
-                          value={message}
-                          onChange={handleTyping}
-                          ref={textareaRef}
-                        />
-                      </Form.Group>
-                      <Button variant="info" className="text-white rounded-circle" onClick={handleSendMessage}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-send-fill"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
-                        </svg>
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="video-container">
-                    <video playsInline muted ref={myVideo} autoPlay className="video" />
-                    <video playsInline ref={userVideo} autoPlay className="video" />
-                  </div>
-                  <div className="call-buttons">
-                    <Button onClick={startCall}>Start Call</Button>
-                    <Button onClick={joinCall}>Join Call</Button>
-                  </div>
-                </div>
-              </div>
+              <ChatMessageFeed
+                texts={msgList}
+                backBtnClick={() => setSelectedParticipant(null)}
+                setShowChatConvo={setShowChatConvo}
+              />
             ) : (
               <div className="chat-init-right flex-grow-1">
                 <p className="text-center w-100 fs-5 pt-5">Click any specialist to start chat.</p>
