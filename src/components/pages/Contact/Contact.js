@@ -252,9 +252,9 @@ const Contact = () => {
               <i className="bi bi-arrow-left-circle"></i>
             </div>
             <div className="d-flex h-100 gap-2 align-items-center">
-              <CustomAvatar name={"john doe"} />
+              <CustomAvatar name={selectedParticipant.name} />
               <div className="d-flex flex-column">
-                <span className="chat-regular-text chat-user-name">John Doe</span>
+                <span className="chat-regular-text chat-user-name">{selectedParticipant.name}</span>
                 <span className="chat-small-text">Online</span>
               </div>
             </div>
@@ -263,22 +263,40 @@ const Contact = () => {
 
         <div className="px-3 pb-5 h-auto">
           <div className="chat-convo-section">
-            {texts?.map((text, index) => (
-              <div key={index}>
-                <p className="chat-message-text chat-regular-text bg-light p-2 rounded-3 my-3">{text.user1}</p>
-                <p className="ms-auto chat-message-text chat-regular-text bg-dark text-white p-2 rounded-3 my-3">
-                  {text.user2}
-                </p>
+            {msgList?.map((msg, index) => (
+              <div key={index} className={`message-container ${msg.userId === user.uid ? "msg-self" : "msg-other"} ${visibleTimestamps[index] ? "show-timestamp" : ""}`}
+                onClick={() => toggleTimestamp(index)}>
+                <p className="chat-message-text chat-regular-text p-2 rounded-3 my-3" title={msg.user}>{msg.text}</p>
+                {visibleTimestamps[index] && (
+                  <span className={`timestamp ${msg.userId === user.uid ? "timestamp-left" : "timestamp-right"}`}>
+                    {formatTimestamp(msg.timestamp)}
+                  </span>
+                )}
               </div>
             ))}
+            {otherTyping && (
+              <p className="msg-other typing-indicator">
+                Typing...
+              </p>
+            )}
           </div>
 
           <div className="mt-auto pt-4">
             <div className="d-flex gap-2 chat-text-field-box">
               <Form.Group className="flex-grow-1">
-                <Form.Control className="h-100 rounded-pill" placeholder="Type your message..." />
+                <Form.Control
+                  as="textarea"
+                  ref={textareaRef}
+                  rows={1}
+                  placeholder="Type your message..."
+                  value={message}
+                  onChange={handleTyping}
+                  aria-label="User message input"
+                  className="message-input"
+                  style={{ resize: 'none', overflow: 'auto' }}
+                />
               </Form.Group>
-              <Button variant="info" className="text-white rounded-circle">
+              <Button variant="info" className="text-white rounded-circle" onClick={handleSendMessage}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -296,39 +314,26 @@ const Contact = () => {
     );
   };
 
-  const ChatUserItem = ({ name, imgUrl, field, lastSeen, isOnline, handleClick, selectedSpecialist }) => {
+  const ChatUserItem = ({ participant, isDoctor, handleClick, selectedParticipant }) => {
     return (
-      <div
-        className={`d-flex chat-user-item align-items-center gap-2 bg-white p-3 rounded-3 ${
-          selectedSpecialist && selectedSpecialist === "eg" ? "border border-primary border-2 opacity-75" : ""
-        }`}
-        onClick={handleClick}>
-        <CustomAvatar name={name} imgUrl={""} />
-        <div className="d-flex flex-shrink-0 flex-column">
-          <span className="chat-user-name">{name}</span>
-          <span className="chat-small-text">{field}</span>
+      <ListGroup.Item
+        key={`${isDoctor ? "user" : "doctor"}-${participant.id}`}
+        active={selectedParticipant && selectedParticipant.id === participant.id}
+        onClick={() => handleClick(participant)}
+      >
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <h5>{participant.name}</h5>
+            <p>{isDoctor ? participant.email : participant.speciality}</p>
+          </div>
+          <Badge bg="success">Online</Badge>
         </div>
-        <span className="ms-auto chat-small-text">
-          {isOnline ? (
-            <>
-              <span className="chat-online-indicator me-1"></span>
-              online
-            </>
-          ) : (
-            lastSeen
-          )}
-        </span>
-      </div>
+      </ListGroup.Item>
     );
   };
 
-  const ChatUserFeed = ({ setShowChatConvo, setSelectedSpecialist, selectedSpecialist }) => {
+  const ChatUserFeed = ({ setShowChatConvo, selectedParticipant, handleParticipantClick }) => {
     const [showSearch, setShowSearch] = useState(false);
-
-    const handleClick = () => {
-      setShowChatConvo(true);
-      setSelectedSpecialist("eg");
-    };
 
     return (
       <div className="flex-shrink-0 border-end h-100 chat-user-feed bg-light pb-5">
@@ -355,25 +360,15 @@ const Contact = () => {
         </div>
         <div className="mt-4 px-2 ">
           <div className="d-flex flex-column gap-3">
-            <ChatUserItem
-              field={"herbalist"}
-              handleClick={() => {}}
-              lastSeen={"2hr"}
-              name={"John Doe"}
-              imgUrl={""}
-              isOnline={false}
-            />
-            <ChatUserItem
-              field={"herbalist"}
-              handleClick={handleClick}
-              selectedSpecialist={selectedSpecialist}
-              lastSeen={"2hr"}
-              name={"John Doe"}
-              imgUrl={""}
-              isOnline={true}
-            />
-            <ChatUserItem field={"herbalist"} lastSeen={"2hr"} name={"John Doe"} imgUrl={""} isOnline={true} />
-            {/* Add more ChatUserItem components as needed */}
+            {(isDoctor ? activeUsers : onlineDoctors).map((participant) => (
+              <ChatUserItem
+                key={participant.id}
+                participant={participant}
+                isDoctor={isDoctor}
+                handleClick={handleParticipantClick}
+                selectedParticipant={selectedParticipant}
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -384,42 +379,24 @@ const Contact = () => {
     <Container fluid className="chat-room">
       <Row>
         <Col md={4} className="participants-list">
-          <h3>{isDoctor ? "Users" : "Online Doctors"}</h3>
-          <ListGroup>
-            {(isDoctor ? activeUsers : onlineDoctors).map((participant) => (
-              <ListGroup.Item
-                key={`${isDoctor ? "user" : "doctor"}-${participant.id}`}
-                active={selectedParticipant && selectedParticipant.id === participant.id}
-                onClick={() => handleParticipantClick(participant)}
-              >
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <h5>{participant.name}</h5>
-                    <p>{isDoctor ? participant.email : participant.speciality}</p>
-                  </div>
-                  <Badge bg="success">Online</Badge>
-                </div>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
+          <ChatUserFeed
+            setShowChatConvo={setShowChatConvo}
+            selectedParticipant={selectedParticipant}
+            handleParticipantClick={handleParticipantClick}
+          />
         </Col>
         <Col md={8} className="chat-section" ref={chatSectionRef}>
-          <ChatPanel
-            showChatConvo={showChatConvo}
-            setShowChatConvo={setShowChatConvo}
-            selectedSpecialist={selectedSpecialist}
-            setSelectedSpecialist={setSelectedSpecialist}
-            msgList={msgList}
-            handleSendMessage={handleSendMessage}
-            handleTyping={handleTyping}
-            message={message}
-            textareaRef={textareaRef}
-            msgBoxRef={msgBoxRef}
-            otherTyping={otherTyping}
-            visibleTimestamps={visibleTimestamps}
-            toggleTimestamp={toggleTimestamp}
-            formatTimestamp={formatTimestamp}
-          />
+          {showChatConvo ? (
+            <ChatMessageFeed
+              texts={msgList}
+              setShowChatConvo={setShowChatConvo}
+              backBtnClick={() => setSelectedSpecialist("")}
+            />
+          ) : (
+            <div className="chat-init-right flex-grow-1">
+              <p className="text-center w-100 fs-5 pt-5">Click any specialist to start chat.</p>
+            </div>
+          )}
         </Col>
       </Row>
     </Container>
