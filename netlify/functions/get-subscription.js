@@ -5,12 +5,18 @@ exports.handler = async (event) => {
   const { userId } = JSON.parse(event.body);
 
   try {
-    const userDoc = await db.collection('users').doc(userId).get();
+    // Check the users collection first
+    let userDoc = await db.collection('users').doc(userId).get();
+    
     if (!userDoc.exists) {
-      return {
-        statusCode: 404,
-        body: JSON.stringify({ error: 'User not found' }),
-      };
+      // If not found in users collection, check the doctors collection
+      userDoc = await db.collection('doctors').doc(userId).get();
+      if (!userDoc.exists) {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({ error: 'User or Doctor not found' }),
+        };
+      }
     }
 
     const userData = userDoc.data();
