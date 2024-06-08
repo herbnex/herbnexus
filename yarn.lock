@@ -16,7 +16,7 @@
   dependencies:
     "tslib" "^2.6.2"
 
-"@azure/communication-calling-effects@1.0.1":
+"@azure/communication-calling-effects@^1.0.1", "@azure/communication-calling-effects@1.0.1":
   "integrity" "sha512-hV1pV72j06/2YIWN0dU3ucQVDBj9tN6RzUJdYwiGUPveX69EHm2zg5H/XKx2tV3wuTUMvusaNixWP63TvJftBA=="
   "resolved" "https://registry.npmjs.org/@azure/communication-calling-effects/-/communication-calling-effects-1.0.1.tgz"
   "version" "1.0.1"
