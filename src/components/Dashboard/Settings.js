@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Alert, Spinner, InputGroup } from 'react-bootstrap';
 import { getAuth, updateEmail, updatePassword } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../Firebase/firebase.config'; // Correct import path
-import useAuth from "../../hooks/useAuth"; // Correct import path
+import { db } from '../../Firebase/firebase.config';
+import useAuth from "../../hooks/useAuth";
 import './Settings.css';
 
 const Settings = () => {
@@ -34,7 +34,9 @@ const Settings = () => {
       }
     };
 
-    fetchProfileData();
+    if (user) {
+      fetchProfileData();
+    }
   }, [user, isDoctor]);
 
   const handleUpdateProfile = async (event) => {
@@ -58,7 +60,6 @@ const Settings = () => {
         ...updatedProfileData
       }));
       setSuccess('Profile updated successfully.');
-      // Refresh user data
       await updateUser({ ...user, ...updatedProfileData });
     } catch (err) {
       setError('Failed to update profile: ' + err.message);
@@ -101,7 +102,6 @@ const Settings = () => {
       await updateDoc(userDocRef, { email: newEmail });
       setNewEmail('');
       setSuccess('Email updated successfully.');
-      // Refresh user data
       await updateUser({ ...user, email: newEmail });
     } catch (err) {
       setError('Failed to update email: ' + err.message);
