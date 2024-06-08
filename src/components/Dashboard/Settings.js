@@ -3,7 +3,7 @@ import { Card, Form, Button, Alert, Spinner, InputGroup } from 'react-bootstrap'
 import { getAuth, updateEmail, updatePassword } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../Firebase/firebase.config'; // Correct import path
-import useAuth from "../hooks/useAuth"; // Correct import path
+import useAuth from "../../hooks/useAuth"; // Correct import path
 import './Settings.css';
 
 const Settings = () => {
