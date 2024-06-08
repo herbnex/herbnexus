@@ -6,7 +6,7 @@ import { db } from '../../Firebase/firebase.config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const UserProfile = () => {
-  const { user, isDoctor, error, setError, updateUser, isLoading } = useAuth();
+  const { user, isDoctor, isLoading, error, setError, updateUser } = useAuth(); // Add isLoading
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updateError, setUpdateError] = useState(null);
