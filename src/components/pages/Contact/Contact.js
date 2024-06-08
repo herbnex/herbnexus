@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge, Spinner, Alert } from "react-bootstrap";
+import { Container, Row, Col, ListGroup, Form, Button, Badge, Spinner, Alert } from "react-bootstrap";
 import { ref, set, onValue, push } from "firebase/database";
 import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
@@ -32,7 +32,7 @@ const Contact = () => {
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
   const chatSectionRef = useRef(null);
-  const [visibleTimestamps, setVisibleTimestamps] = useState({});
+  const [visibleTimestamps, setVisibleTtimestamps] = useState({});
   const [showChatConvo, setShowChatConvo] = useState(false);
   const [selectedSpecialist, setSelectedSpecialist] = useState("");
 
@@ -228,6 +228,7 @@ const Contact = () => {
 
   const handleParticipantClick = (participant) => {
     setSelectedParticipant(participant);
+    setShowChatConvo(true);
 
     // Scroll to the chat section on small screens
     setTimeout(() => {
@@ -252,9 +253,9 @@ const Contact = () => {
               <i className="bi bi-arrow-left-circle"></i>
             </div>
             <div className="d-flex h-100 gap-2 align-items-center">
-              <CustomAvatar name={selectedParticipant.name} />
+              <CustomAvatar name={selectedParticipant?.name || "john doe"} />
               <div className="d-flex flex-column">
-                <span className="chat-regular-text chat-user-name">{selectedParticipant.name}</span>
+                <span className="chat-regular-text chat-user-name">{selectedParticipant?.name || "John Doe"}</span>
                 <span className="chat-small-text">Online</span>
               </div>
             </div>
