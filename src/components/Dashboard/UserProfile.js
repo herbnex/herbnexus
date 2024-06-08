@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
-import useAuth from '../../hooks/useAuth'; // Correct import path
+import useAuth from '../../hooks/useAuth';
 import './UserProfile.css';
-import { db } from '../../Firebase/firebase.config'; // Correct import path
+import { db } from '../../Firebase/firebase.config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const UserProfile = () => {
-  const { user, isDoctor, error, setError, updateUser } = useAuth(); // added updateUser
+  const { user, isDoctor, error, setError, updateUser, isLoading } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updateError, setUpdateError] = useState(null);
@@ -33,7 +33,7 @@ const UserProfile = () => {
     if (user) {
       fetchProfileData();
     }
-  }, [user, isDoctor, setError]);
+  }, [user, isDoctor]);
 
   const handleUpdateProfile = async (event) => {
     event.preventDefault();
@@ -43,7 +43,6 @@ const UserProfile = () => {
 
     const updatedProfileData = {
       name: event.target.formDisplayName.value,
-      // Add other fields to update here if needed
     };
 
     try {
@@ -55,7 +54,7 @@ const UserProfile = () => {
         ...updatedProfileData
       }));
       setSuccess('Profile updated successfully.');
-      await updateUser({ ...user, ...updatedProfileData }); // Refresh user data
+      await updateUser({ ...user, ...updatedProfileData });
     } catch (err) {
       setUpdateError('Failed to update profile: ' + err.message);
     } finally {
@@ -63,7 +62,7 @@ const UserProfile = () => {
     }
   };
 
-  if (loading) {
+  if (isLoading || loading) {
     return <Spinner animation="border" />;
   }
 
@@ -94,7 +93,6 @@ const UserProfile = () => {
               defaultValue={profileData?.name}
             />
           </Form.Group>
-          {/* Add more form fields as needed */}
           <Button variant="primary" type="submit">
             Update Profile
           </Button>
