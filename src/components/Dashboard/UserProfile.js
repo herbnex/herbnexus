@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
 import useAuth from '../../hooks/useAuth'; // Correct import path
 import './UserProfile.css';
-import { db } from '../Firebase/firebase.config'; // Correct import path
+import { db } from '../../Firebase/firebase.config'; // Correct import path
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const UserProfile = () => {
