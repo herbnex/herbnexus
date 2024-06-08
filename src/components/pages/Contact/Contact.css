@@ -93,15 +93,19 @@
     z-index: 999;
     background-color: white;
   }
+
   .chat-user-feed {
     width: 100%;
   }
+
   .chat-convo-section {
     height: calc(100vh - 172px);
   }
+
   .chat-convo-back {
     display: block;
   }
+
   .chat-init-right {
     display: none;
   }

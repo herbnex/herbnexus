@@ -1,10 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container, Grid, Typography, List, ListItem, ListItemAvatar, ListItemText, Button, Paper, TextField } from "@material-ui/core";
+import { FormControl, InputLabel, Input, Badge } from "@material-ui/core";
 import useAuth from "../../../hooks/useAuth";
 import { database, db } from "../../../Firebase/firebase.config";
 import { ref, set, onValue, push } from "firebase/database";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import "./Contact.css";
+
+// Helper functions
+const generateChatId = (id1, id2) => {
+  return [id1, id2].sort().join("-");
+};
+
+const dummyText = [
+  {
+    user1: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Provident, sequi.",
+    user2: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Provident, sequi.",
+  },
+  // Add more dummy text objects as needed
+];
 
 const Contact = () => {
   const { user } = useAuth();
@@ -16,11 +30,16 @@ const Contact = () => {
   const [message, setMessage] = useState("");
   const [showChatConvo, setShowChatConvo] = useState(false);
   const [selectedSpecialist, setSelectedSpecialist] = useState("");
+  const [visibleTimestamps, setVisibleTimestamps] = useState({});
+  const [otherTyping, setOtherTyping] = useState(false);
 
   const myVideo = useRef();
   const userVideo = useRef();
   const connectionRef = useRef();
   const chatSectionRef = useRef(null);
+  const msgBoxRef = useRef(null);
+  const textareaRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
     if (!user) return;
@@ -231,7 +250,9 @@ const Contact = () => {
               <i className="bi bi-arrow-left-circle"></i>
             </div>
             <div className="d-flex h-100 gap-2 align-items-center">
-              <CustomAvatar name={"john doe"} />
+              <div className="custom-avatar-profile rounded-pill fs-6 bg-primary overflow-hidden text-white">
+                JD
+              </div>
               <div className="d-flex flex-column">
                 <span className="chat-regular-text chat-user-name">John Doe</span>
                 <span className="chat-small-text">Online</span>
@@ -254,10 +275,10 @@ const Contact = () => {
 
           <div className="mt-auto pt-4">
             <div className="d-flex gap-2 chat-text-field-box">
-              <Form.Group className="flex-grow-1">
-                <Form.Control className="h-100 rounded-pill" placeholder="Type your message..." />
-              </Form.Group>
-              <Button variant="info" className="text-white rounded-circle">
+              <FormControl className="flex-grow-1">
+                <TextField className="h-100 rounded-pill" placeholder="Type your message..." />
+              </FormControl>
+              <Button variant="contained" color="primary" className="rounded-circle">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -327,7 +348,7 @@ const Contact = () => {
           </div>
           {showSearch && (
             <div className="px-3 mt-2">
-              <Form.Control
+              <TextField
                 type="text"
                 className="border-0"
                 placeholder="Search here..."
