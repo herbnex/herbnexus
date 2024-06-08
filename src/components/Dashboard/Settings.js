@@ -19,6 +19,7 @@ const Settings = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       if (user) {
+        setLoading(true); // Set loading to true when fetching profile data
         try {
           const collection = isDoctor ? 'doctors' : 'users';
           const userDocRef = doc(db, collection, user.uid);
@@ -30,6 +31,8 @@ const Settings = () => {
           }
         } catch (err) {
           setError(err.message);
+        } finally {
+          setLoading(false); // Set loading to false after fetching profile data
         }
       }
     };
