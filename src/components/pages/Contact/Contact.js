@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Row, Col, ListGroup, Form, Button, Badge } from "react-bootstrap";
+import { Container, Row, Col, ListGroup, Form, Button, Badge, Spinner, Alert } from "react-bootstrap";
 import { ref, set, onValue, push } from "firebase/database";
 import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
+import SimplePeer from "simple-peer";
 import "./Contact.css";
 
 const CustomAvatar = ({ name, imgUrl }) => {
@@ -34,6 +35,11 @@ const Contact = () => {
   const chatSectionRef = useRef(null);
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
   const [showChatConvo, setShowChatConvo] = useState(false);
+  const [stream, setStream] = useState(null);
+  const [peer, setPeer] = useState(null);
+  const myVideo = useRef();
+  const userVideo = useRef();
+  const connectionRef = useRef();
 
   useEffect(() => {
     if (!user) {
@@ -238,6 +244,81 @@ const Contact = () => {
     }, 300); // Delay to ensure layout has updated
   };
 
+  const startCall = () => {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+      setStream(stream);
+      myVideo.current.srcObject = stream;
+
+      const peer = new SimplePeer({
+        initiator: true,
+        trickle: false,
+        stream: stream,
+      });
+
+      peer.on("signal", (data) => {
+        const chatId = isDoctor
+          ? generateChatId(selectedParticipant.id, user.displayName)
+          : generateChatId(user.uid, selectedParticipant.name);
+
+        const callRef = ref(database, `calls/${chatId}`);
+        set(callRef, data);
+      });
+
+      peer.on("stream", (stream) => {
+        userVideo.current.srcObject = stream;
+      });
+
+      connectionRef.current = peer;
+      setPeer(peer);
+    });
+  };
+
+  const joinCall = () => {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+      setStream(stream);
+      myVideo.current.srcObject = stream;
+
+      const peer = new SimplePeer({
+        initiator: false,
+        trickle: false,
+        stream: stream,
+      });
+
+      const chatId = isDoctor
+        ? generateChatId(selectedParticipant.id, user.displayName)
+        : generateChatId(user.uid, selectedParticipant.name);
+
+      const callRef = ref(database, `calls/${chatId}`);
+      onValue(callRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          peer.signal(data);
+        }
+      });
+
+      peer.on("stream", (stream) => {
+        userVideo.current.srcObject = stream;
+      });
+
+      connectionRef.current = peer;
+      setPeer(peer);
+    });
+  };
+
+  const leaveCall = () => {
+    setStream(null);
+    setPeer(null);
+    if (connectionRef.current) {
+      connectionRef.current.destroy();
+    }
+    if (myVideo.current.srcObject) {
+      myVideo.current.srcObject.getTracks().forEach(track => track.stop());
+    }
+    if (userVideo.current.srcObject) {
+      userVideo.current.srcObject.getTracks().forEach(track => track.stop());
+    }
+  };
+
   const ChatMessageFeed = ({ texts, setShowChatConvo, backBtnClick }) => {
     return (
       <div className="flex-grow-1 chat-message-feed">
@@ -387,11 +468,22 @@ const Contact = () => {
         </Col>
         <Col md={8} className="chat-section" ref={chatSectionRef}>
           {showChatConvo ? (
-            <ChatMessageFeed
-              texts={msgList}
-              setShowChatConvo={setShowChatConvo}
-              backBtnClick={() => setSelectedParticipant(null)}
-            />
+            <>
+              <ChatMessageFeed
+                texts={msgList}
+                setShowChatConvo={setShowChatConvo}
+                backBtnClick={() => setSelectedParticipant(null)}
+              />
+              <div className="video-container">
+                <video playsInline muted ref={myVideo} autoPlay className="video" />
+                <video playsInline ref={userVideo} autoPlay className="video" />
+              </div>
+              <div className="d-flex justify-content-center gap-2">
+                <Button onClick={startCall}>Start Call</Button>
+                <Button onClick={joinCall}>Join Call</Button>
+                <Button onClick={leaveCall}>Leave Call</Button>
+              </div>
+            </>
           ) : (
             <div className="chat-init-right flex-grow-1">
               <p className="text-center w-100 fs-5 pt-5">Click any specialist to start chat.</p>
