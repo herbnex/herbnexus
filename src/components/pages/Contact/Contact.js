@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Row, Col, ListGroup, Form, Button, Badge, Spinner, Alert } from "react-bootstrap";
-import { ref, set, onValue, push } from "firebase/database";
+import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge, Spinner, Alert } from "react-bootstrap";
+import { ref, set, onValue, push, update } from "firebase/database";
 import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
+import { useHistory, useLocation } from "react-router-dom";
 import SimplePeer from "simple-peer";
 import "./Contact.css";
 
@@ -20,7 +21,9 @@ const CustomAvatar = ({ name, imgUrl }) => {
 };
 
 const Contact = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
+  const history = useHistory();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
@@ -74,26 +77,14 @@ const Contact = () => {
     const q = query(doctorsRef, where("isOnline", "==", true));
     const querySnapshot = await getDocs(q);
     const doctors = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    console.log("Fetched online doctors:", doctors);
-
-    // Deduplicate doctors
-    const uniqueDoctors = doctors.filter(
-      (doctor, index, self) => index === self.findIndex((d) => d.id === doctor.id),
-    );
-
-    setOnlineDoctors(uniqueDoctors);
+    setOnlineDoctors(doctors);
   };
 
   const fetchActiveUsers = async () => {
     const usersRef = collection(db, "users");
     const querySnapshot = await getDocs(usersRef);
     const users = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    console.log("Fetched active users:", users);
-
-    // Deduplicate users
-    const uniqueUsers = users.filter((user, index, self) => index === self.findIndex((u) => u.id === user.id));
-
-    setActiveUsers(uniqueUsers);
+    setActiveUsers(users);
   };
 
   useEffect(() => {
@@ -105,7 +96,6 @@ const Contact = () => {
       ? generateChatId(selectedParticipant.id, user.displayName)
       : generateChatId(user.uid, selectedParticipant.name);
 
-    console.log("Generated Chat ID:", chatId);
     const chatRef = ref(database, `chats/${chatId}/messages`);
     const typingRef = ref(database, `chats/${chatId}/typing`);
 
@@ -113,9 +103,7 @@ const Contact = () => {
       const data = snapshot.val();
       if (data) {
         const messages = Object.values(data);
-        console.log("Fetched messages:", messages);
         setMsgList(messages);
-        // Scroll to the bottom when new messages arrive
         setTimeout(() => {
           if (msgBoxRef.current) {
             msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
@@ -158,13 +146,11 @@ const Contact = () => {
     const newMessageRef = push(chatRef);
 
     await set(newMessageRef, newMessage);
-    console.log("Sent message:", newMessage);
     setMessage("");
     resetTextarea();
 
     await set(ref(database, `chats/${chatId}/typing`), { typing: false });
 
-    // Scroll to the bottom after sending a message
     setTimeout(() => {
       if (msgBoxRef.current) {
         msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
@@ -228,20 +214,19 @@ const Contact = () => {
         ...prev,
         [index]: false,
       }));
-    }, 3000); // Hide the timestamp after 3 seconds
+    }, 3000);
   };
 
   const handleParticipantClick = (participant) => {
     setSelectedParticipant(participant);
     setShowChatConvo(true);
 
-    // Scroll to the chat section on small screens
     setTimeout(() => {
       const chatSection = chatSectionRef.current;
       if (chatSection) {
         chatSection.scrollIntoView({ behavior: "smooth" });
       }
-    }, 300); // Delay to ensure layout has updated
+    }, 300);
   };
 
   const startCall = () => {
@@ -290,10 +275,14 @@ const Contact = () => {
 
       const callRef = ref(database, `calls/${chatId}`);
       onValue(callRef, (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
+        const data = snapshot.val();
+        if (data) {
           peer.signal(data);
         }
+      });
+
+      peer.on("signal", (data) => {
+        update(callRef, data);
       });
 
       peer.on("stream", (stream) => {
@@ -305,190 +294,142 @@ const Contact = () => {
     });
   };
 
-  const leaveCall = () => {
-    setStream(null);
-    setPeer(null);
-    if (connectionRef.current) {
-      connectionRef.current.destroy();
-    }
-    if (myVideo.current.srcObject) {
-      myVideo.current.srcObject.getTracks().forEach(track => track.stop());
-    }
-    if (userVideo.current.srcObject) {
-      userVideo.current.srcObject.getTracks().forEach(track => track.stop());
-    }
-  };
-
-  const ChatMessageFeed = ({ texts, setShowChatConvo, backBtnClick }) => {
-    return (
-      <div className="flex-grow-1 chat-message-feed">
-        <div className="chat-title-box px-4 border-bottom">
-          <div className="d-flex align-items-center h-100 gap-3 ">
-            <div
-              className="fs-2 text-secondary chat-user-item chat-convo-back"
-              onClick={() => {
-                backBtnClick();
-                setShowChatConvo(false);
-              }}>
-              <i className="bi bi-arrow-left-circle"></i>
-            </div>
-            <div className="d-flex h-100 gap-2 align-items-center">
-              <CustomAvatar name={selectedParticipant?.name || "john doe"} />
-              <div className="d-flex flex-column">
-                <span className="chat-regular-text chat-user-name">{selectedParticipant?.name || "John Doe"}</span>
-                <span className="chat-small-text">Online</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="px-3 pb-5 h-auto">
-          <div className="chat-convo-section">
-            {msgList?.map((msg, index) => (
-              <div key={index} className={`message-container ${msg.userId === user.uid ? "msg-self" : "msg-other"} ${visibleTimestamps[index] ? "show-timestamp" : ""}`}
-                onClick={() => toggleTimestamp(index)}>
-                <p className="chat-message-text chat-regular-text p-2 rounded-3 my-3" title={msg.user}>{msg.text}</p>
-                {visibleTimestamps[index] && (
-                  <span className={`timestamp ${msg.userId === user.uid ? "timestamp-left" : "timestamp-right"}`}>
-                    {formatTimestamp(msg.timestamp)}
-                  </span>
-                )}
-              </div>
-            ))}
-            {otherTyping && (
-              <p className="msg-other typing-indicator">
-                Typing...
-              </p>
-            )}
-          </div>
-
-          <div className="mt-auto pt-4">
-            <div className="d-flex gap-2 chat-text-field-box">
-              <Form.Group className="flex-grow-1">
-                <Form.Control
-                  as="textarea"
-                  ref={textareaRef}
-                  rows={1}
-                  placeholder="Type your message..."
-                  value={message}
-                  onChange={handleTyping}
-                  aria-label="User message input"
-                  className="message-input"
-                  style={{ resize: 'none', overflow: 'auto' }}
-                />
-              </Form.Group>
-              <Button variant="info" className="text-white rounded-circle" onClick={handleSendMessage}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-send-fill"
-                  viewBox="0 0 16 16">
-                  <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
-                </svg>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const ChatUserItem = ({ participant, isDoctor, handleClick, selectedParticipant }) => {
-    return (
-      <ListGroup.Item
-        key={`${isDoctor ? "user" : "doctor"}-${participant.id}`}
-        active={selectedParticipant && selectedParticipant.id === participant.id}
-        onClick={() => handleClick(participant)}
-      >
-        <div className="d-flex justify-content-between align-items-center">
-          <div>
-            <h5>{participant.name}</h5>
-            <p>{isDoctor ? participant.email : participant.speciality}</p>
-          </div>
-          <Badge bg="success">Online</Badge>
-        </div>
-      </ListGroup.Item>
-    );
-  };
-
-  const ChatUserFeed = ({ setShowChatConvo, selectedParticipant, handleParticipantClick }) => {
-    const [showSearch, setShowSearch] = useState(false);
-
-    return (
-      <div className="flex-shrink-0 border-end h-100 chat-user-feed bg-light pb-5">
-        <div className="">
-          <div className="border-bottom px-3 chat-title-box d-flex justify-content-between align-items-center">
-            <span className="chat-panel-title">Messages</span>
-            {!showSearch && (
-              <span className="chat-panel-title-search" onClick={() => setShowSearch(true)}>
-                <i className="bi bi-search"></i>
-              </span>
-            )}
-          </div>
-          {showSearch && (
-            <div className="px-3 mt-2">
-              <Form.Control
-                type="text"
-                className="border-0"
-                placeholder="Search here..."
-                autoFocus
-                onBlur={() => setShowSearch(false)}
-              />
-            </div>
-          )}
-        </div>
-        <div className="mt-4 px-2 ">
-          <div className="d-flex flex-column gap-3">
-            {(isDoctor ? activeUsers : onlineDoctors).map((participant) => (
-              <ChatUserItem
-                key={participant.id}
-                participant={participant}
-                isDoctor={isDoctor}
-                handleClick={handleParticipantClick}
-                selectedParticipant={selectedParticipant}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <Container fluid className="chat-room">
       <Row>
         <Col md={4} className="participants-list">
-          <ChatUserFeed
-            setShowChatConvo={setShowChatConvo}
-            selectedParticipant={selectedParticipant}
-            handleParticipantClick={handleParticipantClick}
-          />
+          <h3>{isDoctor ? "Users" : "Online Doctors"}</h3>
+          <ListGroup>
+            {(isDoctor ? activeUsers : onlineDoctors).map((participant) => (
+              <ListGroup.Item
+                key={`${isDoctor ? "user" : "doctor"}-${participant.id}`}
+                active={selectedParticipant && selectedParticipant.id === participant.id}
+                onClick={() => handleParticipantClick(participant)}
+              >
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5>{participant.name}</h5>
+                    <p>{isDoctor ? participant.email : participant.speciality}</p>
+                  </div>
+                  <Badge bg="success">Online</Badge>
+                </div>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
         </Col>
         <Col md={8} className="chat-section" ref={chatSectionRef}>
-          {showChatConvo ? (
-            <>
-              <ChatMessageFeed
-                texts={msgList}
-                setShowChatConvo={setShowChatConvo}
-                backBtnClick={() => setSelectedParticipant(null)}
-              />
-              <div className="video-container">
-                <video playsInline muted ref={myVideo} autoPlay className="video" />
-                <video playsInline ref={userVideo} autoPlay className="video" />
+          <div className="d-flex chat-panel chat-regular-text border-top">
+            <div className="flex-shrink-0 border-end h-100 chat-user-feed bg-light pb-5">
+              <div className="">
+                <div className="border-bottom px-3 chat-title-box d-flex justify-content-between align-items-center">
+                  <span className="chat-panel-title">Messages</span>
+                  <span className="chat-panel-title-search">
+                    <i className="bi bi-search"></i>
+                  </span>
+                </div>
+                <div className="px-3 mt-2">
+                  <Form.Control type="text" className="border-0" placeholder="Search here..." autoFocus />
+                </div>
               </div>
-              <div className="d-flex justify-content-center gap-2">
-                <Button onClick={startCall}>Start Call</Button>
-                <Button onClick={joinCall}>Join Call</Button>
-                <Button onClick={leaveCall}>Leave Call</Button>
+              <div className="mt-4 px-2 ">
+                <div className="d-flex flex-column gap-3">
+                  <div className="d-flex chat-user-item align-items-center gap-2 bg-white p-3 rounded-3">
+                    <CustomAvatar name={"John Doe"} imgUrl={""} />
+                    <div className="d-flex flex-shrink-0 flex-column">
+                      <span className="chat-user-name">John Doe</span>
+                      <span className="chat-small-text">herbalist</span>
+                    </div>
+                    <span className="ms-auto chat-small-text">
+                      <span className="chat-online-indicator me-1"></span>online
+                    </span>
+                  </div>
+                  <div className="d-flex chat-user-item align-items-center gap-2 bg-white p-3 rounded-3">
+                    <CustomAvatar name={"John Doe"} imgUrl={""} />
+                    <div className="d-flex flex-shrink-0 flex-column">
+                      <span className="chat-user-name">John Doe</span>
+                      <span className="chat-small-text">herbalist</span>
+                    </div>
+                    <span className="ms-auto chat-small-text">
+                      <span className="chat-online-indicator me-1"></span>online
+                    </span>
+                  </div>
+                </div>
               </div>
-            </>
-          ) : (
-            <div className="chat-init-right flex-grow-1">
-              <p className="text-center w-100 fs-5 pt-5">Click any specialist to start chat.</p>
             </div>
-          )}
+            {showChatConvo ? (
+              <div className="flex-grow-1 chat-message-feed">
+                <div className="chat-title-box px-4 border-bottom">
+                  <div className="d-flex align-items-center h-100 gap-3 ">
+                    <div
+                      className="fs-2 text-secondary chat-user-item chat-convo-back"
+                      onClick={() => {
+                        setSelectedParticipant(null);
+                        setShowChatConvo(false);
+                      }}
+                    >
+                      <i className="bi bi-arrow-left-circle"></i>
+                    </div>
+                    <div className="d-flex h-100 gap-2 align-items-center">
+                      <CustomAvatar name={"John Doe"} />
+                      <div className="d-flex flex-column">
+                        <span className="chat-regular-text chat-user-name">John Doe</span>
+                        <span className="chat-small-text">Online</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="px-3 pb-5 h-auto">
+                  <div className="chat-convo-section">
+                    {msgList.map((text, index) => (
+                      <div key={index}>
+                        <p className="chat-message-text chat-regular-text bg-light p-2 rounded-3 my-3">{text.user1}</p>
+                        <p className="ms-auto chat-message-text chat-regular-text bg-dark text-white p-2 rounded-3 my-3">
+                          {text.user2}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-auto pt-4">
+                    <div className="d-flex gap-2 chat-text-field-box">
+                      <Form.Group className="flex-grow-1">
+                        <Form.Control
+                          className="h-100 rounded-pill"
+                          placeholder="Type your message..."
+                          value={message}
+                          onChange={handleTyping}
+                          ref={textareaRef}
+                        />
+                      </Form.Group>
+                      <Button variant="info" className="text-white rounded-circle" onClick={handleSendMessage}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          className="bi bi-send-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
+                        </svg>
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="video-container">
+                    <video playsInline muted ref={myVideo} autoPlay className="video" />
+                    <video playsInline ref={userVideo} autoPlay className="video" />
+                  </div>
+                  <div className="call-buttons">
+                    <Button onClick={startCall}>Start Call</Button>
+                    <Button onClick={joinCall}>Join Call</Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="chat-init-right flex-grow-1">
+                <p className="text-center w-100 fs-5 pt-5">Click any specialist to start chat.</p>
+              </div>
+            )}
+          </div>
         </Col>
       </Row>
     </Container>
