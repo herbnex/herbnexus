@@ -20,6 +20,7 @@ import Subscription from "./components/subscription/subscriptions";
 import Dashboard from "./components/Dashboard/Dashboard";
 import PrivacyPolicy from "./components/pages/PrivacyPolicy/PrivacyPolicy";
 import TermsOfService from "./components/pages/TermsOfService/TermsOfService";
+import ChatWithDoctor from "./components/ChatWithDoctor/ChatWithDoctor";
 
 
 function ScrollToTop() {
@@ -82,6 +83,9 @@ function App() {
           <Route path="/terms-of-service">
             <TermsOfService /> 
           </Route>
+          <Route path="/chat-with-doctor/:doctorId">
+            <ChatWithDoctor />  
+            </Route> 
           <Route path="*">
             <NotFound />
           </Route>
