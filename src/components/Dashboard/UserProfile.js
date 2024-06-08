@@ -33,7 +33,7 @@ const UserProfile = () => {
     if (user) {
       fetchProfileData();
     }
-  }, [user, isDoctor]);
+  }, [user, isDoctor, setError]);
 
   const handleUpdateProfile = async (event) => {
     event.preventDefault();
