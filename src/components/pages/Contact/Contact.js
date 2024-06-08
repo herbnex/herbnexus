@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Row, Col, ListGroup, Form, Button, Badge, Spinner, Alert } from "react-bootstrap";
+import { Container, Row, Col, ListGroup, Form, Button, Badge } from "react-bootstrap";
 import { ref, set, onValue, push } from "firebase/database";
 import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
@@ -19,7 +19,7 @@ const CustomAvatar = ({ name, imgUrl }) => {
 };
 
 const Contact = () => {
-  const { user, updateUser } = useAuth();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
@@ -32,9 +32,8 @@ const Contact = () => {
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
   const chatSectionRef = useRef(null);
-  const [visibleTimestamps, setVisibleTtimestamps] = useState({});
+  const [visibleTimestamps, setVisibleTimestamps] = useState({});
   const [showChatConvo, setShowChatConvo] = useState(false);
-  const [selectedSpecialist, setSelectedSpecialist] = useState("");
 
   useEffect(() => {
     if (!user) {
