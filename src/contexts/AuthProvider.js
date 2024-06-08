@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext, useCallback, useRef } from 'react';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../Firebase/firebase.config'; // Adjust the path as necessary
+import { auth, db } from '../Firebase/firebase.config';
 
 export const AuthContext = createContext();
 
@@ -13,7 +13,9 @@ const AuthProvider = ({ children }) => {
   const isMounted = useRef(true);
 
   const updateUser = useCallback(async (firebaseUser) => {
-    if (!isMounted.current) return; // Prevent state updates if component is unmounted
+    if (!isMounted.current) return;
+
+    setIsLoading(true);
 
     if (firebaseUser) {
       const userRef = doc(db, 'users', firebaseUser.uid);
@@ -83,7 +85,7 @@ const AuthProvider = ({ children }) => {
     });
 
     return () => {
-      isMounted.current = false; // Cleanup function to update the flag
+      isMounted.current = false;
       unsubscribe();
     };
   }, [updateUser]);
