@@ -287,7 +287,7 @@ const Contact = () => {
       peerConnection.current.addTrack(track, localStream.current);
     });
 
-    const callerCandidatesCollection = roomRef.collection('callerCandidates');
+    const callerCandidatesCollection = collection(roomRef, 'callerCandidates');
     peerConnection.current.addEventListener('icecandidate', event => {
       if (event.candidate) {
         callerCandidatesCollection.add(event.candidate.toJSON());
@@ -298,7 +298,7 @@ const Contact = () => {
     await peerConnection.current.setLocalDescription(offer);
 
     const roomWithOffer = { 'offer': { type: offer.type, sdp: offer.sdp } };
-    await roomRef.set(roomWithOffer);
+    await setDoc(roomRef, roomWithOffer);
 
     document.querySelector('#currentRoom').innerText = `Current room is ${roomRef.id} - You are the caller!`;
 
@@ -308,7 +308,7 @@ const Contact = () => {
       });
     });
 
-    roomRef.onSnapshot(async snapshot => {
+    onSnapshot(roomRef, async (snapshot) => {
       const data = snapshot.data();
       if (data?.answer && !peerConnection.current.currentRemoteDescription) {
         const rtcSessionDescription = new RTCSessionDescription(data.answer);
@@ -316,7 +316,7 @@ const Contact = () => {
       }
     });
 
-    roomRef.collection('calleeCandidates').onSnapshot(snapshot => {
+    onSnapshot(collection(roomRef, 'calleeCandidates'), (snapshot) => {
       snapshot.docChanges().forEach(async change => {
         if (change.type === 'added') {
           await peerConnection.current.addIceCandidate(new RTCIceCandidate(change.doc.data()));
@@ -338,10 +338,10 @@ const Contact = () => {
   };
 
   const joinRoomById = async (roomId) => {
-    const roomRef = db.collection('rooms').doc(roomId);
-    const roomSnapshot = await roomRef.get();
+    const roomRef = doc(db, 'rooms', roomId);
+    const roomSnapshot = await getDoc(roomRef);
 
-    if (roomSnapshot.exists) {
+    if (roomSnapshot.exists()) {
       peerConnection.current = new RTCPeerConnection(configuration);
       registerPeerConnectionListeners();
 
@@ -349,7 +349,7 @@ const Contact = () => {
         peerConnection.current.addTrack(track, localStream.current);
       });
 
-      const calleeCandidatesCollection = roomRef.collection('calleeCandidates');
+      const calleeCandidatesCollection = collection(roomRef, 'calleeCandidates');
       peerConnection.current.addEventListener('icecandidate', event => {
         if (event.candidate) {
           calleeCandidatesCollection.add(event.candidate.toJSON());
@@ -368,9 +368,9 @@ const Contact = () => {
       await peerConnection.current.setLocalDescription(answer);
 
       const roomWithAnswer = { answer: { type: answer.type, sdp: answer.sdp } };
-      await roomRef.update(roomWithAnswer);
+      await updateDoc(roomRef, roomWithAnswer);
 
-      roomRef.collection('callerCandidates').onSnapshot(snapshot => {
+      onSnapshot(collection(roomRef, 'callerCandidates'), (snapshot) => {
         snapshot.docChanges().forEach(async change => {
           if (change.type === 'added') {
             await peerConnection.current.addIceCandidate(new RTCIceCandidate(change.doc.data()));
@@ -404,16 +404,16 @@ const Contact = () => {
     document.querySelector('#currentRoom').innerText = '';
 
     if (roomIdRef.current) {
-      const roomRef = db.collection('rooms').doc(roomIdRef.current);
-      const calleeCandidates = await roomRef.collection('calleeCandidates').get();
-      calleeCandidates.forEach(async candidate => {
-        await candidate.ref.delete();
+      const roomRef = doc(db, 'rooms', roomIdRef.current);
+      const calleeCandidatesSnapshot = await getDocs(collection(roomRef, 'calleeCandidates'));
+      calleeCandidatesSnapshot.forEach(async candidate => {
+        await deleteDoc(candidate.ref);
       });
-      const callerCandidates = await roomRef.collection('callerCandidates').get();
-      callerCandidates.forEach(async candidate => {
-        await candidate.ref.delete();
+      const callerCandidatesSnapshot = await getDocs(collection(roomRef, 'callerCandidates'));
+      callerCandidatesSnapshot.forEach(async candidate => {
+        await deleteDoc(candidate.ref);
       });
-      await roomRef.delete();
+      await deleteDoc(roomRef);
     }
 
     document.location.reload(true);
