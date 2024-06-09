@@ -1,28 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge } from "react-bootstrap";
 import { ref, set, onValue, push } from "firebase/database";
-import firebase from "firebase/app";
-import "firebase/firestore";
-import "firebase/database";
-import { database, db } from "../../../Firebase/firebase.config"; // Ensure this is correctly imported
+import { db } from "../../../Firebase/firebase.config"; // Ensure this is correctly imported
+import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
 import "./Contact.css";
-
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-};
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
 
 const Contact = () => {
   const { user } = useAuth();
@@ -292,7 +276,6 @@ const Contact = () => {
     document.querySelector('#createBtn').disabled = true;
     document.querySelector('#joinBtn').disabled = true;
 
-    const db = firebase.firestore();
     const roomRef = await db.collection('rooms').doc();
     roomIdRef.current = roomRef.id;
 
@@ -354,7 +337,6 @@ const Contact = () => {
   };
 
   const joinRoomById = async (roomId) => {
-    const db = firebase.firestore();
     const roomRef = db.collection('rooms').doc(roomId);
     const roomSnapshot = await roomRef.get();
 
@@ -421,7 +403,6 @@ const Contact = () => {
     document.querySelector('#currentRoom').innerText = '';
 
     if (roomIdRef.current) {
-      const db = firebase.firestore();
       const roomRef = db.collection('rooms').doc(roomIdRef.current);
       const calleeCandidates = await roomRef.collection('calleeCandidates').get();
       calleeCandidates.forEach(async candidate => {
