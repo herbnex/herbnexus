@@ -271,10 +271,10 @@ const Contact = () => {
   const openUserMedia = async () => {
     try {
       localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      remoteStream.current = new MediaStream();
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = localStream.current;
       }
+      remoteStream.current = new MediaStream();
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = remoteStream.current;
       }
