@@ -298,11 +298,21 @@ const Contact = () => {
           };
         }
 
+        if (peerConnection.current.signalingState !== 'stable') {
+          console.warn("Peer connection is not stable yet, can't set remote offer");
+          return;
+        }
+
         await peerConnection.current.setRemoteDescription(new RTCSessionDescription(message.offer));
         const answer = await peerConnection.current.createAnswer();
         await peerConnection.current.setLocalDescription(answer);
         sendMessage({ answer });
       } else if (message.answer) {
+        if (peerConnection.current.signalingState !== 'have-local-offer') {
+          console.warn("Peer connection is not in 'have-local-offer' state, can't set remote answer");
+          return;
+        }
+
         await peerConnection.current.setRemoteDescription(new RTCSessionDescription(message.answer));
       } else if (message.candidate) {
         await peerConnection.current.addIceCandidate(new RTCIceCandidate(message.candidate));
