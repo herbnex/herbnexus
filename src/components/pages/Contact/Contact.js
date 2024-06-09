@@ -30,6 +30,7 @@ const Contact = () => {
   const localStream = useRef(null);
   const remoteStream = useRef(new MediaStream());
   const roomIdRef = useRef(null);
+  const roomDialog = useRef(null); // Define roomDialog
 
   const configuration = {
     iceServers: [
@@ -333,7 +334,7 @@ const Contact = () => {
       await joinRoomById(roomIdRef.current);
       document.querySelector('#currentRoom').innerText = `Current room is ${roomIdRef.current} - You are the callee!`;
     }, { once: true });
-    roomDialog.open();
+    roomDialog.current.open();
   };
 
   const joinRoomById = async (roomId) => {
