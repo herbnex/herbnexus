@@ -508,6 +508,7 @@ const Contact = () => {
                 <Button id="createBtn" onClick={createRoom}>Create Room</Button>
                 <Button id="joinBtn" onClick={joinRoom}>Join Room</Button>
                 <Button id="hangupBtn" onClick={hangUp}>Hang Up</Button>
+                <div id="currentRoom"></div>
               </div>
             </>
           ) : (
