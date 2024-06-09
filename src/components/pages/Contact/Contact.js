@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge } from "react-bootstrap";
+import Peer from 'peerjs';
 import { ref, set, onValue, push } from "firebase/database";
 import { database, db } from "../../../Firebase/firebase.config";
-import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
+import { doc, getDocs, collection, query, where, getDoc, setDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
@@ -25,8 +26,56 @@ const Contact = () => {
   const textareaRef = useRef(null);
   const chatSectionRef = useRef(null);
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
+  const [peerId, setPeerId] = useState(null);
+  const [call, setCall] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
+  const localVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
+  const peerInstance = useRef(null);
 
-  
+  useEffect(() => {
+    const peer = new Peer({
+      host: 'peerjs-server.herokuapp.com',
+      secure: true,
+      port: 443,
+    });
+
+    peer.on('open', async (id) => {
+      setPeerId(id);
+      const userRef = doc(db, isDoctor ? "doctors" : "users", user.uid);
+      await setDoc(userRef, { peerId: id }, { merge: true });
+    });
+
+    peer.on('call', (incomingCall) => {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+        incomingCall.answer(stream);
+        setCall(incomingCall);
+        localVideoRef.current.srcObject = stream;
+        incomingCall.on('stream', (remoteStream) => {
+          setRemoteStream(remoteStream);
+        });
+      });
+    });
+
+    peerInstance.current = peer;
+  }, [isDoctor, user]);
+
+  const startCall = (remotePeerId) => {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+      const call = peerInstance.current.call(remotePeerId, stream);
+      setCall(call);
+      localVideoRef.current.srcObject = stream;
+      call.on('stream', (remoteStream) => {
+        setRemoteStream(remoteStream);
+      });
+    });
+  };
+
+  const endCall = () => {
+    call.close();
+    setCall(null);
+    setRemoteStream(null);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -63,7 +112,6 @@ const Contact = () => {
     const doctors = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     console.log("Fetched online doctors:", doctors);
 
-    // Deduplicate doctors
     const uniqueDoctors = doctors.filter((doctor, index, self) =>
       index === self.findIndex((d) => d.id === doctor.id)
     );
@@ -77,7 +125,6 @@ const Contact = () => {
     const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     console.log("Fetched active users:", users);
 
-    // Deduplicate users
     const uniqueUsers = users.filter((user, index, self) =>
       index === self.findIndex((u) => u.id === user.id)
     );
@@ -104,7 +151,6 @@ const Contact = () => {
         const messages = Object.values(data);
         console.log("Fetched messages:", messages);
         setMsgList(messages);
-        // Scroll to the bottom when new messages arrive
         setTimeout(() => {
           if (msgBoxRef.current) {
             msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
@@ -147,13 +193,11 @@ const Contact = () => {
     const newMessageRef = push(chatRef);
 
     await set(newMessageRef, newMessage);
-    console.log("Sent message:", newMessage);
     setMessage('');
     resetTextarea();
 
     await set(ref(database, `chats/${chatId}/typing`), { typing: false });
 
-    // Scroll to the bottom after sending a message
     setTimeout(() => {
       if (msgBoxRef.current) {
         msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
@@ -217,19 +261,34 @@ const Contact = () => {
         ...prev,
         [index]: false,
       }));
-    }, 3000); // Hide the timestamp after 3 seconds
+    }, 3000);
   };
 
-  const handleParticipantClick = (participant) => {
+  const handleParticipantClick = async (participant) => {
+    if (!participant.peerId) {
+      const peer = new Peer({
+        host: 'peerjs-server.herokuapp.com',
+        secure: true,
+        port: 443,
+      });
+
+      peer.on('open', async (id) => {
+        participant.peerId = id;
+        const participantRef = doc(db, isDoctor ? "users" : "doctors", participant.id);
+        await setDoc(participantRef, { peerId: id }, { merge: true });
+      });
+
+      peerInstance.current = peer;
+    }
+
     setSelectedParticipant(participant);
 
-    // Scroll to the chat section on small screens
     setTimeout(() => {
       const chatSection = chatSectionRef.current;
       if (chatSection) {
         chatSection.scrollIntoView({ behavior: 'smooth' });
       }
-    }, 300); // Delay to ensure layout has updated
+    }, 300);
   };
 
   return (
@@ -296,6 +355,15 @@ const Contact = () => {
                   <Button variant="outline-secondary" type="submit" className="message-send-button">Send</Button>
                 </InputGroup>
               </Form>
+              <div className="video-call-container">
+                <video ref={localVideoRef} autoPlay muted className="local-video"></video>
+                <video ref={remoteVideoRef} autoPlay className="remote-video" srcObject={remoteStream}></video>
+                {call ? (
+                  <Button onClick={endCall}>End Call</Button>
+                ) : (
+                  <Button onClick={() => startCall(selectedParticipant.peerId)}>Start Call</Button>
+                )}
+              </div>
             </>
           ) : (
             <h4>Select a {isDoctor ? "user" : "doctor"} to start chatting</h4>
