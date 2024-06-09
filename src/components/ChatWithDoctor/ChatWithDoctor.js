@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Spinner, Container } from "react-bootstrap";
 import { CallWithChatExperience } from "./CallWithChatExperience";
-import { doc, getDocs, collection, query, where } from "firebase/firestore";
-import { db } from "../../../src/Firebase/firebase.config";
-import useAuth from "../../../src/hooks/useAuth";
+import { collection, query, getDocs, getDoc, doc } from "firebase/firestore";
+import { db } from "../../../Firebase/firebase.config";
+import useAuth from "../../../hooks/useAuth";
 
 const ChatWithDoctor = () => {
   const { user } = useAuth();
@@ -28,7 +28,7 @@ const ChatWithDoctor = () => {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ userId: user.id, doctorId })
+          body: JSON.stringify({ userId: user.uid, doctorId })
         });
 
         if (!response.ok) {
@@ -36,10 +36,10 @@ const ChatWithDoctor = () => {
         }
 
         const data = await response.json();
-        const userIdObject = { communicationUserId: user.id };
+        const userIdObject = { communicationUserId: user.uid };
         const token = data.token;
         const displayName = user.displayName || "User";
-        const endpointUrl = "https://<RESOURCE_NAME>.communication.azure.com";
+        const endpointUrl = process.env.REACT_APP_AZURE_COMMUNICATION_SERVICES_ENDPOINT;
         const locator = { groupId: data.groupId, threadId: data.threadId };
 
         setCallProps({
