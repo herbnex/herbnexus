@@ -32,7 +32,6 @@ const Contact = () => {
   const localStream = useRef(null);
   const remoteStream = useRef(new MediaStream());
   const roomIdRef = useRef(null);
-  const roomDialog = useRef(null);
 
   const configuration = {
     iceServers: [
@@ -275,11 +274,6 @@ const Contact = () => {
       remoteStream.current = new MediaStream();
       localVideoRef.current.srcObject = localStream.current;
       remoteVideoRef.current.srcObject = remoteStream.current;
-
-      document.querySelector('#cameraBtn').disabled = true;
-      document.querySelector('#joinBtn').disabled = false;
-      document.querySelector('#createBtn').disabled = false;
-      document.querySelector('#hangupBtn').disabled = false;
     } catch (error) {
       console.error('Error accessing user media:', error);
     }
@@ -287,12 +281,8 @@ const Contact = () => {
 
   const createRoom = async () => {
     if (!localStream.current) {
-      console.error('Local stream is not initialized.');
-      return;
+      await openUserMedia();
     }
-
-    document.querySelector('#createBtn').disabled = true;
-    document.querySelector('#joinBtn').disabled = true;
 
     const roomRef = await doc(collection(db, 'rooms'));
     roomIdRef.current = roomRef.id;
@@ -342,22 +332,9 @@ const Contact = () => {
     });
   };
 
-  const joinRoom = () => {
-    document.querySelector('#createBtn').disabled = true;
-    document.querySelector('#joinBtn').disabled = true;
-
-    document.querySelector('#confirmJoinBtn').addEventListener('click', async () => {
-      roomIdRef.current = document.querySelector('#room-id').value;
-      await joinRoomById(roomIdRef.current);
-      document.querySelector('#currentRoom').innerText = `Current room is ${roomIdRef.current} - You are the callee!`;
-    }, { once: true });
-    roomDialog.current.open();
-  };
-
   const joinRoomById = async (roomId) => {
     if (!localStream.current) {
-      console.error('Local stream is not initialized.');
-      return;
+      await openUserMedia();
     }
 
     const roomRef = doc(db, 'rooms', roomId);
@@ -419,10 +396,6 @@ const Contact = () => {
     localVideoRef.current.srcObject = null;
     remoteVideoRef.current.srcObject = null;
 
-    document.querySelector('#cameraBtn').disabled = false;
-    document.querySelector('#joinBtn').disabled = true;
-    document.querySelector('#createBtn').disabled = true;
-    document.querySelector('#hangupBtn').disabled = true;
     document.querySelector('#currentRoom').innerText = '';
 
     if (roomIdRef.current) {
@@ -555,16 +528,8 @@ const Contact = () => {
               <div className="video-call-container">
                 <video ref={localVideoRef} autoPlay muted className="local-video" id="localVideo"></video>
                 <video ref={remoteVideoRef} autoPlay className="remote-video" id="remoteVideo"></video>
-                <Button id="cameraBtn" onClick={openUserMedia}>Open Camera & Microphone</Button>
-                <Button id="createBtn" onClick={createRoom}>Create Room</Button>
-                <Button id="joinBtn" onClick={joinRoom}>Join Room</Button>
-                <Button id="hangupBtn" onClick={hangUp}>Hang Up</Button>
                 <Button id="callBtn" onClick={handleCall}>Call</Button>
                 <div id="currentRoom"></div>
-                <div id="room-dialog">
-                  <input type="text" id="room-id" placeholder="Enter Room ID" />
-                  <Button id="confirmJoinBtn">Join</Button>
-                </div>
               </div>
             </>
           ) : (
