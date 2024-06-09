@@ -272,8 +272,12 @@ const Contact = () => {
     try {
       localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       remoteStream.current = new MediaStream();
-      localVideoRef.current.srcObject = localStream.current;
-      remoteVideoRef.current.srcObject = remoteStream.current;
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = localStream.current;
+      }
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = remoteStream.current;
+      }
     } catch (error) {
       console.error('Error accessing user media:', error);
     }
@@ -393,10 +397,12 @@ const Contact = () => {
       peerConnection.current.close();
     }
 
-    localVideoRef.current.srcObject = null;
-    remoteVideoRef.current.srcObject = null;
-
-    document.querySelector('#currentRoom').innerText = '';
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = null;
+    }
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = null;
+    }
 
     if (roomIdRef.current) {
       const roomRef = doc(db, 'rooms', roomIdRef.current);
