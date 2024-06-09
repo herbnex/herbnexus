@@ -288,7 +288,7 @@ const Contact = () => {
       await openUserMedia();
     }
 
-    const roomRef = doc(collection(db, 'rooms'));
+    const roomRef = await doc(collection(db, 'rooms'));
     roomIdRef.current = roomRef.id;
 
     peerConnection.current = new RTCPeerConnection(configuration);
@@ -316,6 +316,9 @@ const Contact = () => {
     peerConnection.current.addEventListener('track', event => {
       event.streams[0].getTracks().forEach(track => {
         remoteStream.current.addTrack(track);
+        if (remoteVideoRef.current) {
+          remoteVideoRef.current.srcObject = remoteStream.current;
+        }
       });
     });
 
@@ -454,7 +457,7 @@ const Contact = () => {
 
     await addDoc(collection(db, 'calls'), callData);
 
-    createRoom();
+    await createRoom();
   };
 
   const answerCall = async () => {
