@@ -50,7 +50,6 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         token: userTokenDetails.token,
         doctorToken: doctorTokenDetails.token,
-        groupId: uuidv1(),
         threadId
       })
     };

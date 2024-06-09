@@ -40,7 +40,7 @@ const ChatWithDoctor = () => {
         const token = data.token;
         const displayName = user.displayName || "User";
         const endpointUrl = process.env.REACT_APP_AZURE_COMMUNICATION_SERVICES_ENDPOINT || "<RESOURCE_NAME>.communication.azure.com";
-        const locator = { groupId: data.groupId, threadId: data.threadId };
+        const locator = { threadId: data.threadId };
 
         setCallProps({
           userId: userIdObject,
