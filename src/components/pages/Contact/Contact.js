@@ -280,21 +280,23 @@ const Contact = () => {
   const handleIncomingCall = async (message) => {
     try {
       if (message.offer) {
-        peerConnection.current = new RTCPeerConnection(servers);
-        localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localStream.current.getTracks().forEach(track => peerConnection.current.addTrack(track, localStream.current));
+        if (!peerConnection.current) {
+          peerConnection.current = new RTCPeerConnection(servers);
+          localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+          localStream.current.getTracks().forEach(track => peerConnection.current.addTrack(track, localStream.current));
 
-        localVideoRef.current.srcObject = localStream.current;
+          localVideoRef.current.srcObject = localStream.current;
 
-        peerConnection.current.onicecandidate = event => {
-          if (event.candidate) {
-            sendMessage({ candidate: event.candidate });
-          }
-        };
+          peerConnection.current.onicecandidate = event => {
+            if (event.candidate) {
+              sendMessage({ candidate: event.candidate });
+            }
+          };
 
-        peerConnection.current.ontrack = event => {
-          remoteVideoRef.current.srcObject = event.streams[0];
-        };
+          peerConnection.current.ontrack = event => {
+            remoteVideoRef.current.srcObject = event.streams[0];
+          };
+        }
 
         await peerConnection.current.setRemoteDescription(new RTCSessionDescription(message.offer));
         const answer = await peerConnection.current.createAnswer();
