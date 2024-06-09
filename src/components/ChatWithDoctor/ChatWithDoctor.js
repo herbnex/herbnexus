@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Spinner, Container } from "react-bootstrap";
+import { Spinner, Container, Row, Col, ListGroup } from "react-bootstrap";
 import { CallWithChatExperience } from "./CallWithChatExperience";
 import { collection, query, getDocs } from "firebase/firestore";
 import { db } from "../../../src/Firebase/firebase.config";
@@ -9,26 +9,37 @@ const ChatWithDoctor = () => {
   const { user } = useAuth();
   const [callProps, setCallProps] = useState(null);
   const [error, setError] = useState("");
+  const [doctors, setDoctors] = useState([]);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const doctorsQuery = query(collection(db, 'doctors'));
+        const doctorSnapshot = await getDocs(doctorsQuery);
+        if (doctorSnapshot.empty) {
+          throw new Error('No doctors found');
+        }
+        setDoctors(doctorSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   useEffect(() => {
     const fetchCallProps = async () => {
       try {
-        if (!user) return;
-
-        // Fetch doctor ID from Firestore (example: getting the first doctor)
-        const doctorsQuery = query(collection(db, 'doctors'));
-        const doctorSnapshot = await getDocs(doctorsQuery);
-        if (doctorSnapshot.empty) {
-          throw new Error('No doctor found');
-        }
-        const doctorId = doctorSnapshot.docs[0].id;
+        if (!user || !selectedDoctor) return;
 
         const response = await fetch("/.netlify/functions/getCallDetails", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ userId: user.uid, doctorId })
+          body: JSON.stringify({ userId: user.uid, doctorId: selectedDoctor.id })
         });
 
         if (!response.ok) {
@@ -40,7 +51,7 @@ const ChatWithDoctor = () => {
         const token = data.token;
         const displayName = user.displayName || "User";
         const endpointUrl = process.env.REACT_APP_AZURE_COMMUNICATION_SERVICES_ENDPOINT || "<RESOURCE_NAME>.communication.azure.com";
-        const locator = { threadId: data.threadId };
+        const locator = { groupId: data.groupId, threadId: data.threadId };
 
         setCallProps({
           userId: userIdObject,
@@ -56,7 +67,7 @@ const ChatWithDoctor = () => {
     };
 
     fetchCallProps();
-  }, [user]);
+  }, [user, selectedDoctor]);
 
   if (error) {
     return <Container><h1>Error: {error}</h1></Container>;
@@ -68,8 +79,26 @@ const ChatWithDoctor = () => {
 
   return (
     <Container>
-      <h1>Chat with Doctor</h1>
-      <CallWithChatExperience {...callProps} />
+      <Row>
+        <Col md={3}>
+          <h2>Active Doctors</h2>
+          <ListGroup>
+            {doctors.map(doctor => (
+              <ListGroup.Item key={doctor.id} action onClick={() => setSelectedDoctor(doctor)}>
+                {doctor.name}
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </Col>
+        <Col md={9}>
+          <h1>Chat with Doctor</h1>
+          {selectedDoctor ? (
+            <CallWithChatExperience {...callProps} />
+          ) : (
+            <p>Select a doctor to start a chat and video call.</p>
+          )}
+        </Col>
+      </Row>
     </Container>
   );
 };

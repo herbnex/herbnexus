@@ -1,12 +1,9 @@
-import { TeamsMeetingIdLocator, TeamsMeetingLinkLocator } from '@azure/communication-calling';
-import { AzureCommunicationTokenCredential, CommunicationUserIdentifier } from '@azure/communication-common';
+import { AzureCommunicationTokenCredential } from '@azure/communication-common';
 import {
-  CallAndChatLocator,
   CallWithChatComposite,
-  useAzureCommunicationCallWithChatAdapter,
-  CallWithChatCompositeOptions
+  useAzureCommunicationCallWithChatAdapter
 } from '@azure/communication-react';
-import { Theme, PartialTheme, Spinner, initializeIcons } from '@fluentui/react';
+import { Spinner, initializeIcons } from '@fluentui/react';
 import React, { useMemo } from 'react';
 
 initializeIcons();
