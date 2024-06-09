@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge } from "react-bootstrap";
-import Peer from 'peerjs';
 import { ref, set, onValue, push } from "firebase/database";
 import { database, db } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc, setDoc } from "firebase/firestore";
@@ -10,7 +9,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import "./Contact.css";
 
 const Contact = () => {
-  const { user, updateUser } = useAuth();
+  const { user } = useAuth();
   const history = useHistory();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -26,63 +25,20 @@ const Contact = () => {
   const textareaRef = useRef(null);
   const chatSectionRef = useRef(null);
   const [visibleTimestamps, setVisibleTimestamps] = useState({});
-  const [peerId, setPeerId] = useState(null);
-  const [call, setCall] = useState(null);
-  const [remoteStream, setRemoteStream] = useState(null);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
-  const peerInstance = useRef(null);
+  const peerConnection = useRef(null);
+  const localStream = useRef(null);
 
-  useEffect(() => {
-    const peer = new Peer({
-      host: 'peerjs-server.herokuapp.com',
-      secure: true,
-      port: 443,
-    });
-
-    peer.on('open', async (id) => {
-      setPeerId(id);
-      const userRef = doc(db, isDoctor ? "doctors" : "users", user.uid);
-      await setDoc(userRef, { peerId: id }, { merge: true });
-    });
-
-    peer.on('call', (incomingCall) => {
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-        incomingCall.answer(stream);
-        setCall(incomingCall);
-        localVideoRef.current.srcObject = stream;
-        incomingCall.on('stream', (remoteStream) => {
-          setRemoteStream(remoteStream);
-        });
-      });
-    });
-
-    peerInstance.current = peer;
-  }, [isDoctor, user]);
-
-  const startCall = (remotePeerId) => {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-      const call = peerInstance.current.call(remotePeerId, stream);
-      setCall(call);
-      localVideoRef.current.srcObject = stream;
-      call.on('stream', (remoteStream) => {
-        setRemoteStream(remoteStream);
-      });
-    });
-  };
-
-  const endCall = () => {
-    call.close();
-    setCall(null);
-    setRemoteStream(null);
+  const servers = {
+    iceServers: [
+      {
+        urls: "stun:stun.l.google.com:19302"
+      }
+    ]
   };
 
   useEffect(() => {
-    if (!user) {
-      console.error("User is not authenticated!");
-      return;
-    }
-
     const checkIfDoctor = async () => {
       const userDocRef = doc(db, "doctors", user.uid);
       const userDocSnap = await getDoc(userDocRef);
@@ -265,22 +221,6 @@ const Contact = () => {
   };
 
   const handleParticipantClick = async (participant) => {
-    if (!participant.peerId) {
-      const peer = new Peer({
-        host: 'peerjs-server.herokuapp.com',
-        secure: true,
-        port: 443,
-      });
-
-      peer.on('open', async (id) => {
-        participant.peerId = id;
-        const participantRef = doc(db, isDoctor ? "users" : "doctors", participant.id);
-        await setDoc(participantRef, { peerId: id }, { merge: true });
-      });
-
-      peerInstance.current = peer;
-    }
-
     setSelectedParticipant(participant);
 
     setTimeout(() => {
@@ -290,6 +230,89 @@ const Contact = () => {
       }
     }, 300);
   };
+
+  const startCall = async () => {
+    peerConnection.current = new RTCPeerConnection(servers);
+    localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    localStream.current.getTracks().forEach(track => peerConnection.current.addTrack(track, localStream.current));
+
+    localVideoRef.current.srcObject = localStream.current;
+
+    peerConnection.current.onicecandidate = event => {
+      if (event.candidate) {
+        sendMessage({ candidate: event.candidate });
+      }
+    };
+
+    peerConnection.current.ontrack = event => {
+      remoteVideoRef.current.srcObject = event.streams[0];
+    };
+
+    const offer = await peerConnection.current.createOffer();
+    await peerConnection.current.setLocalDescription(offer);
+    sendMessage({ offer });
+  };
+
+  const handleIncomingCall = async (message) => {
+    if (message.offer) {
+      peerConnection.current = new RTCPeerConnection(servers);
+      localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      localStream.current.getTracks().forEach(track => peerConnection.current.addTrack(track, localStream.current));
+
+      localVideoRef.current.srcObject = localStream.current;
+
+      peerConnection.current.onicecandidate = event => {
+        if (event.candidate) {
+          sendMessage({ candidate: event.candidate });
+        }
+      };
+
+      peerConnection.current.ontrack = event => {
+        remoteVideoRef.current.srcObject = event.streams[0];
+      };
+
+      await peerConnection.current.setRemoteDescription(new RTCSessionDescription(message.offer));
+      const answer = await peerConnection.current.createAnswer();
+      await peerConnection.current.setLocalDescription(answer);
+      sendMessage({ answer });
+    } else if (message.answer) {
+      await peerConnection.current.setRemoteDescription(new RTCSessionDescription(message.answer));
+    } else if (message.candidate) {
+      await peerConnection.current.addIceCandidate(new RTCIceCandidate(message.candidate));
+    }
+  };
+
+  const sendMessage = async (message) => {
+    const chatId = isDoctor
+      ? generateChatId(selectedParticipant.id, user.displayName)
+      : generateChatId(user.uid, selectedParticipant.name);
+
+    const messagesRef = ref(database, `calls/${chatId}/messages`);
+    await push(messagesRef, message);
+  };
+
+  useEffect(() => {
+    if (!user || !selectedParticipant) {
+      return;
+    }
+
+    const chatId = isDoctor
+      ? generateChatId(selectedParticipant.id, user.displayName)
+      : generateChatId(user.uid, selectedParticipant.name);
+
+    const messagesRef = ref(database, `calls/${chatId}/messages`);
+    const unsubscribe = onValue(messagesRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const messages = Object.values(data);
+        messages.forEach(message => handleIncomingCall(message));
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [user, selectedParticipant, isDoctor]);
 
   return (
     <Container fluid className="chat-room">
@@ -357,12 +380,8 @@ const Contact = () => {
               </Form>
               <div className="video-call-container">
                 <video ref={localVideoRef} autoPlay muted className="local-video"></video>
-                <video ref={remoteVideoRef} autoPlay className="remote-video" srcObject={remoteStream}></video>
-                {call ? (
-                  <Button onClick={endCall}>End Call</Button>
-                ) : (
-                  <Button onClick={() => startCall(selectedParticipant.peerId)}>Start Call</Button>
-                )}
+                <video ref={remoteVideoRef} autoPlay className="remote-video"></video>
+                <Button onClick={startCall}>Start Call</Button>
               </div>
             </>
           ) : (
