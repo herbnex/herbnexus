@@ -30,7 +30,7 @@ const Contact = () => {
   const localStream = useRef(null);
   const remoteStream = useRef(new MediaStream());
   const roomIdRef = useRef(null);
-  const roomDialog = useRef(null); // Define roomDialog
+  const roomDialog = useRef(null);
 
   const configuration = {
     iceServers: [
@@ -509,6 +509,10 @@ const Contact = () => {
                 <Button id="joinBtn" onClick={joinRoom}>Join Room</Button>
                 <Button id="hangupBtn" onClick={hangUp}>Hang Up</Button>
                 <div id="currentRoom"></div>
+                <div id="room-dialog">
+                  <input type="text" id="room-id" placeholder="Enter Room ID" />
+                  <Button id="confirmJoinBtn">Join</Button>
+                </div>
               </div>
             </>
           ) : (
