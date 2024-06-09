@@ -9,7 +9,10 @@ import React, { useMemo } from 'react';
 initializeIcons();
 
 export const CallWithChatExperience = (props) => {
-  const credential = useMemo(() => new AzureCommunicationTokenCredential(props.token), [props.token]);
+  const credential = useMemo(() => {
+    console.log("Initializing AzureCommunicationTokenCredential with token:", props.token);
+    return new AzureCommunicationTokenCredential(props.token);
+  }, [props.token]);
 
   const adapter = useAzureCommunicationCallWithChatAdapter({
     userId: props.userId,
@@ -20,8 +23,11 @@ export const CallWithChatExperience = (props) => {
   });
 
   if (!adapter) {
+    console.log("Adapter not initialized yet");
     return <Spinner label="Initializing..." />;
   }
+
+  console.log("Adapter initialized successfully");
 
   return (
     <CallWithChatComposite
