@@ -1,45 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { Spinner, Container } from "react-bootstrap";
 import { CallWithChatExperience } from "./CallWithChatExperience";
-import firebase from 'firebase/app'; // Ensure you have firebase initialized
-import 'firebase/firestore';
+import { doc, getDocs, collection, query, where } from "firebase/firestore";
+import { db } from "../../../Firebase/firebase.config";
+import useAuth from "../../../hooks/useAuth";
 
 const ChatWithDoctor = () => {
+  const { user } = useAuth();
   const [callProps, setCallProps] = useState(null);
   const [error, setError] = useState("");
-  const [doctorId, setDoctorId] = useState(null);
-  const userId = "defaultUserId"; // Replace with actual user ID logic
-
-  useEffect(() => {
-    const fetchDoctorId = async () => {
-      try {
-        const firestore = firebase.firestore();
-        const doctorRef = await firestore.collection('doctors').limit(1).get();
-        if (!doctorRef.empty) {
-          const doctorDoc = doctorRef.docs[0];
-          setDoctorId(doctorDoc.id);
-        } else {
-          setError('Doctor not found');
-        }
-      } catch (error) {
-        setError(error.message);
-      }
-    };
-
-    fetchDoctorId();
-  }, []);
 
   useEffect(() => {
     const fetchCallProps = async () => {
       try {
-        if (!doctorId) return;
+        if (!user) return;
+
+        // Fetch doctor ID from Firestore (example: getting the first doctor)
+        const doctorsQuery = query(collection(db, 'doctors'));
+        const doctorSnapshot = await getDocs(doctorsQuery);
+        if (doctorSnapshot.empty) {
+          throw new Error('No doctor found');
+        }
+        const doctorId = doctorSnapshot.docs[0].id;
 
         const response = await fetch("/.netlify/functions/getCallDetails", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ userId, doctorId })
+          body: JSON.stringify({ userId: user.id, doctorId })
         });
 
         if (!response.ok) {
@@ -47,9 +36,9 @@ const ChatWithDoctor = () => {
         }
 
         const data = await response.json();
-        const userIdObject = { communicationUserId: userId };
+        const userIdObject = { communicationUserId: user.id };
         const token = data.token;
-        const displayName = "Default User";
+        const displayName = user.displayName || "User";
         const endpointUrl = "https://<RESOURCE_NAME>.communication.azure.com";
         const locator = { groupId: data.groupId, threadId: data.threadId };
 
@@ -66,8 +55,8 @@ const ChatWithDoctor = () => {
       }
     };
 
-    if (doctorId) fetchCallProps();
-  }, [doctorId]);
+    fetchCallProps();
+  }, [user]);
 
   if (error) {
     return <Container><h1>Error: {error}</h1></Container>;
