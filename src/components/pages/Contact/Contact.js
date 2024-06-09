@@ -316,10 +316,11 @@ const Contact = () => {
     peerConnection.current.addEventListener('track', event => {
       event.streams[0].getTracks().forEach(track => {
         remoteStream.current.addTrack(track);
-        if (remoteVideoRef.current) {
-          remoteVideoRef.current.srcObject = remoteStream.current;
-        }
       });
+
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = remoteStream.current;
+      }
     });
 
     onSnapshot(roomRef, async (snapshot) => {
@@ -365,10 +366,11 @@ const Contact = () => {
       peerConnection.current.addEventListener('track', event => {
         event.streams[0].getTracks().forEach(track => {
           remoteStream.current.addTrack(track);
-          if (remoteVideoRef.current) {
-            remoteVideoRef.current.srcObject = remoteStream.current;
-          }
         });
+
+        if (remoteVideoRef.current) {
+          remoteVideoRef.current.srcObject = remoteStream.current;
+        }
       });
 
       const offer = roomSnapshot.data().offer;
@@ -538,9 +540,10 @@ const Contact = () => {
                 </InputGroup>
               </Form>
               <div className="video-call-container">
-                <video ref={localVideoRef} autoPlay muted className="local-video" id="localVideo"></video>
-                <video ref={remoteVideoRef} autoPlay className="remote-video" id="remoteVideo"></video>
+                <video ref={localVideoRef} autoPlay muted playsInline className="local-video" id="localVideo"></video>
+                <video ref={remoteVideoRef} autoPlay playsInline className="remote-video" id="remoteVideo"></video>
                 <Button id="callBtn" onClick={handleCall}>Call</Button>
+                <Button id="hangUpBtn" onClick={hangUp}>Hang Up</Button>
                 <div id="currentRoom"></div>
               </div>
             </>
