@@ -40,13 +40,17 @@ const Contact = () => {
 
   useEffect(() => {
     const checkIfDoctor = async () => {
-      const userDocRef = doc(db, "doctors", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
+      try {
+        const userDocRef = doc(db, "doctors", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
 
-      if (userDocSnap.exists()) {
-        setIsDoctor(true);
-      } else {
-        setIsDoctor(false);
+        if (userDocSnap.exists()) {
+          setIsDoctor(true);
+        } else {
+          setIsDoctor(false);
+        }
+      } catch (error) {
+        console.error("Error checking doctor status:", error);
       }
     };
 
@@ -62,30 +66,38 @@ const Contact = () => {
   }, [isDoctor, user]);
 
   const fetchOnlineDoctors = async () => {
-    const doctorsRef = collection(db, "doctors");
-    const q = query(doctorsRef, where("isOnline", "==", true));
-    const querySnapshot = await getDocs(q);
-    const doctors = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log("Fetched online doctors:", doctors);
+    try {
+      const doctorsRef = collection(db, "doctors");
+      const q = query(doctorsRef, where("isOnline", "==", true));
+      const querySnapshot = await getDocs(q);
+      const doctors = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      console.log("Fetched online doctors:", doctors);
 
-    const uniqueDoctors = doctors.filter((doctor, index, self) =>
-      index === self.findIndex((d) => d.id === doctor.id)
-    );
+      const uniqueDoctors = doctors.filter((doctor, index, self) =>
+        index === self.findIndex((d) => d.id === doctor.id)
+      );
 
-    setOnlineDoctors(uniqueDoctors);
+      setOnlineDoctors(uniqueDoctors);
+    } catch (error) {
+      console.error("Error fetching online doctors:", error);
+    }
   };
 
   const fetchActiveUsers = async () => {
-    const usersRef = collection(db, "users");
-    const querySnapshot = await getDocs(usersRef);
-    const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log("Fetched active users:", users);
+    try {
+      const usersRef = collection(db, "users");
+      const querySnapshot = await getDocs(usersRef);
+      const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      console.log("Fetched active users:", users);
 
-    const uniqueUsers = users.filter((user, index, self) =>
-      index === self.findIndex((u) => u.id === user.id)
-    );
+      const uniqueUsers = users.filter((user, index, self) =>
+        index === self.findIndex((u) => u.id === user.id)
+      );
 
-    setActiveUsers(uniqueUsers);
+      setActiveUsers(uniqueUsers);
+    } catch (error) {
+      console.error("Error fetching active users:", error);
+    }
   };
 
   useEffect(() => {
@@ -134,31 +146,35 @@ const Contact = () => {
       return;
     }
 
-    const newMessage = {
-      user: user.displayName || "Anonymous",
-      userId: user.uid,
-      text: message,
-      timestamp: new Date().toISOString()
-    };
+    try {
+      const newMessage = {
+        user: user.displayName || "Anonymous",
+        userId: user.uid,
+        text: message,
+        timestamp: new Date().toISOString()
+      };
 
-    const chatId = isDoctor
-      ? generateChatId(selectedParticipant.id, user.displayName)
-      : generateChatId(user.uid, selectedParticipant.name);
+      const chatId = isDoctor
+        ? generateChatId(selectedParticipant.id, user.displayName)
+        : generateChatId(user.uid, selectedParticipant.name);
 
-    const chatRef = ref(database, `chats/${chatId}/messages`);
-    const newMessageRef = push(chatRef);
+      const chatRef = ref(database, `chats/${chatId}/messages`);
+      const newMessageRef = push(chatRef);
 
-    await set(newMessageRef, newMessage);
-    setMessage('');
-    resetTextarea();
+      await set(newMessageRef, newMessage);
+      setMessage('');
+      resetTextarea();
 
-    await set(ref(database, `chats/${chatId}/typing`), { typing: false });
+      await set(ref(database, `chats/${chatId}/typing`), { typing: false });
 
-    setTimeout(() => {
-      if (msgBoxRef.current) {
-        msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
-      }
-    }, 100);
+      setTimeout(() => {
+        if (msgBoxRef.current) {
+          msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
+        }
+      }, 100);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   const handleTyping = async (e) => {
@@ -168,18 +184,22 @@ const Contact = () => {
       ? generateChatId(selectedParticipant.id, user.displayName)
       : generateChatId(user.uid, selectedParticipant.name);
 
-    if (e.target.value.trim()) {
-      await set(ref(database, `chats/${chatId}/typing`), { typing: user.uid });
+    try {
+      if (e.target.value.trim()) {
+        await set(ref(database, `chats/${chatId}/typing`), { typing: user.uid });
 
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
 
-      typingTimeoutRef.current = setTimeout(async () => {
+        typingTimeoutRef.current = setTimeout(async () => {
+          await set(ref(database, `chats/${chatId}/typing`), { typing: false });
+        }, 7000);
+      } else {
         await set(ref(database, `chats/${chatId}/typing`), { typing: false });
-      }, 7000);
-    } else {
-      await set(ref(database, `chats/${chatId}/typing`), { typing: false });
+      }
+    } catch (error) {
+      console.error("Error handling typing:", error);
     }
 
     autoResizeTextarea();
@@ -220,7 +240,7 @@ const Contact = () => {
     }, 3000);
   };
 
-  const handleParticipantClick = async (participant) => {
+  const handleParticipantClick = (participant) => {
     setSelectedParticipant(participant);
 
     setTimeout(() => {
@@ -232,29 +252,7 @@ const Contact = () => {
   };
 
   const startCall = async () => {
-    peerConnection.current = new RTCPeerConnection(servers);
-    localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    localStream.current.getTracks().forEach(track => peerConnection.current.addTrack(track, localStream.current));
-
-    localVideoRef.current.srcObject = localStream.current;
-
-    peerConnection.current.onicecandidate = event => {
-      if (event.candidate) {
-        sendMessage({ candidate: event.candidate });
-      }
-    };
-
-    peerConnection.current.ontrack = event => {
-      remoteVideoRef.current.srcObject = event.streams[0];
-    };
-
-    const offer = await peerConnection.current.createOffer();
-    await peerConnection.current.setLocalDescription(offer);
-    sendMessage({ offer });
-  };
-
-  const handleIncomingCall = async (message) => {
-    if (message.offer) {
+    try {
       peerConnection.current = new RTCPeerConnection(servers);
       localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       localStream.current.getTracks().forEach(track => peerConnection.current.addTrack(track, localStream.current));
@@ -271,14 +269,44 @@ const Contact = () => {
         remoteVideoRef.current.srcObject = event.streams[0];
       };
 
-      await peerConnection.current.setRemoteDescription(new RTCSessionDescription(message.offer));
-      const answer = await peerConnection.current.createAnswer();
-      await peerConnection.current.setLocalDescription(answer);
-      sendMessage({ answer });
-    } else if (message.answer) {
-      await peerConnection.current.setRemoteDescription(new RTCSessionDescription(message.answer));
-    } else if (message.candidate) {
-      await peerConnection.current.addIceCandidate(new RTCIceCandidate(message.candidate));
+      const offer = await peerConnection.current.createOffer();
+      await peerConnection.current.setLocalDescription(offer);
+      sendMessage({ offer });
+    } catch (error) {
+      console.error("Error starting call:", error);
+    }
+  };
+
+  const handleIncomingCall = async (message) => {
+    try {
+      if (message.offer) {
+        peerConnection.current = new RTCPeerConnection(servers);
+        localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localStream.current.getTracks().forEach(track => peerConnection.current.addTrack(track, localStream.current));
+
+        localVideoRef.current.srcObject = localStream.current;
+
+        peerConnection.current.onicecandidate = event => {
+          if (event.candidate) {
+            sendMessage({ candidate: event.candidate });
+          }
+        };
+
+        peerConnection.current.ontrack = event => {
+          remoteVideoRef.current.srcObject = event.streams[0];
+        };
+
+        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(message.offer));
+        const answer = await peerConnection.current.createAnswer();
+        await peerConnection.current.setLocalDescription(answer);
+        sendMessage({ answer });
+      } else if (message.answer) {
+        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(message.answer));
+      } else if (message.candidate) {
+        await peerConnection.current.addIceCandidate(new RTCIceCandidate(message.candidate));
+      }
+    } catch (error) {
+      console.error("Error handling incoming call:", error);
     }
   };
 
@@ -287,8 +315,12 @@ const Contact = () => {
       ? generateChatId(selectedParticipant.id, user.displayName)
       : generateChatId(user.uid, selectedParticipant.name);
 
-    const messagesRef = ref(database, `calls/${chatId}/messages`);
-    await push(messagesRef, message);
+    try {
+      const messagesRef = ref(database, `calls/${chatId}/messages`);
+      await push(messagesRef, message);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   useEffect(() => {
