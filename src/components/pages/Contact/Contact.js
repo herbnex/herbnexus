@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge } from "react-bootstrap";
 import { ref, set, onValue, push } from "firebase/database";
-import { db, database } from "../../../Firebase/firebase.config"; // Import the database from your Firebase configuration
+import { db, database } from "../../../Firebase/firebase.config"; // Ensure this is correctly imported
 import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
