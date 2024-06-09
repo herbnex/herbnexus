@@ -32,7 +32,7 @@ const Contact = () => {
   const localStream = useRef(null);
   const remoteStream = useRef(new MediaStream());
   const roomIdRef = useRef(null);
-  const roomDialog = useRef(null); 
+  const roomDialog = useRef(null);
 
   const configuration = {
     iceServers: [
@@ -286,6 +286,11 @@ const Contact = () => {
   };
 
   const createRoom = async () => {
+    if (!localStream.current) {
+      console.error('Local stream is not initialized.');
+      return;
+    }
+
     document.querySelector('#createBtn').disabled = true;
     document.querySelector('#joinBtn').disabled = true;
 
@@ -350,6 +355,11 @@ const Contact = () => {
   };
 
   const joinRoomById = async (roomId) => {
+    if (!localStream.current) {
+      console.error('Local stream is not initialized.');
+      return;
+    }
+
     const roomRef = doc(db, 'rooms', roomId);
     const roomSnapshot = await getDoc(roomRef);
 
@@ -393,8 +403,8 @@ const Contact = () => {
   };
 
   const hangUp = async () => {
-    const tracks = localStream.current.getTracks();
-    tracks.forEach(track => {
+    const tracks = localStream.current?.getTracks();
+    tracks?.forEach(track => {
       track.stop();
     });
 
@@ -467,7 +477,9 @@ const Contact = () => {
 
   const answerCall = async () => {
     setShowIncomingCallModal(false);
-    await joinRoomById(incomingCall.roomId);
+    if (incomingCall) {
+      await joinRoomById(incomingCall.roomId);
+    }
     setIncomingCall(null);
   };
 
