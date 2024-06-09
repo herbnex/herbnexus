@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge } from "react-bootstrap";
 import { ref, set, onValue, push } from "firebase/database";
 import { database, db } from "../../../Firebase/firebase.config";
-import { doc, getDocs, collection, query, where, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
@@ -12,7 +12,6 @@ const Contact = () => {
   const { user } = useAuth();
   const history = useHistory();
   const location = useLocation();
-  const [loading, setLoading] = useState(true);
   const [onlineDoctors, setOnlineDoctors] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -29,13 +28,19 @@ const Contact = () => {
   const remoteVideoRef = useRef(null);
   const peerConnection = useRef(null);
   const localStream = useRef(null);
+  const remoteStream = useRef(new MediaStream());
+  const roomIdRef = useRef(null);
 
-  const servers = {
+  const configuration = {
     iceServers: [
       {
-        urls: "stun:stun.l.google.com:19302"
-      }
-    ]
+        urls: [
+          'stun:stun1.l.google.com:19302',
+          'stun:stun2.l.google.com:19302',
+        ],
+      },
+    ],
+    iceCandidatePoolSize: 10,
   };
 
   useEffect(() => {
@@ -251,102 +256,188 @@ const Contact = () => {
     }, 300);
   };
 
-  const startCall = async () => {
+  const openUserMedia = async () => {
     try {
-      peerConnection.current = new RTCPeerConnection(servers);
       localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      localStream.current.getTracks().forEach(track => peerConnection.current.addTrack(track, localStream.current));
-
+      remoteStream.current = new MediaStream();
       localVideoRef.current.srcObject = localStream.current;
+      remoteVideoRef.current.srcObject = remoteStream.current;
 
-      peerConnection.current.onicecandidate = event => {
-        if (event.candidate) {
-          sendMessage({ candidate: event.candidate });
-        }
-      };
-
-      peerConnection.current.ontrack = event => {
-        remoteVideoRef.current.srcObject = event.streams[0];
-      };
-
-      const offer = await peerConnection.current.createOffer();
-      await peerConnection.current.setLocalDescription(offer);
-      sendMessage({ offer });
+      document.querySelector('#cameraBtn').disabled = true;
+      document.querySelector('#joinBtn').disabled = false;
+      document.querySelector('#createBtn').disabled = false;
+      document.querySelector('#hangupBtn').disabled = false;
     } catch (error) {
-      console.error("Error starting call:", error);
+      console.error('Error accessing user media:', error);
     }
   };
 
-  const handleIncomingCall = async (message) => {
-    try {
-      if (message.offer) {
-        if (!peerConnection.current) {
-          peerConnection.current = new RTCPeerConnection(servers);
-          localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-          localStream.current.getTracks().forEach(track => peerConnection.current.addTrack(track, localStream.current));
+  const createRoom = async () => {
+    document.querySelector('#createBtn').disabled = true;
+    document.querySelector('#joinBtn').disabled = true;
 
-          localVideoRef.current.srcObject = localStream.current;
+    const db = firebase.firestore();
+    const roomRef = await db.collection('rooms').doc();
+    roomIdRef.current = roomRef.id;
 
-          peerConnection.current.onicecandidate = event => {
-            if (event.candidate) {
-              sendMessage({ candidate: event.candidate });
-            }
-          };
+    peerConnection.current = new RTCPeerConnection(configuration);
+    registerPeerConnectionListeners();
 
-          peerConnection.current.ontrack = event => {
-            remoteVideoRef.current.srcObject = event.streams[0];
-          };
-        }
+    localStream.current.getTracks().forEach(track => {
+      peerConnection.current.addTrack(track, localStream.current);
+    });
 
-        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(message.offer));
-        const answer = await peerConnection.current.createAnswer();
-        await peerConnection.current.setLocalDescription(answer);
-        sendMessage({ answer });
-      } else if (message.answer) {
-        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(message.answer));
-      } else if (message.candidate) {
-        await peerConnection.current.addIceCandidate(new RTCIceCandidate(message.candidate));
-      }
-    } catch (error) {
-      console.error("Error handling incoming call:", error);
-    }
-  };
-
-  const sendMessage = async (message) => {
-    const chatId = isDoctor
-      ? generateChatId(selectedParticipant.id, user.displayName)
-      : generateChatId(user.uid, selectedParticipant.name);
-
-    try {
-      const messagesRef = ref(database, `calls/${chatId}/messages`);
-      await push(messagesRef, message);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (!user || !selectedParticipant) {
-      return;
-    }
-
-    const chatId = isDoctor
-      ? generateChatId(selectedParticipant.id, user.displayName)
-      : generateChatId(user.uid, selectedParticipant.name);
-
-    const messagesRef = ref(database, `calls/${chatId}/messages`);
-    const unsubscribe = onValue(messagesRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const messages = Object.values(data);
-        messages.forEach(message => handleIncomingCall(message));
+    const callerCandidatesCollection = roomRef.collection('callerCandidates');
+    peerConnection.current.addEventListener('icecandidate', event => {
+      if (event.candidate) {
+        callerCandidatesCollection.add(event.candidate.toJSON());
       }
     });
 
-    return () => {
-      unsubscribe();
-    };
-  }, [user, selectedParticipant, isDoctor]);
+    const offer = await peerConnection.current.createOffer();
+    await peerConnection.current.setLocalDescription(offer);
+
+    const roomWithOffer = { 'offer': { type: offer.type, sdp: offer.sdp } };
+    await roomRef.set(roomWithOffer);
+
+    document.querySelector('#currentRoom').innerText = `Current room is ${roomRef.id} - You are the caller!`;
+
+    peerConnection.current.addEventListener('track', event => {
+      event.streams[0].getTracks().forEach(track => {
+        remoteStream.current.addTrack(track);
+      });
+    });
+
+    roomRef.onSnapshot(async snapshot => {
+      const data = snapshot.data();
+      if (data?.answer && !peerConnection.current.currentRemoteDescription) {
+        const rtcSessionDescription = new RTCSessionDescription(data.answer);
+        await peerConnection.current.setRemoteDescription(rtcSessionDescription);
+      }
+    });
+
+    roomRef.collection('calleeCandidates').onSnapshot(snapshot => {
+      snapshot.docChanges().forEach(async change => {
+        if (change.type === 'added') {
+          await peerConnection.current.addIceCandidate(new RTCIceCandidate(change.doc.data()));
+        }
+      });
+    });
+  };
+
+  const joinRoom = () => {
+    document.querySelector('#createBtn').disabled = true;
+    document.querySelector('#joinBtn').disabled = true;
+
+    document.querySelector('#confirmJoinBtn').addEventListener('click', async () => {
+      roomIdRef.current = document.querySelector('#room-id').value;
+      await joinRoomById(roomIdRef.current);
+      document.querySelector('#currentRoom').innerText = `Current room is ${roomIdRef.current} - You are the callee!`;
+    }, { once: true });
+    document.querySelector('#room-dialog').open();
+  };
+
+  const joinRoomById = async (roomId) => {
+    const db = firebase.firestore();
+    const roomRef = db.collection('rooms').doc(roomId);
+    const roomSnapshot = await roomRef.get();
+
+    if (roomSnapshot.exists) {
+      peerConnection.current = new RTCPeerConnection(configuration);
+      registerPeerConnectionListeners();
+
+      localStream.current.getTracks().forEach(track => {
+        peerConnection.current.addTrack(track, localStream.current);
+      });
+
+      const calleeCandidatesCollection = roomRef.collection('calleeCandidates');
+      peerConnection.current.addEventListener('icecandidate', event => {
+        if (event.candidate) {
+          calleeCandidatesCollection.add(event.candidate.toJSON());
+        }
+      });
+
+      peerConnection.current.addEventListener('track', event => {
+        event.streams[0].getTracks().forEach(track => {
+          remoteStream.current.addTrack(track);
+        });
+      });
+
+      const offer = roomSnapshot.data().offer;
+      await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
+      const answer = await peerConnection.current.createAnswer();
+      await peerConnection.current.setLocalDescription(answer);
+
+      const roomWithAnswer = { answer: { type: answer.type, sdp: answer.sdp } };
+      await roomRef.update(roomWithAnswer);
+
+      roomRef.collection('callerCandidates').onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(async change => {
+          if (change.type === 'added') {
+            await peerConnection.current.addIceCandidate(new RTCIceCandidate(change.doc.data()));
+          }
+        });
+      });
+    }
+  };
+
+  const hangUp = async () => {
+    const tracks = localStream.current.getTracks();
+    tracks.forEach(track => {
+      track.stop();
+    });
+
+    if (remoteStream.current) {
+      remoteStream.current.getTracks().forEach(track => track.stop());
+    }
+
+    if (peerConnection.current) {
+      peerConnection.current.close();
+    }
+
+    localVideoRef.current.srcObject = null;
+    remoteVideoRef.current.srcObject = null;
+
+    document.querySelector('#cameraBtn').disabled = false;
+    document.querySelector('#joinBtn').disabled = true;
+    document.querySelector('#createBtn').disabled = true;
+    document.querySelector('#hangupBtn').disabled = true;
+    document.querySelector('#currentRoom').innerText = '';
+
+    if (roomIdRef.current) {
+      const db = firebase.firestore();
+      const roomRef = db.collection('rooms').doc(roomIdRef.current);
+      const calleeCandidates = await roomRef.collection('calleeCandidates').get();
+      calleeCandidates.forEach(async candidate => {
+        await candidate.ref.delete();
+      });
+      const callerCandidates = await roomRef.collection('callerCandidates').get();
+      callerCandidates.forEach(async candidate => {
+        await candidate.ref.delete();
+      });
+      await roomRef.delete();
+    }
+
+    document.location.reload(true);
+  };
+
+  const registerPeerConnectionListeners = () => {
+    peerConnection.current.addEventListener('icegatheringstatechange', () => {
+      console.log(`ICE gathering state changed: ${peerConnection.current.iceGatheringState}`);
+    });
+
+    peerConnection.current.addEventListener('connectionstatechange', () => {
+      console.log(`Connection state change: ${peerConnection.current.connectionState}`);
+    });
+
+    peerConnection.current.addEventListener('signalingstatechange', () => {
+      console.log(`Signaling state change: ${peerConnection.current.signalingState}`);
+    });
+
+    peerConnection.current.addEventListener('iceconnectionstatechange', () => {
+      console.log(`ICE connection state change: ${peerConnection.current.iceConnectionState}`);
+    });
+  };
 
   return (
     <Container fluid className="chat-room">
@@ -415,7 +506,10 @@ const Contact = () => {
               <div className="video-call-container">
                 <video ref={localVideoRef} autoPlay muted className="local-video"></video>
                 <video ref={remoteVideoRef} autoPlay className="remote-video"></video>
-                <Button onClick={startCall}>Start Call</Button>
+                <Button id="cameraBtn" onClick={openUserMedia}>Open Camera & Microphone</Button>
+                <Button id="createBtn" onClick={createRoom}>Create Room</Button>
+                <Button id="joinBtn" onClick={joinRoom}>Join Room</Button>
+                <Button id="hangupBtn" onClick={hangUp}>Hang Up</Button>
               </div>
             </>
           ) : (
