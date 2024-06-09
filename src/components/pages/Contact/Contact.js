@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge } from "react-bootstrap";
+import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge, Modal } from "react-bootstrap";
 import { ref, set, onValue, push } from "firebase/database";
 import { db, database } from "../../../Firebase/firebase.config";
 import { doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
@@ -19,6 +19,8 @@ const Contact = () => {
   const [message, setMessage] = useState('');
   const [isDoctor, setIsDoctor] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
+  const [incomingCall, setIncomingCall] = useState(null);
+  const [showIncomingCallModal, setShowIncomingCallModal] = useState(false);
   const typingTimeoutRef = useRef(null);
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
@@ -30,7 +32,7 @@ const Contact = () => {
   const localStream = useRef(null);
   const remoteStream = useRef(new MediaStream());
   const roomIdRef = useRef(null);
-  const roomDialog = useRef(null);
+  const roomDialog = useRef(null); 
 
   const configuration = {
     iceServers: [
@@ -140,9 +142,19 @@ const Contact = () => {
       setOtherTyping(typingData && typingData.typing && typingData.typing !== user.uid);
     });
 
+    const callUnsubscribe = onSnapshot(collection(db, `calls`), (snapshot) => {
+      snapshot.docChanges().forEach(change => {
+        if (change.type === 'added' && change.doc.data().receiverId === user.uid) {
+          setIncomingCall(change.doc.data());
+          setShowIncomingCallModal(true);
+        }
+      });
+    });
+
     return () => {
       unsubscribe();
       typingUnsubscribe();
+      callUnsubscribe();
     };
   }, [user, selectedParticipant, isDoctor]);
 
@@ -437,6 +449,33 @@ const Contact = () => {
     });
   };
 
+  const handleCall = async () => {
+    if (!selectedParticipant) return;
+
+    const callData = {
+      callerId: user.uid,
+      callerName: user.displayName || 'Anonymous',
+      receiverId: selectedParticipant.id,
+      roomId: roomIdRef.current,
+      timestamp: new Date().toISOString(),
+    };
+
+    await addDoc(collection(db, 'calls'), callData);
+
+    createRoom();
+  };
+
+  const answerCall = async () => {
+    setShowIncomingCallModal(false);
+    await joinRoomById(incomingCall.roomId);
+    setIncomingCall(null);
+  };
+
+  const declineCall = () => {
+    setShowIncomingCallModal(false);
+    setIncomingCall(null);
+  };
+
   return (
     <Container fluid className="chat-room">
       <Row>
@@ -508,6 +547,7 @@ const Contact = () => {
                 <Button id="createBtn" onClick={createRoom}>Create Room</Button>
                 <Button id="joinBtn" onClick={joinRoom}>Join Room</Button>
                 <Button id="hangupBtn" onClick={hangUp}>Hang Up</Button>
+                <Button id="callBtn" onClick={handleCall}>Call</Button>
                 <div id="currentRoom"></div>
                 <div id="room-dialog">
                   <input type="text" id="room-id" placeholder="Enter Room ID" />
@@ -520,6 +560,16 @@ const Contact = () => {
           )}
         </Col>
       </Row>
+      <Modal show={showIncomingCallModal} onHide={declineCall}>
+        <Modal.Header closeButton>
+          <Modal.Title>Incoming Call</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{incomingCall?.callerName} is calling you.</p>
+          <Button variant="success" onClick={answerCall}>Answer</Button>
+          <Button variant="danger" onClick={declineCall}>Decline</Button>
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };
