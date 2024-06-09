@@ -362,6 +362,9 @@ const Contact = () => {
       peerConnection.current.addEventListener('track', event => {
         event.streams[0].getTracks().forEach(track => {
           remoteStream.current.addTrack(track);
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = remoteStream.current;
+          }
         });
       });
 
