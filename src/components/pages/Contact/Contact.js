@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge } from "react-bootstrap";
 import { ref, set, onValue, push } from "firebase/database";
-import { db, database } from "../../../Firebase/firebase.config"; // Ensure this is correctly imported
-import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
+import { db, database } from "../../../Firebase/firebase.config";
+import { doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
@@ -277,7 +277,7 @@ const Contact = () => {
     document.querySelector('#createBtn').disabled = true;
     document.querySelector('#joinBtn').disabled = true;
 
-    const roomRef = await db.collection('rooms').doc();
+    const roomRef = await doc(collection(db, 'rooms'));
     roomIdRef.current = roomRef.id;
 
     peerConnection.current = new RTCPeerConnection(configuration);
@@ -290,7 +290,7 @@ const Contact = () => {
     const callerCandidatesCollection = collection(roomRef, 'callerCandidates');
     peerConnection.current.addEventListener('icecandidate', event => {
       if (event.candidate) {
-        callerCandidatesCollection.add(event.candidate.toJSON());
+        addDoc(callerCandidatesCollection, event.candidate.toJSON());
       }
     });
 
@@ -352,7 +352,7 @@ const Contact = () => {
       const calleeCandidatesCollection = collection(roomRef, 'calleeCandidates');
       peerConnection.current.addEventListener('icecandidate', event => {
         if (event.candidate) {
-          calleeCandidatesCollection.add(event.candidate.toJSON());
+          addDoc(calleeCandidatesCollection, event.candidate.toJSON());
         }
       });
 
