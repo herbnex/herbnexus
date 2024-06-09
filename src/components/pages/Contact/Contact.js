@@ -333,7 +333,7 @@ const Contact = () => {
       await joinRoomById(roomIdRef.current);
       document.querySelector('#currentRoom').innerText = `Current room is ${roomIdRef.current} - You are the callee!`;
     }, { once: true });
-    document.querySelector('#room-dialog').open();
+    roomDialog.open();
   };
 
   const joinRoomById = async (roomId) => {
@@ -501,8 +501,8 @@ const Contact = () => {
                 </InputGroup>
               </Form>
               <div className="video-call-container">
-                <video ref={localVideoRef} autoPlay muted className="local-video"></video>
-                <video ref={remoteVideoRef} autoPlay className="remote-video"></video>
+                <video ref={localVideoRef} autoPlay muted className="local-video" id="localVideo"></video>
+                <video ref={remoteVideoRef} autoPlay className="remote-video" id="remoteVideo"></video>
                 <Button id="cameraBtn" onClick={openUserMedia}>Open Camera & Microphone</Button>
                 <Button id="createBtn" onClick={createRoom}>Create Room</Button>
                 <Button id="joinBtn" onClick={joinRoom}>Join Room</Button>
