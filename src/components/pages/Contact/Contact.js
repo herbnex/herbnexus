@@ -449,6 +449,8 @@ const Contact = () => {
   const handleCall = async () => {
     if (!selectedParticipant) return;
 
+    await createRoom();
+
     const callData = {
       callerId: user.uid,
       callerName: user.displayName || 'Anonymous',
@@ -458,8 +460,6 @@ const Contact = () => {
     };
 
     await addDoc(collection(db, 'calls'), callData);
-
-    await createRoom();
   };
 
   const answerCall = async () => {
