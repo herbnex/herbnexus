@@ -288,7 +288,7 @@ const Contact = () => {
       await openUserMedia();
     }
 
-    const roomRef = await doc(collection(db, 'rooms'));
+    const roomRef = doc(collection(db, 'rooms'));
     roomIdRef.current = roomRef.id;
 
     peerConnection.current = new RTCPeerConnection(configuration);
@@ -465,6 +465,7 @@ const Contact = () => {
   const answerCall = async () => {
     setShowIncomingCallModal(false);
     if (incomingCall) {
+      roomIdRef.current = incomingCall.roomId;
       await joinRoomById(incomingCall.roomId);
     }
     setIncomingCall(null);
