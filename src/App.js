@@ -59,6 +59,9 @@ function App() {
           <Route path="/about">
             <About />
           </Route>
+          <Route path="/chat-with-doctor">
+            <ChatWithDoctor />  
+            </Route> 
           <PrivateRoute path="/contact">
             <Contact />
           </PrivateRoute>
@@ -83,9 +86,6 @@ function App() {
           <Route path="/terms-of-service">
             <TermsOfService /> 
           </Route>
-          <Route path="/chat-with-doctor/:doctorId">
-            <ChatWithDoctor />  
-            </Route> 
           <Route path="*">
             <NotFound />
           </Route>
