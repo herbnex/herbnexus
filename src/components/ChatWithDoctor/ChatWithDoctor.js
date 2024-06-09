@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Spinner, Container } from "react-bootstrap";
 import { CallWithChatExperience } from "./CallWithChatExperience";
 import { doc, getDocs, collection, query, where } from "firebase/firestore";
-import { db } from "../../../Firebase/firebase.config";
-import useAuth from "../../../hooks/useAuth";
+import { db } from "../../../src/Firebase/firebase.config";
+import useAuth from "../../../src/hooks/useAuth";
 
 const ChatWithDoctor = () => {
   const { user } = useAuth();
