@@ -7,7 +7,6 @@ const getTokenForUser = async () => {
   const connectionString = process.env.AZURE_COMMUNICATION_SERVICES_CONNECTION_STRING;
   const client = new CommunicationIdentityClient(connectionString);
 
-  // Create a new user and issue a token
   const user = await client.createUser();
   const tokenResponse = await client.issueToken(user, ["voip", "chat"]);
 
@@ -36,7 +35,6 @@ exports.handler = async (event) => {
   try {
     const { userId, doctorId } = JSON.parse(event.body);
 
-    // Fetch tokens and user IDs for both the user and the doctor
     const userTokenDetails = await getTokenForUser();
     const doctorTokenDetails = await getTokenForUser();
     const endpointUrl = process.env.AZURE_COMMUNICATION_SERVICES_ENDPOINT;
