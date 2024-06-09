@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Spinner, Container } from "react-bootstrap";
 import { CallWithChatExperience } from "./CallWithChatExperience";
-import { collection, query, getDocs, getDoc, doc } from "firebase/firestore";
+import { collection, query, getDocs } from "firebase/firestore";
 import { db } from "../../../src/Firebase/firebase.config";
 import useAuth from "../../../src/hooks/useAuth";
 
@@ -39,7 +39,7 @@ const ChatWithDoctor = () => {
         const userIdObject = { communicationUserId: user.uid };
         const token = data.token;
         const displayName = user.displayName || "User";
-        const endpointUrl = process.env.REACT_APP_AZURE_COMMUNICATION_SERVICES_ENDPOINT;
+        const endpointUrl = process.env.REACT_APP_AZURE_COMMUNICATION_SERVICES_ENDPOINT || "<RESOURCE_NAME>.communication.azure.com";
         const locator = { groupId: data.groupId, threadId: data.threadId };
 
         setCallProps({
