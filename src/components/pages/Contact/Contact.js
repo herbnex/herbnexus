@@ -63,7 +63,7 @@ const Contact = () => {
     isScreenSharing, setIsScreenSharing,
     loading, setLoading,
     error, setError,
-    showNotification, setShowNotification, // Add these lines
+    showNotification, setShowNotification,
     notification, setNotification,
     language, setLanguage
   } = useContext(ChatContext);
@@ -722,7 +722,7 @@ const Contact = () => {
   return (
     <Container fluid className="chat-room">
       <Row>
-        <Col md={4} className="participants-list">
+        <Col md={3} className="participants-list">
           <div className="d-flex justify-content-between align-items-center">
             <h3>{isDoctor ? "Users" : "Online Doctors"}</h3>
             <Dropdown>
@@ -758,184 +758,94 @@ const Contact = () => {
             ))}
           </ListGroup>
         </Col>
-        <Col md={8} className="chat-section" ref={chatSectionRef}>
-          {selectedParticipant ? (
-            <>
-              <h4>Chat with {selectedParticipant.name}</h4>
-              <div className="d-flex align-items-center justify-content-between mb-2">
-                <div>{currentRoom}</div>
-                <Button variant="link" onClick={handleCall}>
-                  <FaPhoneAlt size={20} />
-                </Button>
-              </div>
-              <div className="msg-box" ref={msgBoxRef}>
-                {msgList.map((msg, index) => (
-                  <div
-                    key={index}
-                    className={`message-container ${
-                      msg.userId === user.uid ? "msg-self" : "msg-other"
-                    } ${
-                      visibleTimestamps[index] ? "show-timestamp" : ""
+        <Col md={6} className="video-call-container">
+          <h4>Video Call</h4>
+          <video
+            ref={localVideoRef}
+            autoPlay
+            muted
+            playsInline
+            className="local-video"
+            id="localVideo"
+          />
+          <video
+            ref={remoteVideoRef}
+            autoPlay
+            playsInline
+            className="remote-video"
+            id="remoteVideo"
+          />
+          <div className="video-call-controls">
+            <Button onClick={toggleMute} className="control-button">
+              {isMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
+            </Button>
+            <Button onClick={toggleCamera} className="control-button">
+              {isCameraOff ? <FaVideoSlash /> : <FaVideo />}
+            </Button>
+            <Button onClick={startScreenShare} className="control-button">
+              <FaDesktop />
+            </Button>
+            <Button variant="danger" onClick={hangUp} className="control-button">
+              Hang Up
+            </Button>
+          </div>
+        </Col>
+        <Col md={3} className="chat-section" ref={chatSectionRef}>
+          <h4>Chat</h4>
+          <div className="msg-box" ref={msgBoxRef}>
+            {msgList.map((msg, index) => (
+              <div
+                key={index}
+                className={`message-container ${
+                  msg.userId === user.uid ? "msg-self" : "msg-other"
+                } ${
+                  visibleTimestamps[index] ? "show-timestamp" : ""
+                }`}
+                onClick={() => toggleTimestamp(index)}
+              >
+                <p title={msg.user}>{msg.text}</p>
+                {visibleTimestamps[index] && (
+                  <span
+                    className={`timestamp ${
+                      msg.userId === user.uid
+                        ? "timestamp-left"
+                        : "timestamp-right"
                     }`}
-                    onClick={() => toggleTimestamp(index)}
                   >
-                    <p title={msg.user}>{msg.text}</p>
-                    {visibleTimestamps[index] && (
-                      <span
-                        className={`timestamp ${
-                          msg.userId === user.uid
-                            ? "timestamp-left"
-                            : "timestamp-right"
-                        }`}
-                      >
-                        {formatTimestamp(msg.timestamp)}
-                      </span>
-                    )}
-                  </div>
-                ))}
-                {otherTyping && (
-                  <p className="msg-other typing-indicator">Typing...</p>
+                    {formatTimestamp(msg.timestamp)}
+                  </span>
                 )}
               </div>
-              <Form
-                onSubmit={handleSendMessage}
-                className="message-input-container"
+            ))}
+            {otherTyping && (
+              <p className="msg-other typing-indicator">Typing...</p>
+            )}
+          </div>
+          <Form
+            onSubmit={handleSendMessage}
+            className="message-input-container"
+          >
+            <InputGroup className="mb-3">
+              <Form.Control
+                as="textarea"
+                ref={textareaRef}
+                rows={1}
+                placeholder="Type your message..."
+                value={message}
+                onChange={handleTyping}
+                aria-label="User message input"
+                className="message-input"
+                style={{ resize: "none", overflow: "auto" }}
+              />
+              <Button
+                variant="outline-secondary"
+                type="submit"
+                className="message-send-button"
               >
-                <InputGroup className="mb-3">
-                  <Form.Control
-                    as="textarea"
-                    ref={textareaRef}
-                    rows={1}
-                    placeholder="Type your message..."
-                    value={message}
-                    onChange={handleTyping}
-                    aria-label="User message input"
-                    className="message-input"
-                    style={{ resize: "none", overflow: "auto" }}
-                  />
-                  <Button
-                    variant="outline-secondary"
-                    type="submit"
-                    className="message-send-button"
-                  >
-                    Send
-                  </Button>
-                </InputGroup>
-              </Form>
-              <Modal
-                show={showCallModal}
-                onHide={() => setShowCallModal(false)}
-                size="lg"
-              >
-                <Modal.Header closeButton>
-                  <Modal.Title>Video Call</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <Row>
-                    <Col
-                      md={8}
-                      className="d-flex flex-column align-items-center video-container"
-                    >
-                      {showCallModal && (
-                        <>
-                          <video
-                            ref={localVideoRef}
-                            autoPlay
-                            muted
-                            playsInline
-                            className="local-video"
-                            id="localVideo"
-                          />
-                          <video
-                            ref={remoteVideoRef}
-                            autoPlay
-                            playsInline
-                            className="remote-video"
-                            id="remoteVideo"
-                          />
-                        </>
-                      )}
-
-                      <div className="video-call-controls">
-                        <Button onClick={toggleMute} className="control-button">
-                          {isMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
-                        </Button>
-                        <Button onClick={toggleCamera} className="control-button">
-                          {isCameraOff ? <FaVideoSlash /> : <FaVideo />}
-                        </Button>
-                        <Button onClick={startScreenShare} className="control-button">
-                          <FaDesktop />
-                        </Button>
-                      </div>
-                    </Col>
-                    <Col md={4}>
-                      <div className="msg-box" ref={msgBoxRef}>
-                        {msgList.map((msg, index) => (
-                          <div
-                            key={index}
-                            className={`message-container ${
-                              msg.userId === user.uid ? "msg-self" : "msg-other"
-                            } ${
-                              visibleTimestamps[index] ? "show-timestamp" : ""
-                            }`}
-                            onClick={() => toggleTimestamp(index)}
-                          >
-                            <p title={msg.user}>{msg.text}</p>
-                            {visibleTimestamps[index] && (
-                              <span
-                                className={`timestamp ${
-                                  msg.userId === user.uid
-                                    ? "timestamp-left"
-                                    : "timestamp-right"
-                                }`}
-                              >
-                                {formatTimestamp(msg.timestamp)}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                        {otherTyping && (
-                          <p className="msg-other typing-indicator">Typing...</p>
-                        )}
-                      </div>
-                      <Form
-                        onSubmit={handleSendMessage}
-                        className="message-input-container"
-                      >
-                        <InputGroup className="mb-3">
-                          <Form.Control
-                            as="textarea"
-                            ref={textareaRef}
-                            rows={1}
-                            placeholder="Type your message..."
-                            value={message}
-                            onChange={handleTyping}
-                            aria-label="User message input"
-                            className="message-input"
-                            style={{ resize: "none", overflow: "auto" }}
-                          />
-                          <Button
-                            variant="outline-secondary"
-                            type="submit"
-                            className="message-send-button"
-                          >
-                            Send
-                          </Button>
-                        </InputGroup>
-                      </Form>
-                    </Col>
-                  </Row>
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="danger" onClick={hangUp}>
-                    Hang Up
-                  </Button>
-                </Modal.Footer>
-              </Modal>
-            </>
-          ) : (
-            <h4>Select a {isDoctor ? "user" : "doctor"} to start chatting</h4>
-          )}
+                Send
+              </Button>
+            </InputGroup>
+          </Form>
         </Col>
       </Row>
       <Modal show={showIncomingCallModal} onHide={declineCall}>
