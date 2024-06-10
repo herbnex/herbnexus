@@ -1,5 +1,3 @@
-/* Contact.css */
-
 .contact-panel {
   display: flex;
   flex-direction: column;
@@ -154,7 +152,7 @@
 
 @media (max-width: 768px) {
   .chat-section {
-    height: calc(100vh - 60px); /* Adjust height to prevent excessive scrolling */
+    height: calc(100vh - 60px);
     padding: 10px;
   }
 
@@ -168,26 +166,32 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 10px;
 }
 
-.local-video, .remote-video {
+.local-video,
+.remote-video {
   width: 100%;
-  max-width: 400px;
-  border: 2px solid #39cabb;
-  border-radius: 10px;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-button {
-  padding: 0.5rem 1rem;
-  background-color: #39cabb;
-  color: white;
+#callBtn,
+#hangUpBtn {
+  padding: 10px;
   border: none;
+  background-color: #39cabb;
+  color: #fff;
   border-radius: 5px;
   cursor: pointer;
 }
 
-button:hover {
+#callBtn:hover,
+#hangUpBtn:hover {
   background-color: #33b3a3;
+}
+
+#currentRoom {
+  margin-top: 10px;
 }
