@@ -28,13 +28,14 @@ const Contact = () => {
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
   const chatSectionRef = useRef(null);
-  const [visibleTimestamps, setVisibleTimestamps] = useState({});
+  const [visibleTimestamps, setVisibleTtimestamps] = useState({});
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnection = useRef(null);
   const localStream = useRef(null);
   const remoteStream = useRef(null);
   const roomIdRef = useRef(null);
+  const pendingCandidates = useRef([]);
 
   const configuration = {
     iceServers: [
@@ -331,13 +332,23 @@ const Contact = () => {
       if (data?.answer) {
         const rtcSessionDescription = new RTCSessionDescription(data.answer);
         await peerConnection.current.setRemoteDescription(rtcSessionDescription);
+
+        // Add pending candidates now that remote description is set
+        while (pendingCandidates.current.length) {
+          await peerConnection.current.addIceCandidate(new RTCIceCandidate(pendingCandidates.current.shift()));
+        }
       }
     });
 
     onSnapshot(collection(roomRef, 'calleeCandidates'), (snapshot) => {
       snapshot.docChanges().forEach(async change => {
         if (change.type === 'added') {
-          await peerConnection.current.addIceCandidate(new RTCIceCandidate(change.doc.data()));
+          const candidate = new RTCIceCandidate(change.doc.data());
+          if (peerConnection.current.remoteDescription) {
+            await peerConnection.current.addIceCandidate(candidate);
+          } else {
+            pendingCandidates.current.push(candidate);
+          }
         }
       });
     });
@@ -388,7 +399,12 @@ const Contact = () => {
         onSnapshot(collection(roomRef, 'callerCandidates'), (snapshot) => {
           snapshot.docChanges().forEach(async change => {
             if (change.type === 'added') {
-              await peerConnection.current.addIceCandidate(new RTCIceCandidate(change.doc.data()));
+              const candidate = new RTCIceCandidate(change.doc.data());
+              if (peerConnection.current.remoteDescription) {
+                await peerConnection.current.addIceCandidate(candidate);
+              } else {
+                pendingCandidates.current.push(candidate);
+              }
             }
           });
         });
