@@ -680,6 +680,9 @@ const Contact = () => {
       if (localVideoRef.current && localStream.current) {
         localVideoRef.current.srcObject = localStream.current; // Attach local stream when modal opens
       }
+      if (remoteVideoRef.current && remoteStream.current) {
+        remoteVideoRef.current.srcObject = remoteStream.current; // Attach remote stream when modal opens
+      }
     }
   }, [showCallModal]);
 
