@@ -116,8 +116,8 @@ const Contact = () => {
     }
 
     const chatId = isDoctor
-      ? generateChatId(selectedParticipant.id, user.displayName)
-      : generateChatId(user.uid, selectedParticipant.name);
+      ? generateChatId(selectedParticipant.id, user.uid)
+      : generateChatId(user.uid, selectedParticipant.id);
 
     console.log("Generated Chat ID:", chatId);
     const chatRef = ref(database, `chats/${chatId}/messages`);
@@ -175,8 +175,8 @@ const Contact = () => {
       };
 
       const chatId = isDoctor
-        ? generateChatId(selectedParticipant.id, user.displayName)
-        : generateChatId(user.uid, selectedParticipant.name);
+        ? generateChatId(selectedParticipant.id, user.uid)
+        : generateChatId(user.uid, selectedParticipant.id);
 
       const chatRef = ref(database, `chats/${chatId}/messages`);
       const newMessageRef = push(chatRef);
@@ -201,8 +201,8 @@ const Contact = () => {
     setMessage(e.target.value);
 
     const chatId = isDoctor
-      ? generateChatId(selectedParticipant.id, user.displayName)
-      : generateChatId(user.uid, selectedParticipant.name);
+      ? generateChatId(selectedParticipant.id, user.uid)
+      : generateChatId(user.uid, selectedParticipant.id);
 
     try {
       if (e.target.value.trim()) {
@@ -291,7 +291,7 @@ const Contact = () => {
       await openUserMedia();
     }
 
-    const roomRef = doc(collection(db, 'rooms'));
+    const roomRef = doc(db, 'rooms', generateRoomId(selectedParticipant.id, user.uid));
     roomIdRef.current = roomRef.id;
 
     peerConnection.current = new RTCPeerConnection(configuration);
@@ -481,25 +481,9 @@ const Contact = () => {
     await addDoc(collection(db, 'calls'), callData);
   };
 
-  const findOrCreateRoom = async (doctorId, userId) => {
-    const roomId = generateRoomId(doctorId, userId);
-    const roomRef = doc(db, 'rooms', roomId);
-    const roomSnapshot = await getDoc(roomRef);
-
-    if (roomSnapshot.exists()) {
-      return { id: roomSnapshot.id, ...roomSnapshot.data() };
-    }
-
-    const newRoom = {
-      participants: [doctorId, userId],
-      timestamp: new Date(),
-    };
-    await setDoc(roomRef, newRoom);
-    return { id: roomRef.id, ...newRoom };
-  };
-
   const generateRoomId = (doctorId, userId) => {
-    return `${doctorId}_${userId}`;
+    const ids = [doctorId, userId].sort(); // Ensure the room ID is the same regardless of the order of doctorId and userId
+    return `${ids[0]}_${ids[1]}`;
   };
 
   const answerCall = async () => {
