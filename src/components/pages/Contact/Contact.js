@@ -33,7 +33,7 @@ import {
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
-import { FaPhoneAlt } from "react-icons/fa";
+import { FaPhoneAlt, FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaDesktop } from "react-icons/fa";
 import "./Contact.css";
 
 const Contact = () => {
@@ -51,6 +51,9 @@ const Contact = () => {
   const [showIncomingCallModal, setShowIncomingCallModal] = useState(false);
   const [showCallModal, setShowCallModal] = useState(false);
   const [currentRoom, setCurrentRoom] = useState(null);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isCameraOff, setIsCameraOff] = useState(false);
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
   const typingTimeoutRef = useRef(null);
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
@@ -528,6 +531,65 @@ const Contact = () => {
     document.location.reload(true);
   };
 
+  const toggleMute = () => {
+    const audioTrack = localStream.current
+      .getTracks()
+      .find((track) => track.kind === "audio");
+    if (audioTrack) {
+      audioTrack.enabled = !audioTrack.enabled;
+      setIsMuted(!audioTrack.enabled);
+    }
+  };
+
+  const toggleCamera = () => {
+    const videoTrack = localStream.current
+      .getTracks()
+      .find((track) => track.kind === "video");
+    if (videoTrack) {
+      videoTrack.enabled = !videoTrack.enabled;
+      setIsCameraOff(!videoTrack.enabled);
+    }
+  };
+
+  const startScreenShare = async () => {
+    if (!isScreenSharing) {
+      try {
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+        });
+        const screenTrack = screenStream.getTracks()[0];
+
+        const sender = peerConnection.current
+          .getSenders()
+          .find((s) => s.track.kind === "video");
+        sender.replaceTrack(screenTrack);
+
+        screenTrack.onended = () => {
+          stopScreenShare();
+        };
+
+        setIsScreenSharing(true);
+      } catch (error) {
+        console.error("Error starting screen share:", error);
+      }
+    } else {
+      stopScreenShare();
+    }
+  };
+
+  const stopScreenShare = () => {
+    const videoTrack = localStream.current
+      .getTracks()
+      .find((track) => track.kind === "video");
+
+    const sender = peerConnection.current
+      .getSenders()
+      .find((s) => s.track.kind === "video");
+    sender.replaceTrack(videoTrack);
+
+    setIsScreenSharing(false);
+  };
+
   const registerPeerConnectionListeners = () => {
     if (!peerConnection.current) return;
 
@@ -722,6 +784,17 @@ const Contact = () => {
                         className="remote-video"
                         id="remoteVideo"
                       ></video>
+                      <div className="video-call-controls">
+                        <Button onClick={toggleMute} className="control-button">
+                          {isMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
+                        </Button>
+                        <Button onClick={toggleCamera} className="control-button">
+                          {isCameraOff ? <FaVideoSlash /> : <FaVideo />}
+                        </Button>
+                        <Button onClick={startScreenShare} className="control-button">
+                          <FaDesktop />
+                        </Button>
+                      </div>
                     </Col>
                     <Col md={4}>
                       <div className="msg-box" ref={msgBoxRef}>

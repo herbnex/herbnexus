@@ -201,3 +201,22 @@ button:hover {
   height: 200px;
   overflow-y: auto;
 }
+.video-call-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.control-button {
+  padding: 0.5rem 1rem;
+  background-color: #39cabb;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.control-button:hover {
+  background-color: #33b3a3;
+}
