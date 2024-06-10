@@ -330,6 +330,11 @@ const Contact = () => {
       await openUserMedia();
     }
 
+    if (peerConnection.current) {
+      peerConnection.current.close();
+      peerConnection.current = null;
+    }
+
     peerConnection.current = new RTCPeerConnection(configuration);
     registerPeerConnectionListeners();
 
@@ -374,14 +379,8 @@ const Contact = () => {
       if (data?.answer) {
         const rtcSessionDescription = new RTCSessionDescription(data.answer);
         try {
-          await peerConnection.current.setRemoteDescription(
-            rtcSessionDescription
-          );
-          // Add pending candidates now that remote description is set
-          while (pendingCandidates.current.length) {
-            await peerConnection.current.addIceCandidate(
-              new RTCIceCandidate(pendingCandidates.current.shift())
-            );
+          if (peerConnection.current.signalingState === "stable") {
+            await peerConnection.current.setRemoteDescription(rtcSessionDescription);
           }
         } catch (error) {
           console.error("Error setting remote description:", error);
@@ -410,6 +409,11 @@ const Contact = () => {
   const joinRoomById = async (roomId) => {
     if (!localStream.current) {
       await openUserMedia();
+    }
+
+    if (peerConnection.current) {
+      peerConnection.current.close();
+      peerConnection.current = null;
     }
 
     const roomRef = doc(db, "rooms", roomId);
@@ -493,6 +497,7 @@ const Contact = () => {
 
     if (peerConnection.current) {
       peerConnection.current.close();
+      peerConnection.current = null;
     }
 
     if (localVideoRef.current) {
