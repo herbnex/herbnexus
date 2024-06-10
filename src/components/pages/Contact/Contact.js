@@ -64,6 +64,7 @@ const Contact = () => {
   const peerConnection = useRef(null);
   const localStream = useRef(null);
   const remoteStream = useRef(null);
+  const screenStream = useRef(null);
   const roomIdRef = useRef(null);
   const pendingCandidates = useRef([]);
 
@@ -554,10 +555,10 @@ const Contact = () => {
   const startScreenShare = async () => {
     if (!isScreenSharing) {
       try {
-        const screenStream = await navigator.mediaDevices.getDisplayMedia({
+        screenStream.current = await navigator.mediaDevices.getDisplayMedia({
           video: true,
         });
-        const screenTrack = screenStream.getTracks()[0];
+        const screenTrack = screenStream.current.getTracks()[0];
 
         const sender = peerConnection.current
           .getSenders()
