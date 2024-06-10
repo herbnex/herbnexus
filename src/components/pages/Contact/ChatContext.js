@@ -19,6 +19,7 @@ export const ChatProvider = ({ children }) => {
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showNotification, setShowNotification] = useState(false);
   const [notification, setNotification] = useState(null);
   const [language, setLanguage] = useState('en'); // For internationalization
 
@@ -57,6 +58,8 @@ export const ChatProvider = ({ children }) => {
         setLoading,
         error,
         setError,
+        showNotification,
+        setShowNotification,
         notification,
         setNotification,
         language,
