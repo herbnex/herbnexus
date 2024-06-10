@@ -112,7 +112,7 @@ const Contact = () => {
   };
 
   useEffect(() => {
-    if (!user || !selectedParticipant) {
+    if (!user || !selectedParticipant || !currentRoom) {
       return;
     }
 
@@ -159,7 +159,7 @@ const Contact = () => {
       typingUnsubscribe();
       callUnsubscribe();
     };
-  }, [user, selectedParticipant, isDoctor]);
+  }, [user, selectedParticipant, isDoctor, currentRoom]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -279,9 +279,6 @@ const Contact = () => {
         localVideoRef.current.srcObject = localStream.current;
       }
       remoteStream.current = new MediaStream();
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = remoteStream.current;
-      }
     } catch (error) {
       console.error('Error accessing user media:', error);
     }
@@ -322,6 +319,7 @@ const Contact = () => {
         remoteStream.current.addTrack(track);
       });
 
+      // Ensure the remote video element is updated after all tracks are added
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = remoteStream.current;
       }
@@ -389,6 +387,7 @@ const Contact = () => {
           remoteStream.current.addTrack(track);
         });
 
+        // Ensure the remote video element is updated after all tracks are added
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream.current;
         }
@@ -489,6 +488,7 @@ const Contact = () => {
         remoteStream.current.addTrack(track);
       });
 
+      // Ensure the remote video element is updated after all tracks are added
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = remoteStream.current;
       }
