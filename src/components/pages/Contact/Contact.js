@@ -328,7 +328,7 @@ const Contact = () => {
 
     onSnapshot(roomRef, async (snapshot) => {
       const data = snapshot.data();
-      if (data?.answer && !peerConnection.current.currentRemoteDescription) {
+      if (data?.answer) {
         const rtcSessionDescription = new RTCSessionDescription(data.answer);
         await peerConnection.current.setRemoteDescription(rtcSessionDescription);
       }
@@ -377,20 +377,22 @@ const Contact = () => {
       });
 
       const offer = roomSnapshot.data().offer;
-      await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
-      const answer = await peerConnection.current.createAnswer();
-      await peerConnection.current.setLocalDescription(answer);
+      if (offer) {
+        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await peerConnection.current.createAnswer();
+        await peerConnection.current.setLocalDescription(answer);
 
-      const roomWithAnswer = { answer: { type: answer.type, sdp: answer.sdp } };
-      await updateDoc(roomRef, roomWithAnswer);
+        const roomWithAnswer = { answer: { type: answer.type, sdp: answer.sdp } };
+        await updateDoc(roomRef, roomWithAnswer);
 
-      onSnapshot(collection(roomRef, 'callerCandidates'), (snapshot) => {
-        snapshot.docChanges().forEach(async change => {
-          if (change.type === 'added') {
-            await peerConnection.current.addIceCandidate(new RTCIceCandidate(change.doc.data()));
-          }
+        onSnapshot(collection(roomRef, 'callerCandidates'), (snapshot) => {
+          snapshot.docChanges().forEach(async change => {
+            if (change.type === 'added') {
+              await peerConnection.current.addIceCandidate(new RTCIceCandidate(change.doc.data()));
+            }
+          });
         });
-      });
+      }
     }
   };
 
