@@ -482,25 +482,24 @@ const Contact = () => {
   };
 
   const findOrCreateRoom = async (doctorId, userId) => {
-    const roomsRef = collection(db, 'rooms');
-    const q = query(roomsRef, where('participants', 'array-contains', doctorId));
-    const querySnapshot = await getDocs(q);
+    const roomId = generateRoomId(doctorId, userId);
+    const roomRef = doc(db, 'rooms', roomId);
+    const roomSnapshot = await getDoc(roomRef);
 
-    const existingRoom = querySnapshot.docs
-      .map(doc => ({ id: doc.id, ...doc.data() }))
-      .find(room => room.participants.includes(userId) && new Date() - new Date(room.timestamp.toDate()) < 30 * 60 * 1000);
-
-    if (existingRoom) {
-      return existingRoom;
+    if (roomSnapshot.exists()) {
+      return { id: roomSnapshot.id, ...roomSnapshot.data() };
     }
 
-    const newRoomRef = doc(roomsRef);
     const newRoom = {
       participants: [doctorId, userId],
       timestamp: new Date(),
     };
-    await setDoc(newRoomRef, newRoom);
-    return { id: newRoomRef.id, ...newRoom };
+    await setDoc(roomRef, newRoom);
+    return { id: roomRef.id, ...newRoom };
+  };
+
+  const generateRoomId = (doctorId, userId) => {
+    return `${doctorId}_${userId}`;
   };
 
   const answerCall = async () => {
