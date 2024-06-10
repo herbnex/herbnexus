@@ -435,6 +435,8 @@ const Contact = () => {
   };
 
   const registerPeerConnectionListeners = () => {
+    if (!peerConnection.current) return;
+
     peerConnection.current.addEventListener('icegatheringstatechange', () => {
       console.log(`ICE gathering state changed: ${peerConnection.current.iceGatheringState}`);
     });
@@ -451,8 +453,8 @@ const Contact = () => {
       console.log(`ICE connection state change: ${peerConnection.current.iceConnectionState}`);
     });
 
-    peerConnection.current.addEventListener('track', event => {
-      event.streams[0].getTracks().forEach(track => {
+    peerConnection.current.addEventListener('track', (event) => {
+      event.streams[0].getTracks().forEach((track) => {
         remoteStream.current.addTrack(track);
       });
 
@@ -465,16 +467,14 @@ const Contact = () => {
   const handleCall = async () => {
     if (!selectedParticipant) return;
 
-    const room = await findOrCreateRoom(selectedParticipant.id, user.uid);
-    roomIdRef.current = room.id;
-    await joinRoomById(room.id);
+    await createRoom();
     setShowCallModal(true);
 
     const callData = {
       callerId: user.uid,
       callerName: user.displayName || 'Anonymous',
       receiverId: selectedParticipant.id,
-      roomId: room.id,
+      roomId: roomIdRef.current,
       timestamp: new Date().toISOString(),
     };
 
