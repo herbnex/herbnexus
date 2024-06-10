@@ -331,11 +331,14 @@ const Contact = () => {
       const data = snapshot.data();
       if (data?.answer) {
         const rtcSessionDescription = new RTCSessionDescription(data.answer);
-        await peerConnection.current.setRemoteDescription(rtcSessionDescription);
-
-        // Add pending candidates now that remote description is set
-        while (pendingCandidates.current.length) {
-          await peerConnection.current.addIceCandidate(new RTCIceCandidate(pendingCandidates.current.shift()));
+        try {
+          await peerConnection.current.setRemoteDescription(rtcSessionDescription);
+          // Add pending candidates now that remote description is set
+          while (pendingCandidates.current.length) {
+            await peerConnection.current.addIceCandidate(new RTCIceCandidate(pendingCandidates.current.shift()));
+          }
+        } catch (error) {
+          console.error("Error setting remote description:", error);
         }
       }
     });
@@ -344,10 +347,14 @@ const Contact = () => {
       snapshot.docChanges().forEach(async change => {
         if (change.type === 'added') {
           const candidate = new RTCIceCandidate(change.doc.data());
-          if (peerConnection.current.remoteDescription) {
-            await peerConnection.current.addIceCandidate(candidate);
-          } else {
-            pendingCandidates.current.push(candidate);
+          try {
+            if (peerConnection.current.remoteDescription) {
+              await peerConnection.current.addIceCandidate(candidate);
+            } else {
+              pendingCandidates.current.push(candidate);
+            }
+          } catch (error) {
+            console.error("Error adding ICE candidate:", error);
           }
         }
       });
@@ -389,25 +396,33 @@ const Contact = () => {
 
       const offer = roomSnapshot.data().offer;
       if (offer) {
-        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
-        const answer = await peerConnection.current.createAnswer();
-        await peerConnection.current.setLocalDescription(answer);
+        try {
+          await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
+          const answer = await peerConnection.current.createAnswer();
+          await peerConnection.current.setLocalDescription(answer);
 
-        const roomWithAnswer = { answer: { type: answer.type, sdp: answer.sdp } };
-        await updateDoc(roomRef, roomWithAnswer);
+          const roomWithAnswer = { answer: { type: answer.type, sdp: answer.sdp } };
+          await updateDoc(roomRef, roomWithAnswer);
 
-        onSnapshot(collection(roomRef, 'callerCandidates'), (snapshot) => {
-          snapshot.docChanges().forEach(async change => {
-            if (change.type === 'added') {
-              const candidate = new RTCIceCandidate(change.doc.data());
-              if (peerConnection.current.remoteDescription) {
-                await peerConnection.current.addIceCandidate(candidate);
-              } else {
-                pendingCandidates.current.push(candidate);
+          onSnapshot(collection(roomRef, 'callerCandidates'), (snapshot) => {
+            snapshot.docChanges().forEach(async change => {
+              if (change.type === 'added') {
+                const candidate = new RTCIceCandidate(change.doc.data());
+                try {
+                  if (peerConnection.current.remoteDescription) {
+                    await peerConnection.current.addIceCandidate(candidate);
+                  } else {
+                    pendingCandidates.current.push(candidate);
+                  }
+                } catch (error) {
+                  console.error("Error adding ICE candidate:", error);
+                }
               }
-            }
+            });
           });
-        });
+        } catch (error) {
+          console.error("Error setting remote description or creating answer:", error);
+        }
       }
     }
   };
