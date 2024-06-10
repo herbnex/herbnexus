@@ -2,14 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge, Modal } from "react-bootstrap";
 import { ref, set, onValue, push } from "firebase/database";
 import { db, database } from "../../../Firebase/firebase.config";
-import { doc, getDocs, collection, query, where, getDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
+import { doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
 import CustomAvatar from "../../CustomAvatar/CustomAvatar";
 import ChatUserFeed from "../../ChatPanel/ChatUserFeed";
 import "./Contact.css";
-
 
 const Contact = () => {
   const { user } = useAuth();
@@ -20,6 +19,8 @@ const Contact = () => {
   const [message, setMessage] = useState('');
   const [isDoctor, setIsDoctor] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
+  const [incomingCall, setIncomingCall] = useState(null); // Add this
+  const [showIncomingCallModal, setShowIncomingCallModal] = useState(false); // Add this
   const typingTimeoutRef = useRef(null);
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
