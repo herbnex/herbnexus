@@ -311,7 +311,7 @@ const Contact = () => {
     const offer = await peerConnection.current.createOffer();
     await peerConnection.current.setLocalDescription(offer);
 
-    const roomWithOffer = { 'offer': { type: offer.type, sdp: offer.sdp } };
+    const roomWithOffer = { 'offer': { type: offer.type, sdp: offer.sdp }, 'timestamp': new Date() };
     await setDoc(roomRef, roomWithOffer);
 
     setCurrentRoom(`Current room is ${roomRef.id} - You are the caller!`);
@@ -453,18 +453,42 @@ const Contact = () => {
   const handleCall = async () => {
     if (!selectedParticipant) return;
 
-    await createRoom();
+    const room = await findOrCreateRoom(selectedParticipant.id, user.uid);
+    roomIdRef.current = room.id;
+    await joinRoomById(room.id);
     setShowCallModal(true);
 
     const callData = {
       callerId: user.uid,
       callerName: user.displayName || 'Anonymous',
       receiverId: selectedParticipant.id,
-      roomId: roomIdRef.current,
+      roomId: room.id,
       timestamp: new Date().toISOString(),
     };
 
     await addDoc(collection(db, 'calls'), callData);
+  };
+
+  const findOrCreateRoom = async (doctorId, userId) => {
+    const roomsRef = collection(db, 'rooms');
+    const q = query(roomsRef, where('participants', 'array-contains', doctorId));
+    const querySnapshot = await getDocs(q);
+
+    const existingRoom = querySnapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() }))
+      .find(room => room.participants.includes(userId) && new Date() - new Date(room.timestamp.toDate()) < 30 * 60 * 1000);
+
+    if (existingRoom) {
+      return existingRoom;
+    }
+
+    const newRoomRef = doc(roomsRef);
+    const newRoom = {
+      participants: [doctorId, userId],
+      timestamp: new Date(),
+    };
+    await setDoc(newRoomRef, newRoom);
+    return { id: newRoomRef.id, ...newRoom };
   };
 
   const answerCall = async () => {
