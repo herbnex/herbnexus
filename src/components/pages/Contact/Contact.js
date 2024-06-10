@@ -23,6 +23,7 @@ const Contact = () => {
   const [incomingCall, setIncomingCall] = useState(null);
   const [showIncomingCallModal, setShowIncomingCallModal] = useState(false);
   const [showCallModal, setShowCallModal] = useState(false);
+  const [currentRoom, setCurrentRoom] = useState(null);
   const typingTimeoutRef = useRef(null);
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
@@ -313,7 +314,7 @@ const Contact = () => {
     const roomWithOffer = { 'offer': { type: offer.type, sdp: offer.sdp } };
     await setDoc(roomRef, roomWithOffer);
 
-    document.querySelector('#currentRoom').innerText = `Current room is ${roomRef.id} - You are the caller!`;
+    setCurrentRoom(`Current room is ${roomRef.id} - You are the caller!`);
 
     peerConnection.current.addEventListener('track', event => {
       event.streams[0].getTracks().forEach(track => {
@@ -427,6 +428,7 @@ const Contact = () => {
       await deleteDoc(roomRef);
     }
 
+    setCurrentRoom(null);
     document.location.reload(true);
   };
 
@@ -508,7 +510,7 @@ const Contact = () => {
             <>
               <h4>Chat with {selectedParticipant.name}</h4>
               <div className="d-flex align-items-center justify-content-between mb-2">
-                <div></div>
+                <div>{currentRoom}</div>
                 <Button variant="link" onClick={handleCall}>
                   <FaPhoneAlt size={20} />
                 </Button>
