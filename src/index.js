@@ -6,6 +6,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { ChatProvider } from './components/pages/Contact/ChatContext'; // Import the ChatProvider
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
@@ -17,7 +18,9 @@ if (process.env.NODE_ENV === 'development') {
   ReactDOM.render(
     <Router>
       <Elements stripe={stripePromise}>
-        <App />
+        <ChatProvider>
+          <App />
+        </ChatProvider>
       </Elements>
     </Router>,
     rootElement
@@ -27,7 +30,9 @@ if (process.env.NODE_ENV === 'development') {
     <React.StrictMode>
       <Router>
         <Elements stripe={stripePromise}>
-          <App />
+          <ChatProvider>
+            <App />
+          </ChatProvider>
         </Elements>
       </Router>
     </React.StrictMode>,

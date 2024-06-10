@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import {
   Container,
   Row,
@@ -9,6 +9,11 @@ import {
   InputGroup,
   Badge,
   Modal,
+  Spinner,
+  Alert,
+  Toast,
+  ToastContainer,
+  Dropdown,
 } from "react-bootstrap";
 import {
   ref,
@@ -18,32 +23,50 @@ import {
 } from "firebase/database";
 import { db, database } from "../../../Firebase/firebase.config";
 import {
-  doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc,
+  doc,
+  getDocs,
+  collection,
+  query,
+  where,
+  getDoc,
+  setDoc,
+  onSnapshot,
+  updateDoc,
+  deleteDoc,
+  addDoc,
 } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
-import { FaPhoneAlt, FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaDesktop } from "react-icons/fa";
+import { FaPhoneAlt, FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaDesktop, FaGlobe } from "react-icons/fa";
+import { ChatContext } from './ChatContext'; // Import the context
 import "./Contact.css";
 
 const Contact = () => {
   const { user } = useAuth();
   const history = useHistory();
   const location = useLocation();
-  const [onlineDoctors, setOnlineDoctors] = useState([]);
-  const [activeUsers, setActiveUsers] = useState([]);
-  const [selectedParticipant, setSelectedParticipant] = useState(null);
-  const [msgList, setMsgList] = useState([]);
-  const [message, setMessage] = useState("");
-  const [isDoctor, setIsDoctor] = useState(false);
-  const [otherTyping, setOtherTyping] = useState(false);
-  const [incomingCall, setIncomingCall] = useState(null);
-  const [showIncomingCallModal, setShowIncomingCallModal] = useState(false);
-  const [showCallModal, setShowCallModal] = useState(false);
-  const [currentRoom, setCurrentRoom] = useState(null);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isCameraOff, setIsCameraOff] = useState(false);
-  const [isScreenSharing, setIsScreenSharing] = useState(false);
+  const {
+    onlineDoctors, setOnlineDoctors,
+    activeUsers, setActiveUsers,
+    selectedParticipant, setSelectedParticipant,
+    msgList, setMsgList,
+    message, setMessage,
+    isDoctor, setIsDoctor,
+    otherTyping, setOtherTyping,
+    incomingCall, setIncomingCall,
+    showIncomingCallModal, setShowIncomingCallModal,
+    showCallModal, setShowCallModal,
+    currentRoom, setCurrentRoom,
+    isMuted, setIsMuted,
+    isCameraOff, setIsCameraOff,
+    isScreenSharing, setIsScreenSharing,
+    loading, setLoading,
+    error, setError,
+    notification, setNotification,
+    language, setLanguage
+  } = useContext(ChatContext);
+
   const typingTimeoutRef = useRef(null);
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
@@ -305,6 +328,7 @@ const Contact = () => {
   };
 
   const openUserMedia = async () => {
+    setLoading(true);
     try {
       localStream.current = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -316,6 +340,9 @@ const Contact = () => {
       remoteStream.current = new MediaStream();
     } catch (error) {
       console.error("Error accessing user media:", error);
+      setError("Error accessing user media");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -676,11 +703,40 @@ const Contact = () => {
     }
   }, [showCallModal]);
 
+  const handleLanguageChange = (lang) => {
+    setLanguage(lang);
+  };
+
+  const showError = (error) => {
+    setError(error);
+    setTimeout(() => setError(null), 5000);
+  };
+
+  const showNotification = (message) => {
+    setNotification(message);
+    setShowNotification(true);
+    setTimeout(() => setShowNotification(false), 5000);
+  };
+
   return (
     <Container fluid className="chat-room">
       <Row>
         <Col md={4} className="participants-list">
-          <h3>{isDoctor ? "Users" : "Online Doctors"}</h3>
+          <div className="d-flex justify-content-between align-items-center">
+            <h3>{isDoctor ? "Users" : "Online Doctors"}</h3>
+            <Dropdown>
+              <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                <FaGlobe /> {language}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handleLanguageChange('en')}>English</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleLanguageChange('es')}>Spanish</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleLanguageChange('fr')}>French</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleLanguageChange('de')}>German</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
           <ListGroup>
             {(isDoctor ? activeUsers : onlineDoctors).map((participant) => (
               <ListGroup.Item
@@ -895,6 +951,26 @@ const Contact = () => {
           </Button>
         </Modal.Body>
       </Modal>
+      {loading && (
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      )}
+      {error && (
+        <Alert variant="danger" onClose={() => setError(null)} dismissible>
+          <Alert.Heading>Error</Alert.Heading>
+          <p>{error}</p>
+        </Alert>
+      )}
+      <ToastContainer position="top-end" className="p-3">
+        <Toast onClose={() => setShowNotification(false)} show={showNotification} delay={5000} autohide>
+          <Toast.Header>
+            <strong className="me-auto">Notification</strong>
+            <small>Just now</small>
+          </Toast.Header>
+          <Toast.Body>{notification}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </Container>
   );
 };
