@@ -63,6 +63,7 @@ const Contact = () => {
     isScreenSharing, setIsScreenSharing,
     loading, setLoading,
     error, setError,
+    showNotification, setShowNotification, // Add these lines
     notification, setNotification,
     language, setLanguage
   } = useContext(ChatContext);
@@ -712,7 +713,7 @@ const Contact = () => {
     setTimeout(() => setError(null), 5000);
   };
 
-  const showNotification = (message) => {
+  const handleNotification = (message) => {
     setNotification(message);
     setShowNotification(true);
     setTimeout(() => setShowNotification(false), 5000);
