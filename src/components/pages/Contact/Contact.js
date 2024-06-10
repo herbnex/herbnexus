@@ -6,6 +6,7 @@ import { doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, upd
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
+import { FaPhoneAlt } from "react-icons/fa";
 import "./Contact.css";
 
 const Contact = () => {
@@ -21,6 +22,7 @@ const Contact = () => {
   const [otherTyping, setOtherTyping] = useState(false);
   const [incomingCall, setIncomingCall] = useState(null);
   const [showIncomingCallModal, setShowIncomingCallModal] = useState(false);
+  const [showCallModal, setShowCallModal] = useState(false);
   const typingTimeoutRef = useRef(null);
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
@@ -450,6 +452,7 @@ const Contact = () => {
     if (!selectedParticipant) return;
 
     await createRoom();
+    setShowCallModal(true);
 
     const callData = {
       callerId: user.uid,
@@ -464,6 +467,7 @@ const Contact = () => {
 
   const answerCall = async () => {
     setShowIncomingCallModal(false);
+    setShowCallModal(true);
     if (incomingCall) {
       roomIdRef.current = incomingCall.roomId;
       await joinRoomById(incomingCall.roomId);
@@ -503,6 +507,12 @@ const Contact = () => {
           {selectedParticipant ? (
             <>
               <h4>Chat with {selectedParticipant.name}</h4>
+              <div className="d-flex align-items-center justify-content-between mb-2">
+                <div></div>
+                <Button variant="link" onClick={handleCall}>
+                  <FaPhoneAlt size={20} />
+                </Button>
+              </div>
               <div className="msg-box" ref={msgBoxRef}>
                 {msgList.map((msg, index) => (
                   <div
@@ -540,13 +550,61 @@ const Contact = () => {
                   <Button variant="outline-secondary" type="submit" className="message-send-button">Send</Button>
                 </InputGroup>
               </Form>
-              <div className="video-call-container">
-                <video ref={localVideoRef} autoPlay muted playsInline className="local-video" id="localVideo"></video>
-                <video ref={remoteVideoRef} autoPlay playsInline className="remote-video" id="remoteVideo"></video>
-                <Button id="callBtn" onClick={handleCall}>Call</Button>
-                <Button id="hangUpBtn" onClick={hangUp}>Hang Up</Button>
-                <div id="currentRoom"></div>
-              </div>
+              <Modal show={showCallModal} onHide={() => setShowCallModal(false)} size="lg">
+                <Modal.Header closeButton>
+                  <Modal.Title>Video Call</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Row>
+                    <Col md={8} className="d-flex flex-column align-items-center">
+                      <video ref={localVideoRef} autoPlay muted playsInline className="local-video" id="localVideo"></video>
+                      <video ref={remoteVideoRef} autoPlay playsInline className="remote-video" id="remoteVideo"></video>
+                    </Col>
+                    <Col md={4}>
+                      <div className="msg-box" ref={msgBoxRef}>
+                        {msgList.map((msg, index) => (
+                          <div
+                            key={index}
+                            className={`message-container ${msg.userId === user.uid ? "msg-self" : "msg-other"} ${visibleTimestamps[index] ? "show-timestamp" : ""}`}
+                            onClick={() => toggleTimestamp(index)}
+                          >
+                            <p title={msg.user}>{msg.text}</p>
+                            {visibleTimestamps[index] && (
+                              <span className={`timestamp ${msg.userId === user.uid ? "timestamp-left" : "timestamp-right"}`}>
+                                {formatTimestamp(msg.timestamp)}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                        {otherTyping && (
+                          <p className="msg-other typing-indicator">
+                            Typing...
+                          </p>
+                        )}
+                      </div>
+                      <Form onSubmit={handleSendMessage} className="message-input-container">
+                        <InputGroup className="mb-3">
+                          <Form.Control
+                            as="textarea"
+                            ref={textareaRef}
+                            rows={1}
+                            placeholder="Type your message..."
+                            value={message}
+                            onChange={handleTyping}
+                            aria-label="User message input"
+                            className="message-input"
+                            style={{ resize: 'none', overflow: 'auto' }}
+                          />
+                          <Button variant="outline-secondary" type="submit" className="message-send-button">Send</Button>
+                        </InputGroup>
+                      </Form>
+                    </Col>
+                  </Row>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="danger" onClick={hangUp}>Hang Up</Button>
+                </Modal.Footer>
+              </Modal>
             </>
           ) : (
             <h4>Select a {isDoctor ? "user" : "doctor"} to start chatting</h4>
