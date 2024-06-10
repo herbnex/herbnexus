@@ -18,17 +18,7 @@ import {
 } from "firebase/database";
 import { db, database } from "../../../Firebase/firebase.config";
 import {
-  doc,
-  getDocs,
-  collection,
-  query,
-  where,
-  getDoc,
-  setDoc,
-  onSnapshot,
-  updateDoc,
-  deleteDoc,
-  addDoc,
+  doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc,
 } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
