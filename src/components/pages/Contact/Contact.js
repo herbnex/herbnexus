@@ -1,8 +1,37 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge, Modal } from "react-bootstrap";
-import { ref, set, onValue, push } from "firebase/database";
+import {
+  Container,
+  Row,
+  Col,
+  ListGroup,
+  Form,
+  Button,
+  InputGroup,
+  Badge,
+  Modal,
+} from "react-bootstrap";
+import {
+  ref,
+  set,
+  onValue,
+  push,
+  onDisconnect,
+  update,
+} from "firebase/database";
 import { db, database } from "../../../Firebase/firebase.config";
-import { doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
+import {
+  doc,
+  getDocs,
+  collection,
+  query,
+  where,
+  getDoc,
+  setDoc,
+  onSnapshot,
+  updateDoc,
+  deleteDoc,
+  addDoc,
+} from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
@@ -17,7 +46,7 @@ const Contact = () => {
   const [activeUsers, setActiveUsers] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
   const [msgList, setMsgList] = useState([]);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [isDoctor, setIsDoctor] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
   const [incomingCall, setIncomingCall] = useState(null);
@@ -40,10 +69,7 @@ const Contact = () => {
   const configuration = {
     iceServers: [
       {
-        urls: [
-          'stun:stun1.l.google.com:19302',
-          'stun:stun2.l.google.com:19302',
-        ],
+        urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
       },
     ],
     iceCandidatePoolSize: 10,
@@ -81,11 +107,15 @@ const Contact = () => {
       const doctorsRef = collection(db, "doctors");
       const q = query(doctorsRef, where("isOnline", "==", true));
       const querySnapshot = await getDocs(q);
-      const doctors = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const doctors = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       console.log("Fetched online doctors:", doctors);
 
-      const uniqueDoctors = doctors.filter((doctor, index, self) =>
-        index === self.findIndex((d) => d.id === doctor.id)
+      const uniqueDoctors = doctors.filter(
+        (doctor, index, self) =>
+          index === self.findIndex((d) => d.id === doctor.id)
       );
 
       setOnlineDoctors(uniqueDoctors);
@@ -98,11 +128,15 @@ const Contact = () => {
     try {
       const usersRef = collection(db, "users");
       const querySnapshot = await getDocs(usersRef);
-      const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const users = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       console.log("Fetched active users:", users);
 
-      const uniqueUsers = users.filter((user, index, self) =>
-        index === self.findIndex((u) => u.id === user.id)
+      const uniqueUsers = users.filter(
+        (user, index, self) =>
+          index === self.findIndex((u) => u.id === user.id)
       );
 
       setActiveUsers(uniqueUsers);
@@ -142,12 +176,17 @@ const Contact = () => {
 
       const typingUnsubscribe = onValue(typingRef, (snapshot) => {
         const typingData = snapshot.val();
-        setOtherTyping(typingData && typingData.typing && typingData.typing !== user.uid);
+        setOtherTyping(
+          typingData && typingData.typing && typingData.typing !== user.uid
+        );
       });
 
       const callUnsubscribe = onSnapshot(collection(db, `calls`), (snapshot) => {
-        snapshot.docChanges().forEach(change => {
-          if (change.type === 'added' && change.doc.data().receiverId === user.uid) {
+        snapshot.docChanges().forEach((change) => {
+          if (
+            change.type === "added" &&
+            change.doc.data().receiverId === user.uid
+          ) {
             setIncomingCall(change.doc.data());
             setShowIncomingCallModal(true);
           }
@@ -173,7 +212,7 @@ const Contact = () => {
         user: user.displayName || "Anonymous",
         userId: user.uid,
         text: message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       const chatId = isDoctor
@@ -184,7 +223,7 @@ const Contact = () => {
       const newMessageRef = push(chatRef);
 
       await set(newMessageRef, newMessage);
-      setMessage('');
+      setMessage("");
       resetTextarea();
 
       await set(ref(database, `chats/${chatId}/typing`), { typing: false });
@@ -230,7 +269,7 @@ const Contact = () => {
   const autoResizeTextarea = () => {
     const textarea = textareaRef.current;
     if (textarea) {
-      textarea.style.height = 'auto';
+      textarea.style.height = "auto";
       textarea.style.height = `${textarea.scrollHeight}px`;
     }
   };
@@ -238,8 +277,8 @@ const Contact = () => {
   const resetTextarea = () => {
     const textarea = textareaRef.current;
     if (textarea) {
-      textarea.style.height = 'auto';
-      textarea.value = '';
+      textarea.style.height = "auto";
+      textarea.value = "";
     }
   };
 
@@ -268,20 +307,23 @@ const Contact = () => {
     setTimeout(() => {
       const chatSection = chatSectionRef.current;
       if (chatSection) {
-        chatSection.scrollIntoView({ behavior: 'smooth' });
+        chatSection.scrollIntoView({ behavior: "smooth" });
       }
     }, 300);
   };
 
   const openUserMedia = async () => {
     try {
-      localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      localStream.current = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = localStream.current;
       }
       remoteStream.current = new MediaStream();
     } catch (error) {
-      console.error('Error accessing user media:', error);
+      console.error("Error accessing user media:", error);
     }
   };
 
@@ -293,15 +335,15 @@ const Contact = () => {
     peerConnection.current = new RTCPeerConnection(configuration);
     registerPeerConnectionListeners();
 
-    localStream.current.getTracks().forEach(track => {
+    localStream.current.getTracks().forEach((track) => {
       peerConnection.current.addTrack(track, localStream.current);
     });
 
     // Create Firestore references AFTER initializing peerConnection
-    const roomRef = doc(db, 'rooms', roomIdRef.current); // Use existing roomId
-    const callerCandidatesCollection = collection(roomRef, 'callerCandidates');
+    const roomRef = doc(db, "rooms", roomIdRef.current); // Use existing roomId
+    const callerCandidatesCollection = collection(roomRef, "callerCandidates");
 
-    peerConnection.current.addEventListener('icecandidate', event => {
+    peerConnection.current.addEventListener("icecandidate", (event) => {
       if (!peerConnection.current || !event.candidate) return; // Check for null
       addDoc(callerCandidatesCollection, event.candidate.toJSON());
     });
@@ -318,8 +360,8 @@ const Contact = () => {
 
     setCurrentRoom(`Current room is ${roomRef.id} - You are the caller!`);
 
-    peerConnection.current.addEventListener('track', event => {
-      event.streams[0].getTracks().forEach(track => {
+    peerConnection.current.addEventListener("track", (event) => {
+      event.streams[0].getTracks().forEach((track) => {
         remoteStream.current.addTrack(track);
       });
 
@@ -334,10 +376,14 @@ const Contact = () => {
       if (data?.answer) {
         const rtcSessionDescription = new RTCSessionDescription(data.answer);
         try {
-          await peerConnection.current.setRemoteDescription(rtcSessionDescription);
+          await peerConnection.current.setRemoteDescription(
+            rtcSessionDescription
+          );
           // Add pending candidates now that remote description is set
           while (pendingCandidates.current.length) {
-            await peerConnection.current.addIceCandidate(new RTCIceCandidate(pendingCandidates.current.shift()));
+            await peerConnection.current.addIceCandidate(
+              new RTCIceCandidate(pendingCandidates.current.shift())
+            );
           }
         } catch (error) {
           console.error("Error setting remote description:", error);
@@ -345,9 +391,9 @@ const Contact = () => {
       }
     });
 
-    onSnapshot(collection(roomRef, 'calleeCandidates'), (snapshot) => {
-      snapshot.docChanges().forEach(async change => {
-        if (change.type === 'added') {
+    onSnapshot(collection(roomRef, "calleeCandidates"), (snapshot) => {
+      snapshot.docChanges().forEach(async (change) => {
+        if (change.type === "added") {
           const candidate = new RTCIceCandidate(change.doc.data());
           try {
             if (peerConnection.current.remoteDescription) {
@@ -368,26 +414,26 @@ const Contact = () => {
       await openUserMedia();
     }
 
-    const roomRef = doc(db, 'rooms', roomId);
+    const roomRef = doc(db, "rooms", roomId);
     const roomSnapshot = await getDoc(roomRef);
 
     if (roomSnapshot.exists()) {
       peerConnection.current = new RTCPeerConnection(configuration);
       registerPeerConnectionListeners();
 
-      localStream.current.getTracks().forEach(track => {
+      localStream.current.getTracks().forEach((track) => {
         peerConnection.current.addTrack(track, localStream.current);
       });
 
-      const calleeCandidatesCollection = collection(roomRef, 'calleeCandidates');
-      peerConnection.current.addEventListener('icecandidate', event => {
+      const calleeCandidatesCollection = collection(roomRef, "calleeCandidates");
+      peerConnection.current.addEventListener("icecandidate", (event) => {
         if (event.candidate) {
           addDoc(calleeCandidatesCollection, event.candidate.toJSON());
         }
       });
 
-      peerConnection.current.addEventListener('track', event => {
-        event.streams[0].getTracks().forEach(track => {
+      peerConnection.current.addEventListener("track", (event) => {
+        event.streams[0].getTracks().forEach((track) => {
           remoteStream.current.addTrack(track);
         });
 
@@ -400,16 +446,20 @@ const Contact = () => {
       const offer = roomSnapshot.data().offer;
       if (offer) {
         try {
-          await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
+          await peerConnection.current.setRemoteDescription(
+            new RTCSessionDescription(offer)
+          );
           const answer = await peerConnection.current.createAnswer();
           await peerConnection.current.setLocalDescription(answer);
 
-          const roomWithAnswer = { answer: { type: answer.type, sdp: answer.sdp } };
+          const roomWithAnswer = {
+            answer: { type: answer.type, sdp: answer.sdp },
+          };
           await updateDoc(roomRef, roomWithAnswer);
 
-          onSnapshot(collection(roomRef, 'callerCandidates'), (snapshot) => {
-            snapshot.docChanges().forEach(async change => {
-              if (change.type === 'added') {
+          onSnapshot(collection(roomRef, "callerCandidates"), (snapshot) => {
+            snapshot.docChanges().forEach(async (change) => {
+              if (change.type === "added") {
                 const candidate = new RTCIceCandidate(change.doc.data());
                 try {
                   if (peerConnection.current.remoteDescription) {
@@ -424,7 +474,10 @@ const Contact = () => {
             });
           });
         } catch (error) {
-          console.error("Error setting remote description or creating answer:", error);
+          console.error(
+            "Error setting remote description or creating answer:",
+            error
+          );
         }
       }
     }
@@ -432,12 +485,12 @@ const Contact = () => {
 
   const hangUp = async () => {
     const tracks = localStream.current?.getTracks();
-    tracks?.forEach(track => {
+    tracks?.forEach((track) => {
       track.stop();
     });
 
     if (remoteStream.current) {
-      remoteStream.current.getTracks().forEach(track => track.stop());
+      remoteStream.current.getTracks().forEach((track) => track.stop());
     }
 
     if (peerConnection.current) {
@@ -452,13 +505,17 @@ const Contact = () => {
     }
 
     if (roomIdRef.current) {
-      const roomRef = doc(db, 'rooms', roomIdRef.current);
-      const calleeCandidatesSnapshot = await getDocs(collection(roomRef, 'calleeCandidates'));
-      calleeCandidatesSnapshot.forEach(async candidate => {
+      const roomRef = doc(db, "rooms", roomIdRef.current);
+      const calleeCandidatesSnapshot = await getDocs(
+        collection(roomRef, "calleeCandidates")
+      );
+      calleeCandidatesSnapshot.forEach(async (candidate) => {
         await deleteDoc(candidate.ref);
       });
-      const callerCandidatesSnapshot = await getDocs(collection(roomRef, 'callerCandidates'));
-      callerCandidatesSnapshot.forEach(async candidate => {
+      const callerCandidatesSnapshot = await getDocs(
+        collection(roomRef, "callerCandidates")
+      );
+      callerCandidatesSnapshot.forEach(async (candidate) => {
         await deleteDoc(candidate.ref);
       });
       await deleteDoc(roomRef);
@@ -471,23 +528,31 @@ const Contact = () => {
   const registerPeerConnectionListeners = () => {
     if (!peerConnection.current) return;
 
-    peerConnection.current.addEventListener('icegatheringstatechange', () => {
-      console.log(`ICE gathering state changed: ${peerConnection.current.iceGatheringState}`);
+    peerConnection.current.addEventListener("icegatheringstatechange", () => {
+      console.log(
+        `ICE gathering state changed: ${peerConnection.current.iceGatheringState}`
+      );
     });
 
-    peerConnection.current.addEventListener('connectionstatechange', () => {
-      console.log(`Connection state change: ${peerConnection.current.connectionState}`);
+    peerConnection.current.addEventListener("connectionstatechange", () => {
+      console.log(
+        `Connection state change: ${peerConnection.current.connectionState}`
+      );
     });
 
-    peerConnection.current.addEventListener('signalingstatechange', () => {
-      console.log(`Signaling state change: ${peerConnection.current.signalingState}`);
+    peerConnection.current.addEventListener("signalingstatechange", () => {
+      console.log(
+        `Signaling state change: ${peerConnection.current.signalingState}`
+      );
     });
 
-    peerConnection.current.addEventListener('iceconnectionstatechange', () => {
-      console.log(`ICE connection state change: ${peerConnection.current.iceConnectionState}`);
+    peerConnection.current.addEventListener("iceconnectionstatechange", () => {
+      console.log(
+        `ICE connection state change: ${peerConnection.current.iceConnectionState}`
+      );
     });
 
-    peerConnection.current.addEventListener('track', (event) => {
+    peerConnection.current.addEventListener("track", (event) => {
       event.streams[0].getTracks().forEach((track) => {
         remoteStream.current.addTrack(track);
       });
@@ -507,13 +572,13 @@ const Contact = () => {
 
     const callData = {
       callerId: user.uid,
-      callerName: user.displayName || 'Anonymous',
+      callerName: user.displayName || "Anonymous",
       receiverId: selectedParticipant.id,
       roomId: roomIdRef.current,
       timestamp: new Date().toISOString(),
     };
 
-    await addDoc(collection(db, 'calls'), callData);
+    await addDoc(collection(db, "calls"), callData);
   };
 
   const generateRoomId = (doctorId, userId) => {
@@ -542,10 +607,12 @@ const Contact = () => {
         <Col md={4} className="participants-list">
           <h3>{isDoctor ? "Users" : "Online Doctors"}</h3>
           <ListGroup>
-            {(isDoctor ? activeUsers : onlineDoctors).map(participant => (
+            {(isDoctor ? activeUsers : onlineDoctors).map((participant) => (
               <ListGroup.Item
                 key={`${isDoctor ? "user" : "doctor"}-${participant.id}`}
-                active={selectedParticipant && selectedParticipant.id === participant.id}
+                active={
+                  selectedParticipant && selectedParticipant.id === participant.id
+                }
                 onClick={() => handleParticipantClick(participant)}
               >
                 <div className="d-flex justify-content-between align-items-center">
@@ -573,24 +640,35 @@ const Contact = () => {
                 {msgList.map((msg, index) => (
                   <div
                     key={index}
-                    className={`message-container ${msg.userId === user.uid ? "msg-self" : "msg-other"} ${visibleTimestamps[index] ? "show-timestamp" : ""}`}
+                    className={`message-container ${
+                      msg.userId === user.uid ? "msg-self" : "msg-other"
+                    } ${
+                      visibleTimestamps[index] ? "show-timestamp" : ""
+                    }`}
                     onClick={() => toggleTimestamp(index)}
                   >
                     <p title={msg.user}>{msg.text}</p>
                     {visibleTimestamps[index] && (
-                      <span className={`timestamp ${msg.userId === user.uid ? "timestamp-left" : "timestamp-right"}`}>
+                      <span
+                        className={`timestamp ${
+                          msg.userId === user.uid
+                            ? "timestamp-left"
+                            : "timestamp-right"
+                        }`}
+                      >
                         {formatTimestamp(msg.timestamp)}
                       </span>
                     )}
                   </div>
                 ))}
                 {otherTyping && (
-                  <p className="msg-other typing-indicator">
-                    Typing...
-                  </p>
+                  <p className="msg-other typing-indicator">Typing...</p>
                 )}
               </div>
-              <Form onSubmit={handleSendMessage} className="message-input-container">
+              <Form
+                onSubmit={handleSendMessage}
+                className="message-input-container"
+              >
                 <InputGroup className="mb-3">
                   <Form.Control
                     as="textarea"
@@ -601,44 +679,81 @@ const Contact = () => {
                     onChange={handleTyping}
                     aria-label="User message input"
                     className="message-input"
-                    style={{ resize: 'none', overflow: 'auto' }}
+                    style={{ resize: "none", overflow: "auto" }}
                   />
-                  <Button variant="outline-secondary" type="submit" className="message-send-button">Send</Button>
+                  <Button
+                    variant="outline-secondary"
+                    type="submit"
+                    className="message-send-button"
+                  >
+                    Send
+                  </Button>
                 </InputGroup>
               </Form>
-              <Modal show={showCallModal} onHide={() => setShowCallModal(false)} size="lg">
+              <Modal
+                show={showCallModal}
+                onHide={() => setShowCallModal(false)}
+                size="lg"
+              >
                 <Modal.Header closeButton>
                   <Modal.Title>Video Call</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                   <Row>
-                    <Col md={8} className="d-flex flex-column align-items-center">
-                      <video ref={localVideoRef} autoPlay muted playsInline className="local-video" id="localVideo"></video>
-                      <video ref={remoteVideoRef} autoPlay playsInline className="remote-video" id="remoteVideo"></video>
+                    <Col
+                      md={8}
+                      className="d-flex flex-column align-items-center"
+                    >
+                      <video
+                        ref={localVideoRef}
+                        autoPlay
+                        muted
+                        playsInline
+                        className="local-video"
+                        id="localVideo"
+                      ></video>
+                      <video
+                        ref={remoteVideoRef}
+                        autoPlay
+                        playsInline
+                        className="remote-video"
+                        id="remoteVideo"
+                      ></video>
                     </Col>
                     <Col md={4}>
                       <div className="msg-box" ref={msgBoxRef}>
                         {msgList.map((msg, index) => (
                           <div
                             key={index}
-                            className={`message-container ${msg.userId === user.uid ? "msg-self" : "msg-other"} ${visibleTimestamps[index] ? "show-timestamp" : ""}`}
+                            className={`message-container ${
+                              msg.userId === user.uid ? "msg-self" : "msg-other"
+                            } ${
+                              visibleTimestamps[index] ? "show-timestamp" : ""
+                            }`}
                             onClick={() => toggleTimestamp(index)}
                           >
                             <p title={msg.user}>{msg.text}</p>
                             {visibleTimestamps[index] && (
-                              <span className={`timestamp ${msg.userId === user.uid ? "timestamp-left" : "timestamp-right"}`}>
+                              <span
+                                className={`timestamp ${
+                                  msg.userId === user.uid
+                                    ? "timestamp-left"
+                                    : "timestamp-right"
+                                }`}
+                              >
                                 {formatTimestamp(msg.timestamp)}
                               </span>
                             )}
                           </div>
                         ))}
                         {otherTyping && (
-                          <p className="msg-other typing-indicator">
-                            Typing...
-                          </p>
+                          <p className="msg-other typing-indicator">Typing...</p>
                         )}
                       </div>
-                      <Form onSubmit={handleSendMessage} className="message-input-container">
+                      <Form
+                        onSubmit={handleSendMessage}
+                        className="message-input-container"
+                      >
                         <InputGroup className="mb-3">
                           <Form.Control
                             as="textarea"
@@ -649,16 +764,24 @@ const Contact = () => {
                             onChange={handleTyping}
                             aria-label="User message input"
                             className="message-input"
-                            style={{ resize: 'none', overflow: 'auto' }}
+                            style={{ resize: "none", overflow: "auto" }}
                           />
-                          <Button variant="outline-secondary" type="submit" className="message-send-button">Send</Button>
+                          <Button
+                            variant="outline-secondary"
+                            type="submit"
+                            className="message-send-button"
+                          >
+                            Send
+                          </Button>
                         </InputGroup>
                       </Form>
                     </Col>
                   </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                  <Button variant="danger" onClick={hangUp}>Hang Up</Button>
+                  <Button variant="danger" onClick={hangUp}>
+                    Hang Up
+                  </Button>
                 </Modal.Footer>
               </Modal>
             </>
@@ -673,8 +796,12 @@ const Contact = () => {
         </Modal.Header>
         <Modal.Body>
           <p>{incomingCall?.callerName} is calling you.</p>
-          <Button variant="success" onClick={answerCall}>Answer</Button>
-          <Button variant="danger" onClick={declineCall}>Decline</Button>
+          <Button variant="success" onClick={answerCall}>
+            Answer
+          </Button>
+          <Button variant="danger" onClick={declineCall}>
+            Decline
+          </Button>
         </Modal.Body>
       </Modal>
     </Container>
