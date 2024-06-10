@@ -667,6 +667,22 @@ const Contact = () => {
     setIncomingCall(null);
   };
 
+  useEffect(() => {
+    if (!showCallModal) {
+      if (localVideoRef.current && localStream.current) {
+        localVideoRef.current.srcObject = null; // Detach local stream
+      }
+      if (remoteVideoRef.current && remoteStream.current) {
+        remoteVideoRef.current.srcObject = null; // Detach remote stream
+      }
+    } else {
+      // This is when the call modal opens
+      if (localVideoRef.current && localStream.current) {
+        localVideoRef.current.srcObject = localStream.current; // Attach local stream when modal opens
+      }
+    }
+  }, [showCallModal]);
+
   return (
     <Container fluid className="chat-room">
       <Row>
@@ -768,23 +784,28 @@ const Contact = () => {
                   <Row>
                     <Col
                       md={8}
-                      className="d-flex flex-column align-items-center"
+                      className="d-flex flex-column align-items-center video-container"
                     >
-                      <video
-                        ref={localVideoRef}
-                        autoPlay
-                        muted
-                        playsInline
-                        className="local-video"
-                        id="localVideo"
-                      ></video>
-                      <video
-                        ref={remoteVideoRef}
-                        autoPlay
-                        playsInline
-                        className="remote-video"
-                        id="remoteVideo"
-                      ></video>
+                      {showCallModal && (
+                        <>
+                          <video
+                            ref={localVideoRef}
+                            autoPlay
+                            muted
+                            playsInline
+                            className="local-video"
+                            id="localVideo"
+                          />
+                          <video
+                            ref={remoteVideoRef}
+                            autoPlay
+                            playsInline
+                            className="remote-video"
+                            id="remoteVideo"
+                          />
+                        </>
+                      )}
+
                       <div className="video-call-controls">
                         <Button onClick={toggleMute} className="control-button">
                           {isMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
