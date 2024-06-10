@@ -30,7 +30,7 @@ const Contact = () => {
   const remoteVideoRef = useRef(null);
   const peerConnection = useRef(null);
   const localStream = useRef(null);
-  const remoteStream = useRef(new MediaStream());
+  const remoteStream = useRef(null);
   const roomIdRef = useRef(null);
 
   const configuration = {
