@@ -112,53 +112,54 @@ const Contact = () => {
   };
 
   useEffect(() => {
-    if (!user || !selectedParticipant || !currentRoom) {
-      return;
-    }
+    if (user && selectedParticipant) {
+      // Initialize roomIdRef when a participant is selected
+      roomIdRef.current = generateRoomId(selectedParticipant.id, user.uid);
 
-    const chatId = isDoctor
-      ? generateChatId(selectedParticipant.id, user.uid)
-      : generateChatId(user.uid, selectedParticipant.id);
+      const chatId = isDoctor
+        ? generateChatId(selectedParticipant.id, user.uid)
+        : generateChatId(user.uid, selectedParticipant.id);
 
-    console.log("Generated Chat ID:", chatId);
-    const chatRef = ref(database, `chats/${chatId}/messages`);
-    const typingRef = ref(database, `chats/${chatId}/typing`);
+      console.log("Generated Chat ID:", chatId);
+      const chatRef = ref(database, `chats/${chatId}/messages`);
+      const typingRef = ref(database, `chats/${chatId}/typing`);
 
-    const unsubscribe = onValue(chatRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const messages = Object.values(data);
-        console.log("Fetched messages:", messages);
-        setMsgList(messages);
-        setTimeout(() => {
-          if (msgBoxRef.current) {
-            msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
-          }
-        }, 100);
-      } else {
-        setMsgList([]);
-      }
-    });
-
-    const typingUnsubscribe = onValue(typingRef, (snapshot) => {
-      const typingData = snapshot.val();
-      setOtherTyping(typingData && typingData.typing && typingData.typing !== user.uid);
-    });
-
-    const callUnsubscribe = onSnapshot(collection(db, `calls`), (snapshot) => {
-      snapshot.docChanges().forEach(change => {
-        if (change.type === 'added' && change.doc.data().receiverId === user.uid) {
-          setIncomingCall(change.doc.data());
-          setShowIncomingCallModal(true);
+      const unsubscribe = onValue(chatRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const messages = Object.values(data);
+          console.log("Fetched messages:", messages);
+          setMsgList(messages);
+          setTimeout(() => {
+            if (msgBoxRef.current) {
+              msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
+            }
+          }, 100);
+        } else {
+          setMsgList([]);
         }
       });
-    });
 
-    return () => {
-      unsubscribe();
-      typingUnsubscribe();
-      callUnsubscribe();
-    };
+      const typingUnsubscribe = onValue(typingRef, (snapshot) => {
+        const typingData = snapshot.val();
+        setOtherTyping(typingData && typingData.typing && typingData.typing !== user.uid);
+      });
+
+      const callUnsubscribe = onSnapshot(collection(db, `calls`), (snapshot) => {
+        snapshot.docChanges().forEach(change => {
+          if (change.type === 'added' && change.doc.data().receiverId === user.uid) {
+            setIncomingCall(change.doc.data());
+            setShowIncomingCallModal(true);
+          }
+        });
+      });
+
+      return () => {
+        unsubscribe();
+        typingUnsubscribe();
+        callUnsubscribe();
+      };
+    }
   }, [user, selectedParticipant, isDoctor, currentRoom]);
 
   const handleSendMessage = async (e) => {
@@ -289,9 +290,6 @@ const Contact = () => {
       await openUserMedia();
     }
 
-    const roomRef = doc(db, 'rooms', generateRoomId(selectedParticipant.id, user.uid));
-    roomIdRef.current = roomRef.id;
-
     peerConnection.current = new RTCPeerConnection(configuration);
     registerPeerConnectionListeners();
 
@@ -299,17 +297,23 @@ const Contact = () => {
       peerConnection.current.addTrack(track, localStream.current);
     });
 
+    // Create Firestore references AFTER initializing peerConnection
+    const roomRef = doc(db, 'rooms', roomIdRef.current); // Use existing roomId
     const callerCandidatesCollection = collection(roomRef, 'callerCandidates');
+
     peerConnection.current.addEventListener('icecandidate', event => {
-      if (event.candidate) {
-        addDoc(callerCandidatesCollection, event.candidate.toJSON());
-      }
+      if (!peerConnection.current || !event.candidate) return; // Check for null
+      addDoc(callerCandidatesCollection, event.candidate.toJSON());
     });
 
+    // Create offer
     const offer = await peerConnection.current.createOffer();
     await peerConnection.current.setLocalDescription(offer);
 
-    const roomWithOffer = { 'offer': { type: offer.type, sdp: offer.sdp }, 'timestamp': new Date() };
+    const roomWithOffer = {
+      offer: { type: offer.type, sdp: offer.sdp },
+      timestamp: new Date(),
+    };
     await setDoc(roomRef, roomWithOffer);
 
     setCurrentRoom(`Current room is ${roomRef.id} - You are the caller!`);
