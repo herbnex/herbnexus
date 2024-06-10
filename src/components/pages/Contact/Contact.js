@@ -450,6 +450,16 @@ const Contact = () => {
     peerConnection.current.addEventListener('iceconnectionstatechange', () => {
       console.log(`ICE connection state change: ${peerConnection.current.iceConnectionState}`);
     });
+
+    peerConnection.current.addEventListener('track', event => {
+      event.streams[0].getTracks().forEach(track => {
+        remoteStream.current.addTrack(track);
+      });
+
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = remoteStream.current;
+      }
+    });
   };
 
   const handleCall = async () => {
