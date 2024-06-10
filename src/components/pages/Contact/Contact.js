@@ -15,8 +15,6 @@ import {
   set,
   onValue,
   push,
-  onDisconnect,
-  update,
 } from "firebase/database";
 import { db, database } from "../../../Firebase/firebase.config";
 import {
