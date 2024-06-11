@@ -9,6 +9,7 @@ import Faq from "../../Faq/Faq";
 import Loading from "../../Loading/Loading";
 import SectionTitle from "../../SectionTitle/SectionTitle";
 import Subscription from "../../subscription/subscriptions";
+import HowItWorks from '../../HowIItWorks/HowItWorks'; // Import the new component
 
 const Home = () => {
   const { isLoading } = useAuth();
@@ -36,6 +37,8 @@ const Home = () => {
       </Container>
 
       <About home={true} />
+
+      <HowItWorks />
 
       <Faq />
 

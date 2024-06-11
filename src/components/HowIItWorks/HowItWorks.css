@@ -1,0 +1,24 @@
+.how-it-works {
+    padding: 3rem 0;
+  }
+  
+  .how-it-works .step {
+    margin-bottom: 2rem;
+  }
+  
+  .how-it-works .step h2 {
+    font-size: 2rem;
+    color: #00224f;
+  }
+  
+  .how-it-works .step p {
+    font-size: 1.1rem;
+    color: gray;
+  }
+  
+  .demo-gif {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgb(0 24 73 / 20%);
+  }
+  
