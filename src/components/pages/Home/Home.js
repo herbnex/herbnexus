@@ -26,7 +26,6 @@ const Home = () => {
     <div>
       <Banner />
 
-      <StatsBanner /> {/* Add the new component here */}
 
 
       <SectionTitle>
@@ -43,9 +42,14 @@ const Home = () => {
         </NavLink>
       </Container>
 
-      <About home={true} />
+      <StatsBanner /> {/* Add the new component here */}
 
       <HowItWorks />
+
+
+      <About home={true} />
+
+      
       <WhyLoveHerbNexus /> {/* Add the new component here */}
 
 
