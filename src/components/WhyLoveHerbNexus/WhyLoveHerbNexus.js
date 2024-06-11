@@ -1,6 +1,8 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import './WhyLoveHerbNexus.css';
+import mobileimg from '../../assets/why-love-ja-mobile-new.png'; // Path to your mobile image
+import desktopimg from '../../assets/why-love-ja.png'; // Path to your desktop image
 
 const WhyLoveHerbNexus = () => {
   return (
@@ -42,9 +44,9 @@ const WhyLoveHerbNexus = () => {
       </section>
       <div className="image-container">
         <picture>
-          <source media="(max-width: 767px)" srcSet="src/assets/why-love-ja-mobile-new.png" />
-          <source media="(min-width: 768px)" srcSet="src/assets/why-love-ja.png" />
-          <img src="src/assets/why-love-ja.png" alt="Herb Nexus" className="bottom-image" />
+          <source media="(max-width: 767px)" srcSet={mobileimg} />
+          <source media="(min-width: 768px)" srcSet={desktopimg} />
+          <img src={desktopimg} alt="Herb Nexus" className="bottom-image" />
         </picture>
       </div>
     </Container>
