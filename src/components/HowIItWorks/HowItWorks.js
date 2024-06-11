@@ -8,17 +8,18 @@ const HowItWorks = () => {
     <Container className="how-it-works">
       <Row className="align-items-center">
         <Col md={6}>
+          <h2 className="how-it-works-title">How it works</h2>
           <div className="step">
-            <h2>Step 1: Sign Up</h2>
-            <p>Create your account to get started. It's quick and easy.</p>
+            <h3>1. Ask your question</h3>
+            <p>Tell us your situation. Ask any question in any category, anytime you want.</p>
           </div>
           <div className="step">
-            <h2>Step 2: Connect</h2>
-            <p>Connect with accredited herbalists via our 24/7 live chat.</p>
+            <h3>2. Let us match you</h3>
+            <p>We’ll connect you in minutes with the best expert for your question.</p>
           </div>
           <div className="step">
-            <h2>Step 3: Get Personalized Advice</h2>
-            <p>Receive tailored herbal remedies and ongoing support.</p>
+            <h3>3. Chat with an Expert</h3>
+            <p>Talk, text, or chat till you have your answer. Members get unlimited conversations 24/7, so you’ll always have an expert ready to help.</p>
           </div>
         </Col>
         <Col md={6}>
