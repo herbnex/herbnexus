@@ -15,7 +15,12 @@ import {
   ToastContainer,
   Dropdown,
 } from "react-bootstrap";
-import { ref, set, onValue, push } from "firebase/database";
+import {
+  ref,
+  set,
+  onValue,
+  push,
+} from "firebase/database";
 import { db, database } from "../../../Firebase/firebase.config";
 import {
   doc,
@@ -321,7 +326,31 @@ const Contact = () => {
         chatSection.scrollIntoView({ behavior: "smooth" });
       }
     }, 300);
+
+    // Reset call-related states to avoid automatic calls
+    setCurrentRoom(null);
+    if (peerConnection.current) {
+      peerConnection.current.close();
+      peerConnection.current = null;
+    }
   };
+
+  // WebRTC Functions (Moved and Refactored)
+
+  useEffect(() => {
+    // Handle attaching/detaching streams ONLY when showCallModal changes
+    if (showCallModal) {
+      if (localVideoRef.current && localStream.current) {
+        localVideoRef.current.srcObject = localStream.current;
+      }
+      if (remoteVideoRef.current && remoteStream.current) {
+        remoteVideoRef.current.srcObject = remoteStream.current;
+      }
+    } else {
+      if (localVideoRef.current) localVideoRef.current.srcObject = null;
+      if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+    }
+  }, [showCallModal]);
 
   const openUserMedia = async () => {
     setLoading(true);
@@ -647,7 +676,7 @@ const Contact = () => {
     if (!selectedParticipant) return;
 
     await createRoom();
-    setShowCallModal(true);
+    setShowCallModal(true); // Show modal only after the room is created
 
     const callData = {
       callerId: user.uid,
@@ -680,24 +709,7 @@ const Contact = () => {
     setIncomingCall(null);
   };
 
-  useEffect(() => {
-    if (!showCallModal) {
-      if (localVideoRef.current && localStream.current) {
-        localVideoRef.current.srcObject = null; // Detach local stream
-      }
-      if (remoteVideoRef.current && remoteStream.current) {
-        remoteVideoRef.current.srcObject = null; // Detach remote stream
-      }
-    } else {
-      // This is when the call modal opens
-      if (localVideoRef.current && localStream.current) {
-        localVideoRef.current.srcObject = localStream.current; // Attach local stream when modal opens
-      }
-      if (remoteVideoRef.current && remoteStream.current) {
-        remoteVideoRef.current.srcObject = remoteStream.current; // Attach remote stream when modal opens
-      }
-    }
-  }, [showCallModal]);
+  // Helper Functions
 
   const handleLanguageChange = (lang) => {
     setLanguage(lang);
