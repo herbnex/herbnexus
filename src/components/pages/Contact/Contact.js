@@ -15,21 +15,26 @@ import {
   ToastContainer,
   Dropdown,
 } from "react-bootstrap";
-import {
-  ref,
-  set,
-  onValue,
-  push,
-} from "firebase/database";
+import { ref, set, onValue, push } from "firebase/database";
 import { db, database } from "../../../Firebase/firebase.config";
 import {
-  doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc,
+  doc,
+  getDocs,
+  collection,
+  query,
+  where,
+  getDoc,
+  setDoc,
+  onSnapshot,
+  updateDoc,
+  deleteDoc,
+  addDoc,
 } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
 import { FaPhoneAlt, FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaDesktop, FaGlobe } from "react-icons/fa";
-import { ChatContext } from './ChatContext';
+import { ChatContext } from './ChatContext'; // Import the context
 import "./Contact.css";
 
 const Contact = () => {
@@ -655,7 +660,7 @@ const Contact = () => {
   };
 
   const generateRoomId = (doctorId, userId) => {
-    const ids = [doctorId, userId].sort();
+    const ids = [doctorId, userId].sort(); // Ensure the room ID is the same regardless of the order of doctorId and userId
     return `${ids[0]}_${ids[1]}`;
   };
 
@@ -677,17 +682,18 @@ const Contact = () => {
   useEffect(() => {
     if (!showCallModal) {
       if (localVideoRef.current && localStream.current) {
-        localVideoRef.current.srcObject = null;
+        localVideoRef.current.srcObject = null; // Detach local stream
       }
       if (remoteVideoRef.current && remoteStream.current) {
-        remoteVideoRef.current.srcObject = null;
+        remoteVideoRef.current.srcObject = null; // Detach remote stream
       }
     } else {
+      // This is when the call modal opens
       if (localVideoRef.current && localStream.current) {
-        localVideoRef.current.srcObject = localStream.current;
+        localVideoRef.current.srcObject = localStream.current; // Attach local stream when modal opens
       }
       if (remoteVideoRef.current && remoteStream.current) {
-        remoteVideoRef.current.srcObject = remoteStream.current;
+        remoteVideoRef.current.srcObject = remoteStream.current; // Attach remote stream when modal opens
       }
     }
   }, [showCallModal]);
