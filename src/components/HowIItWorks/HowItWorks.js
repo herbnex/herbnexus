@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import './HowItWorks.css';
 import demoVideo from '../../assets/demo.mp4'; // Path to your MP4 video
 
@@ -28,8 +28,8 @@ const HowItWorks = () => {
               </div>
             </div>
           </Col>
-          <Col md={6} className="image-column">
-            <div className="image-box">
+          <Col md={6} className="video-column">
+            <div className="video-box">
               <video className="demo-video" controls>
                 <source src={demoVideo} type="video/mp4" />
                 Your browser does not support the video tag.
