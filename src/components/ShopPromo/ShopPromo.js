@@ -14,33 +14,20 @@ import hlh from '../../assets/hlh.png';
 
 const ShopPromo = () => {
   const categories = [
-    { icon: {dh}, title: "Digestive Health" },
-    { icon: {hb}, title: "Healthy Blood" },
-    { icon: {hh}, title: "Hormone Health" },
-    { icon: {nh}, title: "Neurological Health" },
-    { icon: {lh}, title: "Lung Health" },
-    { icon: {uth}, title: "Urinary Tract Health" },
-    { icon: {bjh}, title: "Bone And Joint Health" },
-    { icon: {ih}, title: "Immune Health" },
-    { icon: {hlh}, title: "Holistic Health" },
+    { icon: dh, title: "Digestive Health" },
+    { icon: hb, title: "Healthy Blood" },
+    { icon: hh, title: "Hormone Health" },
+    { icon: nh, title: "Neurological Health" },
+    { icon: lh, title: "Lung Health" },
+    { icon: uth, title: "Urinary Tract Health" },
+    { icon: bjh, title: "Bone And Joint Health" },
+    { icon: ih, title: "Immune Health" },
+    { icon: hlh, title: "Holistic Health" },
   ];
 
   return (
     <Container fluid className="shop-promo">
-      <Container className="py-5">
-        <Row className="align-items-center">
-          <Col md={6} className="text-col">
-            <h1 className="display-4">Discover the Best Herbal Products</h1>
-            <p className="lead">
-              Visit our in-house herbal marketplace for a wide range of herbs and related items.
-              Quality products curated by our accredited herbalists.
-            </p>
-            <Button href="https://shop.herbnexus.io" target="_blank" className="btn-shop mt-3">
-              Visit the Shop
-            </Button>
-          </Col>
-        </Row>
-      </Container>
+  
       <Container className="shop-categories py-5">
         <h2 className="text-center mb-4">Shop by Body System</h2>
         <p className="text-center mb-5">Select the body system you'd like to focus on.</p>
