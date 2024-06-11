@@ -2,15 +2,17 @@ import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import './HowItWorks.css';
 import demoVideo from '../../assets/demo.mp4'; // Path to your MP4 video
+import SectionTitle from "../SectionTitle/SectionTitle";
+
 
 const HowItWorks = () => {
   return (
     <Container>
       <section className="how-it-works-section">
-        <div className="section-title">
+      <SectionTitle>
           <h4>How It Works</h4>
           <h1>Understand the Process</h1>
-        </div>
+        </SectionTitle>
         <Row className="align-items-center">
           <Col md={6} className="content-column">
             <div className="content-box">
