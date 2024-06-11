@@ -1,60 +1,63 @@
 .stats-banner {
-    background-color: #f8f9fa; /* Light background */
-    position: relative;
-    text-align: left;
-    overflow: hidden;
+  background-color: #39cabb; /* Herb Nexus theme color */
+  position: relative;
+  text-align: left;
+  overflow: hidden;
+  padding-bottom: 2rem;
+}
+
+.text-col h1 {
+  font-family: 'Roboto', sans-serif;
+  color: #fff;
+}
+
+.text-col h2 {
+  font-family: 'Roboto', sans-serif;
+  color: #00224f; /* Contrast highlight color */
+}
+
+.stats-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-item {
+  margin-bottom: 1.5rem;
+}
+
+.stat-item h3 {
+  font-family: 'Roboto', sans-serif;
+  color: #00224f; /* Contrast highlight color */
+}
+
+.stat-item p {
+  font-family: 'Roboto', sans-serif;
+  color: #fff;
+}
+
+.wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  background: #fff;
+  clip-path: polygon(0 60%, 100% 40%, 100% 100%, 0% 100%);
+}
+
+/* Responsive design */
+@media (max-width: 767px) {
+  .text-col {
+    text-align: center;
   }
-  
-  .text-col h1 {
-    font-family: 'Roboto', sans-serif;
-    color: #00224f;
-  }
-  
-  .text-col h2 {
-    font-family: 'Roboto', sans-serif;
-    color: #39cabb;
-  }
-  
-  .stats-col {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  
+
   .stats {
-    display: flex;
-    flex-direction: column;
+    align-items: center;
   }
-  
-  .stat-item {
-    margin-bottom: 1.5rem;
-  }
-  
-  .stat-item h3 {
-    font-family: 'Roboto', sans-serif;
-  }
-  
-  .stat-item p {
-    font-family: 'Roboto', sans-serif;
-  }
-  
-  .wave {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 150px;
-    background: #f8f9fa;
-    clip-path: polygon(0 40%, 100% 60%, 100% 100%, 0% 100%);
-  }
-  
-  @media (max-width: 767px) {
-    .text-col {
-      text-align: center;
-    }
-  
-    .stats {
-      align-items: center;
-    }
-  }
-  
+}

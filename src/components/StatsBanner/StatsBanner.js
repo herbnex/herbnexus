@@ -9,20 +9,20 @@ const StatsBanner = () => {
         <Row className="align-items-center">
           <Col md={6} className="text-col">
             <h1 className="display-4">Connecting you with top herbalists</h1>
-            <h2 className="text-success">100% online.</h2>
+            <h2 className="text-highlight">100% online.</h2>
           </Col>
           <Col md={6} className="stats-col">
             <div className="stats">
               <div className="stat-item">
-                <h3 className="display-5 text-success">1,234,567</h3>
+                <h3 className="display-5 text-highlight">1,234,567</h3>
                 <p className="lead">Messages, chat, phone, video sessions</p>
               </div>
               <div className="stat-item">
-                <h3 className="display-5 text-success">12,345</h3>
+                <h3 className="display-5 text-highlight">12,345</h3>
                 <p className="lead">Accredited herbalists ready to help</p>
               </div>
               <div className="stat-item">
-                <h3 className="display-5 text-success">123,456</h3>
+                <h3 className="display-5 text-highlight">123,456</h3>
                 <p className="lead">People got help</p>
               </div>
             </div>
