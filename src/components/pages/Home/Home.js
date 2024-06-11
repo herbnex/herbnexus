@@ -11,6 +11,8 @@ import SectionTitle from "../../SectionTitle/SectionTitle";
 import Subscription from "../../subscription/subscriptions";
 import HowItWorks from '../../HowIItWorks/HowItWorks'; // Import the new component
 import WhyLoveHerbNexus from '../../WhyLoveHerbNexus/WhyLoveHerbNexus'; // Import the new component
+import StatsBanner from '../../StatsBanner/StatsBanner'; // Import the new component
+
 
 
 const Home = () => {
@@ -23,6 +25,9 @@ const Home = () => {
   return (
     <div>
       <Banner />
+
+      <StatsBanner /> {/* Add the new component here */}
+
 
       <SectionTitle>
         <h4>Subscribe Now</h4>
