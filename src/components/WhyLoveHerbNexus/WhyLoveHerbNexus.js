@@ -1,6 +1,8 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import './WhyLoveHerbNexus.css';
+import SectionTitle from "../SectionTitle/SectionTitle";
+
 import mobileimg from '../../assets/why-love-ja-mobile-new.png'; // Path to your mobile image
 import desktopimg from '../../assets/why-love-ja.png'; // Path to your desktop image
 
