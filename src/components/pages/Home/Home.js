@@ -12,6 +12,8 @@ import Subscription from "../../subscription/subscriptions";
 import HowItWorks from '../../HowIItWorks/HowItWorks'; // Import the new component
 import WhyLoveHerbNexus from '../../WhyLoveHerbNexus/WhyLoveHerbNexus'; // Import the new component
 import StatsBanner from '../../StatsBanner/StatsBanner'; // Import the new component
+import ShopPromo from '../../ShopPromo/ShopPromo'; // Import the new component
+
 
 
 
@@ -38,6 +40,11 @@ const Home = () => {
           </Button>
         </NavLink>
       </Container>
+      <SectionTitle>
+        <h4>Shop</h4>
+        <h1>In-House Herbal Marketplace</h1>
+      </SectionTitle>
+      <ShopPromo />
       <About home={true} />
       <WhyLoveHerbNexus /> 
       <StatsBanner /> 
