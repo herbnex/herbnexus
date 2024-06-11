@@ -7,6 +7,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ChatProvider } from './components/pages/Contact/ChatContext'; // Import the ChatProvider
+import './global.css'; // Import global CSS
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
