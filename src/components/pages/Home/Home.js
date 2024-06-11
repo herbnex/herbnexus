@@ -41,17 +41,10 @@ const Home = () => {
           </Button>
         </NavLink>
       </Container>
-      <WhyLoveHerbNexus /> {/* Add the new component here */}
-
-
-      <StatsBanner /> {/* Add the new component here */}
-
-      <HowItWorks />
-
-
       <About home={true} />
-
-      
+      <WhyLoveHerbNexus /> /* Add the new component here */
+      <StatsBanner /> /* Add the new component here */
+      <HowItWorks />
 
 
       <Faq />
