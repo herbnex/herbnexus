@@ -3,12 +3,24 @@
     background-color: #f9f9f9;
   }
   
-  .how-it-works-title {
+  .how-it-works-section {
+    padding: 2rem 0;
+  }
+  
+  .section-title h4 {
+    font-size: 1.2rem;
+    color: #39cabb;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-family: 'Jost', sans-serif;
+  }
+  
+  .section-title h1 {
     font-size: 2.5rem;
     color: #00224f;
+    text-align: center;
     margin-bottom: 2rem;
     font-family: 'Jost', sans-serif;
-    text-align: center;
   }
   
   .how-it-works .step {
