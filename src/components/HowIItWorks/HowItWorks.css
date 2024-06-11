@@ -1,25 +1,33 @@
 .how-it-works {
     padding: 3rem 0;
+    background-color: #f9f9f9;
   }
   
   .how-it-works-title {
     font-size: 2.5rem;
     color: #00224f;
     margin-bottom: 2rem;
+    font-family: 'Jost', sans-serif;
+    text-align: center;
   }
   
   .how-it-works .step {
     margin-bottom: 2rem;
+    background-color: #d9ebf7;
+    padding: 1rem;
+    border-radius: 10px;
   }
   
   .how-it-works .step h3 {
     font-size: 1.5rem;
     color: #00224f;
+    font-family: 'Jost', sans-serif;
   }
   
   .how-it-works .step p {
     font-size: 1rem;
     color: gray;
+    font-family: 'Poppins', sans-serif;
   }
   
   .demo-video {

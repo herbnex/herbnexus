@@ -6,9 +6,9 @@ import demoVideo from '../../assets/demo.mp4'; // Path to your MP4 video
 const HowItWorks = () => {
   return (
     <Container className="how-it-works">
+      <h2 className="how-it-works-title">How it works</h2>
       <Row className="align-items-center">
         <Col md={6}>
-          <h2 className="how-it-works-title">How it works</h2>
           <div className="step">
             <h3>1. Ask your question</h3>
             <p>Tell us your situation. Ask any question in any category, anytime you want.</p>
