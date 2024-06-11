@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import './HowItWorks.css';
-import demoGif from '../../assets/demo.gif'; // Path to your GIF
+import demoVideo from '../../assets/demo.mp4'; // Path to your MP4 video
 
 const HowItWorks = () => {
   return (
@@ -22,7 +22,10 @@ const HowItWorks = () => {
           </div>
         </Col>
         <Col md={6}>
-          <img src={demoGif} alt="How Herb Nexus Works" className="demo-gif" />
+          <video className="demo-video" controls>
+            <source src={demoVideo} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </Col>
       </Row>
     </Container>
