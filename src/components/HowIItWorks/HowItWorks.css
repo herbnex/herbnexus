@@ -20,15 +20,15 @@
   }
   
   .content-box .step h3 {
-    font-size: 1.5rem;
+    
     color: #00224f;
-    font-family: 'Jost', sans-serif;
+    
   }
   
   .content-box .step p {
-    font-size: 1rem;
+    
     color: gray;
-    font-family: 'Poppins', sans-serif;
+    
   }
   
   .video-column .video-box {
@@ -44,21 +44,6 @@
     opacity: 0.7; /* Blend the video into the background */
   }
   
-  @media (max-width: 767.98px) {
-    .section-title h1 {
-      font-size: 2rem;
-    }
   
-    .section-title h4 {
-      font-size: 1rem;
-    }
   
-    .content-box .step h3 {
-      font-size: 1.25rem;
-    }
-  
-    .content-box .step p {
-      font-size: 0.9rem;
-    }
-  }
   
