@@ -23,23 +23,13 @@ import {
 } from "firebase/database";
 import { db, database } from "../../../Firebase/firebase.config";
 import {
-  doc,
-  getDocs,
-  collection,
-  query,
-  where,
-  getDoc,
-  setDoc,
-  onSnapshot,
-  updateDoc,
-  deleteDoc,
-  addDoc,
+  doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc,
 } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
 import { FaPhoneAlt, FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaDesktop, FaGlobe } from "react-icons/fa";
-import { ChatContext } from './ChatContext'; // Import the context
+import { ChatContext } from './ChatContext';
 import "./Contact.css";
 
 const Contact = () => {
@@ -63,7 +53,7 @@ const Contact = () => {
     isScreenSharing, setIsScreenSharing,
     loading, setLoading,
     error, setError,
-    showNotification, setShowNotification, // Add these lines
+    showNotification, setShowNotification,
     notification, setNotification,
     language, setLanguage
   } = useContext(ChatContext);
@@ -163,7 +153,6 @@ const Contact = () => {
 
   useEffect(() => {
     if (user && selectedParticipant) {
-      // Initialize roomIdRef when a participant is selected
       roomIdRef.current = generateRoomId(selectedParticipant.id, user.uid);
 
       const chatId = isDoctor
@@ -666,7 +655,7 @@ const Contact = () => {
   };
 
   const generateRoomId = (doctorId, userId) => {
-    const ids = [doctorId, userId].sort(); // Ensure the room ID is the same regardless of the order of doctorId and userId
+    const ids = [doctorId, userId].sort();
     return `${ids[0]}_${ids[1]}`;
   };
 
@@ -688,18 +677,17 @@ const Contact = () => {
   useEffect(() => {
     if (!showCallModal) {
       if (localVideoRef.current && localStream.current) {
-        localVideoRef.current.srcObject = null; // Detach local stream
+        localVideoRef.current.srcObject = null;
       }
       if (remoteVideoRef.current && remoteStream.current) {
-        remoteVideoRef.current.srcObject = null; // Detach remote stream
+        remoteVideoRef.current.srcObject = null;
       }
     } else {
-      // This is when the call modal opens
       if (localVideoRef.current && localStream.current) {
-        localVideoRef.current.srcObject = localStream.current; // Attach local stream when modal opens
+        localVideoRef.current.srcObject = localStream.current;
       }
       if (remoteVideoRef.current && remoteStream.current) {
-        remoteVideoRef.current.srcObject = remoteStream.current; // Attach remote stream when modal opens
+        remoteVideoRef.current.srcObject = remoteStream.current;
       }
     }
   }, [showCallModal]);
