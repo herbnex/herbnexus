@@ -40,10 +40,7 @@ const Home = () => {
           </Button>
         </NavLink>
       </Container>
-      <SectionTitle>
-        <h4>Shop</h4>
-        <h1>In-House Herbal Marketplace</h1>
-      </SectionTitle>
+      
       <ShopPromo />
       <About home={true} />
       <WhyLoveHerbNexus /> 

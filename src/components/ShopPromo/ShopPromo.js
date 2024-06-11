@@ -27,6 +27,23 @@ const ShopPromo = () => {
 
   return (
     <Container fluid className="shop-promo">
+        <Container className="py-5">
+        <Row className="align-items-center">
+          <Col md={6} className="text-col">
+            <h1 className="display-4">Discover the Best Herbal Products</h1>
+            <p className="lead">
+              Visit our in-house herbal marketplace for a wide range of herbs and related items.
+              Quality products curated by our accredited herbalists.
+            </p>
+            <Button href="https://shop.herbnexus.io" target="_blank" className="btn-shop mt-3">
+              Visit the Shop
+            </Button>
+          </Col>
+          <Col md={6} className="image-col">
+            <img src="path-to-your-herbal-image.png" alt="Herbal Products" className="img-fluid" />
+          </Col>
+        </Row>
+      </Container>
   
       <Container className="shop-categories py-5">
         
