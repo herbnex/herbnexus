@@ -10,6 +10,8 @@ import Loading from "../../Loading/Loading";
 import SectionTitle from "../../SectionTitle/SectionTitle";
 import Subscription from "../../subscription/subscriptions";
 import HowItWorks from '../../HowIItWorks/HowItWorks'; // Import the new component
+import WhyLoveHerbNexus from '../../WhyLoveHerbNexus/WhyLoveHerbNexus'; // Import the new component
+
 
 const Home = () => {
   const { isLoading } = useAuth();
@@ -39,6 +41,8 @@ const Home = () => {
       <About home={true} />
 
       <HowItWorks />
+      <WhyLoveHerbNexus /> {/* Add the new component here */}
+
 
       <Faq />
 

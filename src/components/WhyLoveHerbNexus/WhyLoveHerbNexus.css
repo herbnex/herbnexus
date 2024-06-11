@@ -1,0 +1,55 @@
+.why-love-herbnexus {
+    padding: 3rem 0;
+  }
+  
+  .why-love-herbnexus-section {
+    padding: 40px 0;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .section-title h1 {
+    font-size: 2rem;
+    color: #00224f;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .feature-column {
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  .feature-box {
+    background-color: #f1f3f4;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .feature-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .feature-icon {
+    width: 50px;
+    margin-bottom: 1rem;
+  }
+  
+  .feature-box h3 {
+    font-size: 1.25rem;
+    color: #00224f;
+    margin-bottom: 0.5rem;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .feature-box p {
+    font-size: 1rem;
+    color: #5f6368;
+    font-family: 'Roboto', sans-serif;
+  }
+  
