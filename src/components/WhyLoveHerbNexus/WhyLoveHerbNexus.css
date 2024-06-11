@@ -1,5 +1,7 @@
 .why-love-herbnexus {
     padding: 3rem 0;
+    position: relative;
+    overflow: hidden;
   }
   
   .why-love-herbnexus-section {
@@ -7,6 +9,7 @@
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1;
   }
   
   .section-title h1 {
@@ -36,7 +39,8 @@
   }
   
   .feature-icon {
-    width: 50px;
+    font-size: 3rem;
+    color: #39cabb;
     margin-bottom: 1rem;
   }
   
@@ -51,5 +55,26 @@
     font-size: 1rem;
     color: #5f6368;
     font-family: 'Roboto', sans-serif;
+  }
+  
+  .image-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+  }
+  
+  .bottom-image {
+    width: 100%;
+    max-width: 1200px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  @media (max-width: 767px) {
+    .bottom-image {
+      max-width: 100%;
+    }
   }
   

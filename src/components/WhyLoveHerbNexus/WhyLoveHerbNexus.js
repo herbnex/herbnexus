@@ -40,6 +40,13 @@ const WhyLoveHerbNexus = () => {
           </Col>
         </Row>
       </section>
+      <div className="image-container">
+        <picture>
+          <source media="(max-width: 767px)" srcSet="../../assets/why-love-ja-mobile-new.png" />
+          <source media="(min-width: 768px)" srcSet="../../assets/why-love-ja.png" />
+          <img src="/path-to-your-desktop-image.png" alt="Herb Nexus" className="bottom-image" />
+        </picture>
+      </div>
     </Container>
   );
 };
