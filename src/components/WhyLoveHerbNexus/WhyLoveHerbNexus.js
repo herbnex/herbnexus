@@ -8,9 +8,10 @@ const WhyLoveHerbNexus = () => {
   return (
     <Container className="why-love-herbnexus">
       <section className="why-love-herbnexus-section">
-        <div className="section-title">
-          <h1>Why you'll love Herb Nexus</h1>
-        </div>
+      <SectionTitle>
+          <h4>Why you'll love Herb Nexus</h4>
+          <h1>The World's Largest Network of Alternative Medicine Practioners</h1>
+        </SectionTitle>
         <Row className="align-items-center">
           <Col md={3} className="feature-column">
             <div className="feature-box">
