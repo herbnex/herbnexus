@@ -25,9 +25,6 @@ const Home = () => {
   return (
     <div>
       <Banner />
-
-
-
       <SectionTitle>
         <h4>Subscribe Now</h4>
         <h1>Get 24/7 Access to Herbalists</h1>
@@ -42,18 +39,10 @@ const Home = () => {
         </NavLink>
       </Container>
       <About home={true} />
-      <WhyLoveHerbNexus /> /* Add the new component here */
-      <StatsBanner /> /* Add the new component here */
+      <WhyLoveHerbNexus /> 
+      <StatsBanner /> 
       <HowItWorks />
-
-
       <Faq />
-
-      {/* <SectionTitle>
-        <h4>Subscribe Now</h4>
-        <h1>Get 24/7 Access to Herbalists</h1>
-      </SectionTitle>
-      <Subscription /> */}
     </div>
   );
 };
