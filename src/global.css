@@ -1,16 +1,28 @@
 /* src/global.css */
+
+/* Font and base styles */
 body {
     font-family: 'Roboto', sans-serif !important;
     font-size: 14px !important; /* Base font size */
     line-height: 1.5 !important;
     color: #202124 !important; /* Google's default text color */
+    background-color: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
   }
   
+  *, *::before, *::after {
+    box-sizing: inherit !important;
+  }
+  
+  /* Headings */
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Roboto', sans-serif !important;
     font-weight: 500 !important;
     margin: 0 0 0.5rem 0 !important;
     line-height: 1.2 !important;
+    color: #202124 !important;
   }
   
   h1 {
@@ -43,8 +55,183 @@ body {
     font-weight: 500 !important;
   }
   
+  /* Paragraphs, links, and other text elements */
   p, a, span, li, input, button {
     font-size: 1rem !important; /* 16px */
     font-weight: 400 !important;
+  }
+  
+  a {
+    color: #1a73e8 !important; /* Google's link color */
+    text-decoration: none !important;
+  }
+  
+  a:hover {
+    text-decoration: underline !important;
+  }
+  
+  /* Buttons */
+  button {
+    font-family: 'Roboto', sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    padding: 0.5rem 1rem !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    transition: background-color 0.3s !important;
+  }
+  
+  button.primary {
+    background-color: #1a73e8 !important;
+    color: #fff !important;
+  }
+  
+  button.primary:hover {
+    background-color: #1558b0 !important;
+  }
+  
+  button.secondary {
+    background-color: #f1f3f4 !important;
+    color: #202124 !important;
+  }
+  
+  button.secondary:hover {
+    background-color: #e0e0e0 !important;
+  }
+  
+  /* Forms */
+  input, textarea, select {
+    font-family: 'Roboto', sans-serif !important;
+    font-size: 1rem !important;
+    padding: 0.5rem !important;
+    border: 1px solid #dadce0 !important;
+    border-radius: 4px !important;
+    outline: none !important;
+    transition: border-color 0.3s !important;
+  }
+  
+  input:focus, textarea:focus, select:focus {
+    border-color: #1a73e8 !important;
+  }
+  
+  /* Cards */
+  .card {
+    background-color: #fff !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    padding: 1rem !important;
+    margin: 1rem 0 !important;
+  }
+  
+  /* Elevation (shadows) */
+  .elevation-1 {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important, 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+  }
+  
+  .elevation-2 {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16) !important, 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  }
+  
+  .elevation-3 {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19) !important, 0 6px 6px rgba(0, 0, 0, 0.23) !important;
+  }
+  
+  /* Lists */
+  ul, ol {
+    padding-left: 1.5rem !important;
+  }
+  
+  li {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  /* Tables */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  th, td {
+    padding: 0.75rem !important;
+    text-align: left !important;
+    border-bottom: 1px solid #dadce0 !important;
+  }
+  
+  th {
+    background-color: #f1f3f4 !important;
+    font-weight: 500 !important;
+  }
+  
+  /* Alerts */
+  .alert {
+    padding: 1rem !important;
+    border-radius: 4px !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .alert-primary {
+    background-color: #1a73e8 !important;
+    color: #fff !important;
+  }
+  
+  .alert-secondary {
+    background-color: #f1f3f4 !important;
+    color: #202124 !important;
+  }
+  
+  /* Navigation */
+  .nav {
+    display: flex !important;
+    list-style: none !important;
+    padding: 0 !important;
+  }
+  
+  .nav-item {
+    margin-right: 1rem !important;
+  }
+  
+  .nav-item a {
+    text-decoration: none !important;
+    color: #202124 !important;
+    transition: color 0.3s !important;
+  }
+  
+  .nav-item a:hover {
+    color: #1a73e8 !important;
+  }
+  
+  /* Grid system */
+  .row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    margin-right: -15px !important;
+    margin-left: -15px !important;
+  }
+  
+  .col {
+    flex: 1 !important;
+    padding-right: 15px !important;
+    padding-left: 15px !important;
+  }
+  
+  /* Media queries for responsiveness */
+  @media (max-width: 767.98px) {
+    .section-title h1 {
+      font-size: 2rem !important;
+    }
+  
+    .section-title h4 {
+      font-size: 1rem !important;
+    }
+  
+    .content-box .step h3 {
+      font-size: 1.25rem !important;
+    }
+  
+    .content-box .step p {
+      font-size: 0.9rem !important;
+    }
   }
   
