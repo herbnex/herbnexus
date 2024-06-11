@@ -31,7 +31,7 @@ const HowItWorks = () => {
           </Col>
           <Col md={6} className="video-column">
             <div className="video-box">
-              <video className="demo-video" controls>
+              <video className="demo-video" autoPlay loop muted>
                 <source src={demoVideo} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>

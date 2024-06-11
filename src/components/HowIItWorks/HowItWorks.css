@@ -38,9 +38,10 @@
   }
   
   .demo-video {
-    width: 100%;
-    border-radius: 10px;
-    box-shadow: 0 10px 40px rgb(0 24 73 / 20%);
+    width: 80%; /* Make the video smaller */
+    border-radius: 0; /* Remove borders */
+    box-shadow: none; /* Remove box shadow */
+    opacity: 0.7; /* Blend the video into the background */
   }
   
   @media (max-width: 767.98px) {
