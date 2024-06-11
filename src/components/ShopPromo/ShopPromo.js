@@ -29,8 +29,7 @@ const ShopPromo = () => {
     <Container fluid className="shop-promo">
   
       <Container className="shop-categories py-5">
-        <h2 className="text-center mb-4">Shop by Body System</h2>
-        <p className="text-center mb-5">Select the body system you'd like to focus on.</p>
+        
         <Row>
           {categories.map((category, index) => (
             <Col key={index} xs={12} sm={6} md={4} lg={3} className="mb-4 text-center">
