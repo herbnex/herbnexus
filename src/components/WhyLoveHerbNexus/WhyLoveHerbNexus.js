@@ -42,9 +42,9 @@ const WhyLoveHerbNexus = () => {
       </section>
       <div className="image-container">
         <picture>
-          <source media="(max-width: 767px)" srcSet="../../assets/why-love-ja-mobile-new.png" />
-          <source media="(min-width: 768px)" srcSet="../../assets/why-love-ja.png" />
-          <img src="../../assets/why-love-ja.png" alt="Herb Nexus" className="bottom-image" />
+          <source media="(max-width: 767px)" srcSet="src/assets/why-love-ja-mobile-new.png" />
+          <source media="(min-width: 768px)" srcSet="src/assets/why-love-ja.png" />
+          <img src="src/assets/why-love-ja.png" alt="Herb Nexus" className="bottom-image" />
         </picture>
       </div>
     </Container>
