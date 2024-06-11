@@ -1,16 +1,24 @@
 import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import './HowItWorks.css';
 import demoVideo from '../../assets/demo.mp4'; // Path to your MP4 video
 
 const HowItWorks = () => {
   return (
-    <Container>
-      <section className="how-it-works-section">
-        <div className="section-title">
-          <h4>How It Works</h4>
-          <h1>Understand the Process</h1>
-        </div>
+    <Container fluid className="how-it-works-bg">
+      <Container className="name h-100">
+        <Row className="h-100 p-5">
+          <Col xs={12} md={7}>
+            <div className="how-it-works-title">
+              <h1 className="text-white text-start mb-3">
+                <i className="bi bi-activity"></i> &nbsp;How Herb Nexus Works
+              </h1>
+            </div>
+          </Col>
+          <Col xs={12} md={4}></Col>
+        </Row>
+      </Container>
+      <Container>
         <Row className="align-items-center">
           <Col md={6} className="content-column">
             <div className="content-box">
@@ -37,7 +45,7 @@ const HowItWorks = () => {
             </div>
           </Col>
         </Row>
-      </section>
+      </Container>
     </Container>
   );
 };
