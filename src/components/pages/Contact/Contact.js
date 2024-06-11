@@ -158,6 +158,7 @@ const Contact = () => {
 
   useEffect(() => {
     if (user && selectedParticipant) {
+      // Initialize roomIdRef when a participant is selected
       roomIdRef.current = generateRoomId(selectedParticipant.id, user.uid);
 
       const chatId = isDoctor
