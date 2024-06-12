@@ -10,8 +10,8 @@ import uth from '../../assets/uth.png';
 import bjh from '../../assets/bjh.png'; 
 import ih from '../../assets/ih.png'; 
 import hlh from '../../assets/hlh.png'; 
-import a from '../../assets/a.png'; 
-
+import promoImage1 from '../../assets/a.png'; // Replace with actual image path
+import promoImage2 from '../../assets/b.png'; // Replace with actual image path
 
 const ShopPromo = () => {
   const categories = [
@@ -28,29 +28,30 @@ const ShopPromo = () => {
 
   return (
     <Container fluid className="shop-promo">
-        <Container className="py-5">
+      <Container className="py-5">
         <Row className="align-items-center">
+          <Col md={6} className="promo-images">
+            <img src={promoImage1} alt="Herbal Products 1" className="promo-image img-fluid" />
+            <img src={promoImage2} alt="Herbal Products 2" className="promo-image img-fluid" />
+          </Col>
           <Col md={6} className="text-col">
-            <h1 className="display-4">Discover the Best Herbal Products</h1>
+            <p className="text-uppercase">For Your Health Goals</p>
+            <h1 className="display-4">Herbal Supplements for Total Wellness</h1>
             <p className="lead">
-              Visit our in-house herbal marketplace for a wide range of herbs and related items.
-              Quality products curated by our accredited herbalists.
+              Shop our huge selection of herbal supplements and discover why we have thousands of reviews from happy customers who appreciate our quality of herbal supplements at amazing prices. Always manufactured in the USA, always made with quality as our #1 priority!
             </p>
             <Button href="https://shop.herbnexus.io" target="_blank" className="btn-shop mt-3">
-              Visit the Shop
+              Shop Now
             </Button>
-          </Col>
-          <Col md={6} className="image-col">
-            <img src={a} alt="Herbal Products" className="img-fluid" />
           </Col>
         </Row>
       </Container>
-  
       <Container className="shop-categories py-5">
-        
+        <h2 className="text-center mb-4">Shop by Body System</h2>
+        <p className="text-center mb-5">Select the body system you'd like to focus on.</p>
         <Row>
           {categories.map((category, index) => (
-            <Col key={index} xs={12} sm={6} className="mb-4 text-center">
+            <Col key={index} xs={12} sm={6} md={4} lg={3} className="mb-4 text-center">
               <img src={category.icon} alt={category.title} className="category-icon mb-3" />
               <h5>{category.title}</h5>
               <Button variant="outline-secondary" className="mt-2">Browse Products</Button>
