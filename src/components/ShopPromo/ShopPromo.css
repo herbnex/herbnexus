@@ -116,7 +116,9 @@
     .promo-images {
       display: none; /* Hide images on small screens */
     }
-  
+    .shop-promo container-fluid{
+      padding-top: 0;
+    }
 
   
   
