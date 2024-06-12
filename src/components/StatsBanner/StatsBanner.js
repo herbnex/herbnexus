@@ -7,7 +7,7 @@ const StatsBanner = () => {
     <div className="stats-banner">
       <Container fluid className="py-5">
         <Row className="align-items-center">
-          <Col md={6} className="text-col">
+          <Col md={6} className="text1-col">
             <h1 className="display-4">Connecting you with top herbalists</h1>
             <h2 className="text-highlight">100% online.</h2>
           </Col>
