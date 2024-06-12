@@ -1,7 +1,7 @@
 .shop-promo {
     background-color: #fff; /* Light background */
     text-align: left;
-    padding: 3rem 0;
+    padding: 0 0;
   }
   
   .text-col p.text-uppercase {
@@ -116,7 +116,7 @@
     .promo-images {
       display: none; /* Hide images on small screens */
     }
-    .shop-promo container-fluid{
+    .herb .py-5{
       padding-top: 0;
     }
 
