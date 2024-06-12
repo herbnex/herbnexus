@@ -30,7 +30,7 @@ const ShopPromo = () => {
 
   return (
     <Container fluid className="shop-promo">
-      <Container className="py-5">
+      <Container className="herb py-5">
         <Row className="align-items-center">
           <Col md={6} className="promo-images">
             <img src={promoImage1} alt="Herbal Products 1" className="promo-image img-fluid image-1" />
