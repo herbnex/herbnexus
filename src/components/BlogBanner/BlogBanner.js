@@ -1,21 +1,46 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Carousel } from 'react-bootstrap';
 import './BlogBanner.css';
-import { db } from "../../../src/Firebase/firebase.config"; // Ensure you have firebase configuration
+import preWorkoutImage from '../../assets/b.png';
+import fadogiaAgrestisImage from '../../assets/b.png';
+import baobabPowderImage from '../../assets/b.png';
+import postWorkoutWomenImage from '../../assets/b.png';
 
 const StatsBanner = () => {
-  const [blogPosts, setBlogPosts] = useState([]);
-
-  useEffect(() => {
-    // Fetch blog posts from Firebase
-    const fetchBlogPosts = async () => {
-      const blogPostsCollection = await db.collection('blogPosts').get();
-      const blogPostsData = blogPostsCollection.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setBlogPosts(blogPostsData);
-    };
-
-    fetchBlogPosts();
-  }, []);
+  const blogPosts = [
+    {
+      id: '1',
+      title: 'Top 10 Pre-Workout Supplements',
+      summary: 'Top 10 Pre-Workout Supplements to Try',
+      content: 'Detailed content about pre-workout supplements...',
+      category: 'Health',
+      image: preWorkoutImage
+    },
+    {
+      id: '2',
+      title: 'Benefits of Fadogia Agrestis',
+      summary: 'Benefits of Fadogia Agrestis (Enhancement)',
+      content: 'Detailed content about Fadogia Agrestis...',
+      category: 'Health',
+      image: fadogiaAgrestisImage
+    },
+    {
+      id: '3',
+      title: 'Benefits of Baobab Powder',
+      summary: 'Benefits of Baobab Powder (Immunity)',
+      content: 'Detailed content about Baobab Powder...',
+      category: 'Nutrition',
+      image: baobabPowderImage
+    },
+    {
+      id: '4',
+      title: 'Top 10 Post-Workout Supplements for Women',
+      summary: 'Top 10 Post-Workout Supplements for Women',
+      content: 'Detailed content about post-workout supplements...',
+      category: 'Wellness',
+      image: postWorkoutWomenImage
+    }
+  ];
 
   return (
     <div className="stats-banner">

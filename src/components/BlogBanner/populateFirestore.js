@@ -6,7 +6,7 @@ const blogPosts = [
     summary: 'Top 10 Pre-Workout Supplements to Try',
     content: 'Detailed content about pre-workout supplements...',
     category: 'Health',
-    image: 'src/assets/b.png'
+    image: 'https://www.eatingwell.com/thmb/7FSJ9b6lj9JFzIWWzrIHvv5LqK0=/282x188/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-1284690585-2000-44ea857d9ae24f3cae8bf89f7c715443.jpg'
   },
   {
     id: '2',
@@ -14,7 +14,7 @@ const blogPosts = [
     summary: 'Benefits of Fadogia Agrestis (Enhancement)',
     content: 'Detailed content about Fadogia Agrestis...',
     category: 'Health',
-    image: 'src/assets/b.png'
+    image: 'https://www.eatingwell.com/thmb/7FSJ9b6lj9JFzIWWzrIHvv5LqK0=/282x188/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-1284690585-2000-44ea857d9ae24f3cae8bf89f7c715443.jpg'
   },
   {
     id: '3',
@@ -22,7 +22,7 @@ const blogPosts = [
     summary: 'Benefits of Baobab Powder (Immunity)',
     content: 'Detailed content about Baobab Powder...',
     category: 'Nutrition',
-    image: 'src/assets/b.png'
+    image: 'https://www.eatingwell.com/thmb/7FSJ9b6lj9JFzIWWzrIHvv5LqK0=/282x188/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-1284690585-2000-44ea857d9ae24f3cae8bf89f7c715443.jpg'
   },
   {
     id: '4',
@@ -30,7 +30,7 @@ const blogPosts = [
     summary: 'Top 10 Post-Workout Supplements for Women',
     content: 'Detailed content about post-workout supplements...',
     category: 'Wellness',
-    image: 'src/assets/b.png'
+    image: 'https://www.eatingwell.com/thmb/7FSJ9b6lj9JFzIWWzrIHvv5LqK0=/282x188/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-1284690585-2000-44ea857d9ae24f3cae8bf89f7c715443.jpg'
   }
 ];
 
