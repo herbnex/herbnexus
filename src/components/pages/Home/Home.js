@@ -42,10 +42,10 @@ const Home = () => {
       </Container>
       
       <ShopPromo />
-      <About home={true} />
-      <WhyLoveHerbNexus /> 
       <StatsBanner /> 
-      <HowItWorks />
+      <WhyLoveHerbNexus /> 
+      <About home={true} />
+      
       <Faq />
     </div>
   );
