@@ -26,8 +26,8 @@ const Home = () => {
     <div>
       <Banner />
       <SectionTitle>
-        <h4>Subscribe Now For $50 CAD Monthly</h4>
-        <h1>The World's Largest Network of Alternative Medicine Practitioners</h1>
+        <h1>Subscribe Now For $50 CAD Monthly</h1>
+        <h4>The World's Largest Network of Alternative Medicine Practitioners</h4>
       </SectionTitle>
       <DoctorsCards home />
       <Container className="text-center my-5">

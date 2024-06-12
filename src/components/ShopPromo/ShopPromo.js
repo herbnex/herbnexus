@@ -49,8 +49,8 @@ const ShopPromo = () => {
       </Container>
       <Container className="shop-categories py-5">
         <SectionTitle>
-          <h4>Shop Herbal Supplements</h4>
-          <h1>Select the body system you'd like to focus on</h1>
+          <h1>Shop Herbal Supplements</h1>
+          <h4>Select the body system you'd like to focus on</h4>
         </SectionTitle>
         <Row>
           {categories.map((category, index) => (

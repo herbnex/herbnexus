@@ -9,8 +9,8 @@ const Faq = () => {
     <Container>
       <section className="about-style-two">
         <SectionTitle>
-          <h4>FAQs</h4>
-          <h1>Frequently Asked Questions</h1>
+          <h1>FAQs</h1>
+          <h4>Frequently Asked Questions</h4>
         </SectionTitle>
         <div className="row align-items-center">
           <div className="col-12 col-lg-5 image-column">

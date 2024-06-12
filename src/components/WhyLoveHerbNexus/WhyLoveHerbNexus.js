@@ -11,8 +11,8 @@ const WhyLoveHerbNexus = () => {
     <Container className="why-love-herbnexus">
       <section className="why-love-herbnexus-section">
       <SectionTitle>
-          <h4>Why you'll love Herb Nexus</h4>
-          <h1>The World's Largest Network of Alternative Medicine Practioners</h1>
+          <h1>Why you'll love Herb Nexus</h1>
+          <h4>The World's Largest Network of Alternative Medicine Practioners</h4>
         </SectionTitle>
         <Row className="align-items-center">
           <Col md={3} className="feature-column">
