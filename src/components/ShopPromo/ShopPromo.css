@@ -80,6 +80,16 @@
     transition: transform 0.2s;
   }
   
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 5%;
+  }
+  
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: #00224f; /* Herb Nexus theme color */
+  }
+  
   @media (max-width: 767px) {
     .text-col {
       text-align: center;

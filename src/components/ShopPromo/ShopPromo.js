@@ -62,7 +62,7 @@ const ShopPromo = () => {
           <h1>Shop Herbal Supplements</h1>
           <h4>Select the body system you'd like to focus on</h4>
         </SectionTitle>
-        <Carousel indicators={false}>
+        <Carousel indicators={false} interval={null}>
           {categoryChunks.map((chunk, index) => (
             <Carousel.Item key={index}>
               <Row>
