@@ -14,7 +14,6 @@ import promoImage1 from '../../assets/a.png'; // Replace with actual image path
 import promoImage2 from '../../assets/b.png'; // Replace with actual image path
 import SectionTitle from "../SectionTitle/SectionTitle";
 
-
 const ShopPromo = () => {
   const categories = [
     { icon: dh, title: "Digestive Health" },
@@ -79,18 +78,18 @@ const ShopPromo = () => {
                   </Col>
                 ))}
               </Row>
+              <div className="carousel-indicators">
+                {categoryChunks.map((_, i) => (
+                  <button
+                    key={i}
+                    className={i === activeIndex ? 'active' : ''}
+                    onClick={() => handleSelect(i)}
+                  ></button>
+                ))}
+              </div>
             </Carousel.Item>
           ))}
         </Carousel>
-        <div className="carousel-indicators">
-          {categoryChunks.map((_, index) => (
-            <button
-              key={index}
-              className={index === activeIndex ? 'active' : ''}
-              onClick={() => handleSelect(index)}
-            ></button>
-          ))}
-        </div>
       </Container>
     </Container>
   );
