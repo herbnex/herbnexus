@@ -38,10 +38,7 @@ const Home = () => {
           </Button>
         </NavLink>
       </Container>
-      <SectionTitle>
-              <h1>Shop Herbal Supplements</h1>
-              <h4>Select the body system you'd like to focus on</h4>
-            </SectionTitle>
+     
       <ShopPromo />
       {!isSmallScreen && <About home={true} />}
       {!isSmallScreen && <WhyLoveHerbNexus />}
