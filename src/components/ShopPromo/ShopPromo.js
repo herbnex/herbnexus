@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Container, Row, Col, Button, Carousel } from 'react-bootstrap';
 import './ShopPromo.css';
 import dh from '../../assets/dh.png'; 
@@ -28,15 +28,15 @@ const ShopPromo = () => {
     { icon: hlh, title: "Holistic Health" },
   ];
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + categories.length) % categories.length);
+  const chunkArray = (array, size) => {
+    const result = [];
+    for (let i = 0; i < array.length; i += size) {
+      result.push(array.slice(i, i + size));
+    }
+    return result;
   };
 
-  const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % categories.length);
-  };
+  const categoryChunks = chunkArray(categories, 4);
 
   return (
     <Container fluid className="shop-promo">
@@ -62,27 +62,21 @@ const ShopPromo = () => {
           <h1>Shop Herbal Supplements</h1>
           <h4>Select the body system you'd like to focus on</h4>
         </SectionTitle>
-        <div className="custom-carousel">
-          <Button className="carousel-control-prev" onClick={handlePrev}>
-            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span className="sr-only">Previous</span>
-          </Button>
-          <div className="carousel-inner">
-            <Row className="justify-content-center">
-              {categories.slice(currentIndex, currentIndex + 4).map((category, index) => (
-                <Col key={index} xs={12} sm={6} md={3} className="mb-4 text-center">
-                  <img src={category.icon} alt={category.title} className="category-icon mb-3" />
-                  <h5>{category.title}</h5>
-                  <Button variant="outline-secondary" className="mt-2">Browse Products</Button>
-                </Col>
-              ))}
-            </Row>
-          </div>
-          <Button className="carousel-control-next" onClick={handleNext}>
-            <span className="carousel-control-next-icon" aria-hidden="true"></span>
-            <span className="sr-only">Next</span>
-          </Button>
-        </div>
+        <Carousel indicators={false} interval={null}>
+          {categoryChunks.map((chunk, index) => (
+            <Carousel.Item key={index}>
+              <Row>
+                {chunk.map((category, index) => (
+                  <Col key={index} xs={12} sm={6} md={3} className="mb-4 text-center">
+                    <img src={category.icon} alt={category.title} className="category-icon mb-3" />
+                    <h5>{category.title}</h5>
+                    <Button variant="outline-secondary" className="mt-2">Browse Products</Button>
+                  </Col>
+                ))}
+              </Row>
+            </Carousel.Item>
+          ))}
+        </Carousel>
       </Container>
     </Container>
   );

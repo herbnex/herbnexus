@@ -1,133 +1,132 @@
 .shop-promo {
-    background-color: #fff; /* Light background */
-    text-align: left;
-    padding: 3rem 0;
+  background-color: #fff; /* Light background */
+  text-align: left;
+  padding: 3rem 0;
+}
+
+.text-col p.text-uppercase {
+  font-weight: bold;
+  color: #6c757d;
+}
+
+.text-col h1 {
+  color: #00224f !important;
+}
+
+.text-col p {
+  color: #6c757d;
+}
+
+.btn-shop {
+  background-color: #ff9900;
+  color: #fff;
+  border: none;
+  font-size: 1.25rem;
+  padding: 0.5rem 1.5rem;
+}
+
+.btn-shop:hover {
+  background-color: #cc7a00;
+  color: #fff;
+}
+
+.promo-images {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.promo-image {
+  max-width: 80%;
+  margin: 0 1rem;
+  box-shadow: 0 10px 40px rgba(0, 24, 73, 0.2);
+  border-radius: 8px;
+}
+
+.image-1 {
+  transform: rotate(-10deg);
+  position: absolute;
+  left: 10%;
+}
+
+.image-2 {
+  transform: rotate(10deg);
+  position: absolute;
+  right: 10%;
+}
+
+.shop-categories {
+  background-color: #f8f9fa;
+  padding: 2rem 0;
+}
+
+.shop-categories h1 {
+  color: #00224f;
+}
+
+.shop-categories h4 {
+  color: #6c757d;
+}
+
+.category-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1rem;
+}
+
+.category-icon:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s;
+}
+
+.custom-carousel {
+  position: relative;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5%;
+  height: 100%;
+  background: none;
+  border: none;
+}
+
+.carousel-control-prev {
+  left: 0;
+}
+
+.carousel-control-next {
+  right: 0;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #00224f; /* Herb Nexus theme color */
+}
+
+@media (max-width: 767px) {
+  .text-col {
+    text-align: center;
   }
-  
-  .text-col p.text-uppercase {
-    font-weight: bold;
-    color: #6c757d;
-  }
-  
-  .text-col h1 {
-    color: #00224f !important;
-  }
-  
-  .text-col p {
-    color: #6c757d;
-  }
-  
+
   .btn-shop {
-    background-color: #ff9900;
-    color: #fff;
-    border: none;
-    font-size: 1.25rem;
-    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
   }
-  
-  .btn-shop:hover {
-    background-color: #cc7a00;
-    color: #fff;
-  }
-  
+
   .promo-images {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: none; /* Hide images on small screens */
   }
-  
-  .promo-image {
-    max-width: 80%;
-    margin: 0 1rem;
-    box-shadow: 0 10px 40px rgba(0, 24, 73, 0.2);
-    border-radius: 8px;
+
+  .herb {
+    display: none;
   }
-  
-  .image-1 {
-    transform: rotate(-10deg);
-    position: absolute;
-    left: 10%;
-  }
-  
-  .image-2 {
-    transform: rotate(10deg);
-    position: absolute;
-    right: 10%;
-  }
-  
+
   .shop-categories {
-    background-color: #f8f9fa;
-    padding: 2rem 0;
+    text-align: center;
   }
-  
-  .shop-categories h1 {
-    color: #00224f;
-  }
-  
-  .shop-categories h4 {
-    color: #6c757d;
-  }
-  
-  .category-icon {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 1rem;
-  }
-  
-  .category-icon:hover {
-    transform: scale(1.1);
-    transition: transform 0.2s;
-  }
-  
-  .custom-carousel {
-    position: relative;
-  }
-  
-  .carousel-control-prev,
-  .carousel-control-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 5%;
-    height: 100%;
-    background: none;
-    border: none;
-  }
-  
-  .carousel-control-prev {
-    left: 0;
-  }
-  
-  .carousel-control-next {
-    right: 0;
-  }
-  
-  .carousel-control-prev-icon,
-  .carousel-control-next-icon {
-    background-color: #00224f; /* Herb Nexus theme color */
-  }
-  
-  @media (max-width: 767px) {
-    .text-col {
-      text-align: center;
-    }
-  
-    .btn-shop {
-      font-size: 1rem;
-      padding: 0.5rem 1rem;
-    }
-  
-    .promo-images {
-      display: none; /* Hide images on small screens */
-    }
-  
-    .herb {
-      display: none;
-    }
-  
-    .shop-categories {
-      text-align: center;
-    }
-  }
-  
+}
