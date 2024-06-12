@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-import './StatsBanner.css';
+import './BlogBanner.css';
 import preWorkoutImage from '../../assets/3.png';
 import fadogiaAgrestisImage from '../../assets/3.png';
 import baobabPowderImage from '../../assets/3.png';
