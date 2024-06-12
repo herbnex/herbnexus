@@ -34,7 +34,7 @@ function App() {
     <div className="App">
       <AuthProvider>
         <NavBar />
-        <ScrollToTop />
+        
         <Switch>
           <Route exact path="/">
             <Home />
