@@ -89,7 +89,7 @@ const ShopPromo = () => {
         </SectionTitle>
         <Slider {...settings}>
           {categories.map((category, index) => (
-            <div key={index} className="text-center">
+            <div key={index} className="text-center category-slide">
               <img src={category.icon} alt={category.title} className="category-icon mb-3" />
               <h5>{category.title}</h5>
               <Button variant="outline-secondary" className="mt-2">Browse Products</Button>
