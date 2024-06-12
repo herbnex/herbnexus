@@ -8,8 +8,6 @@ import DoctorsCards from "../../DoctorsCards/DoctorsCards";
 import Faq from "../../Faq/Faq";
 import Loading from "../../Loading/Loading";
 import SectionTitle from "../../SectionTitle/SectionTitle";
-import Subscription from "../../subscription/subscriptions";
-import HowItWorks from '../../HowItWorks/HowItWorks'; // Import the new component
 import WhyLoveHerbNexus from '../../WhyLoveHerbNexus/WhyLoveHerbNexus'; // Import the new component
 import StatsBanner from '../../StatsBanner/StatsBanner'; // Import the new component
 import ShopPromo from '../../ShopPromo/ShopPromo'; // Import the new component
