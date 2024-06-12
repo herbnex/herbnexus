@@ -11,12 +11,10 @@
   }
   
   .text-col h1 {
-    font-family: 'Roboto', sans-serif;
-    color: #00224f;
+    color: #00224f !important;
   }
   
   .text-col p {
-    font-family: 'Roboto', sans-serif;
     color: #6c757d;
   }
   
@@ -24,7 +22,6 @@
     background-color: #ff9900;
     color: #fff;
     border: none;
-    font-family: 'Roboto', sans-serif;
     font-size: 1.25rem;
     padding: 0.5rem 1.5rem;
   }
@@ -66,12 +63,10 @@
   }
   
   .shop-categories h2 {
-    font-family: 'Roboto', sans-serif;
     color: #00224f;
   }
   
   .shop-categories p {
-    font-family: 'Roboto', sans-serif;
     color: #6c757d;
   }
   
