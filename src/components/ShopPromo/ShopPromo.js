@@ -30,17 +30,27 @@ const ShopPromo = () => {
     { icon: hlh, title: "Holistic Health" },
   ];
 
+  const chunkArray = (array, size) => {
+    const result = [];
+    for (let i = 0; i < array.length; i += size) {
+      result.push(array.slice(i, i + size));
+    }
+    return result;
+  };
+
+  const categoryChunks = chunkArray(categories, 9);
+
   const settings = {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: 1,
     slidesToScroll: 1,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 1,
           slidesToScroll: 1,
           infinite: true,
           dots: true
@@ -53,7 +63,6 @@ const ShopPromo = () => {
           slidesToScroll: 1
         }
       }
-      
     ]
   };
 
@@ -66,22 +75,28 @@ const ShopPromo = () => {
             <img src={promoImage2} alt="Herbal Products 2" className="promo-image img-fluid image-2" />
           </Col>
           <Col md={6} className="text-col">
-          <Container className="shop-categories py-5">
-        
-        <Slider {...settings}>
-          {categories.map((category, index) => (
-            <div key={index} className="text-center category-slide">
-              <img src={category.icon} alt={category.title} className="category-icon mb-3" />
-              <h5>{category.title}</h5>
-              <Button variant="outline-secondary" className="mt-2">Browse Products</Button>
-            </div>
-          ))}
-        </Slider>
-      </Container>
+            <SectionTitle>
+              <h1>Shop Herbal Supplements</h1>
+              <h4>Select the body system you'd like to focus on</h4>
+            </SectionTitle>
+            <Slider {...settings}>
+              {categoryChunks.map((chunk, index) => (
+                <div key={index} className="category-chunk">
+                  <Row>
+                    {chunk.map((category, idx) => (
+                      <Col key={idx} xs={12} sm={4} className="mb-4 text-center">
+                        <img src={category.icon} alt={category.title} className="category-icon mb-3" />
+                        <h5>{category.title}</h5>
+                        <Button variant="outline-secondary" className="mt-2">Browse Products</Button>
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              ))}
+            </Slider>
           </Col>
         </Row>
       </Container>
-      
     </Container>
   );
 };
