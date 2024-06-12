@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Carousel } from 'react-bootstrap';
 import './BlogBanner.css';
-import preWorkoutImage from '../../assets/b.png';
-import fadogiaAgrestisImage from '../../assets/b.png';
-import baobabPowderImage from '../../assets/b.png';
-import postWorkoutWomenImage from '../../assets/b.png';
+import preWorkoutImage from '../../assets/3.png';
+import fadogiaAgrestisImage from '../../assets/3.png';
+import baobabPowderImage from '../../assets/3.png';
+import postWorkoutWomenImage from '../../assets/3.png';
 
 const StatsBanner = () => {
   const blogPosts = [
