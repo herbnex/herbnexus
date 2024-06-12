@@ -9,13 +9,10 @@ import Faq from "../../Faq/Faq";
 import Loading from "../../Loading/Loading";
 import SectionTitle from "../../SectionTitle/SectionTitle";
 import Subscription from "../../subscription/subscriptions";
-import HowItWorks from '../../HowIItWorks/HowItWorks'; // Import the new component
+import HowItWorks from '../../HowItWorks/HowItWorks'; // Import the new component
 import WhyLoveHerbNexus from '../../WhyLoveHerbNexus/WhyLoveHerbNexus'; // Import the new component
 import StatsBanner from '../../StatsBanner/StatsBanner'; // Import the new component
 import ShopPromo from '../../ShopPromo/ShopPromo'; // Import the new component
-
-
-
 
 const Home = () => {
   const { isLoading } = useAuth();
@@ -24,12 +21,14 @@ const Home = () => {
     return <Loading />;
   }
 
+  const isSmallScreen = window.matchMedia("(max-width: 767px)").matches;
+
   return (
     <div>
       <Banner />
       <SectionTitle>
         <h4>Subscribe Now For $50 CAD Monthly</h4>
-        <h1>The World's Largest Network of Alternative Medicine Practioners</h1>
+        <h1>The World's Largest Network of Alternative Medicine Practitioners</h1>
       </SectionTitle>
       <DoctorsCards home />
       <Container className="text-center my-5">
@@ -40,14 +39,10 @@ const Home = () => {
           </Button>
         </NavLink>
       </Container>
-      
       <ShopPromo />
-      <About home={true} />
-      <WhyLoveHerbNexus /> 
+      {!isSmallScreen && <About home={true} />}
+      {!isSmallScreen && <WhyLoveHerbNexus />}
       <StatsBanner />
-
-      
-      
       <Faq />
     </div>
   );
