@@ -6,14 +6,11 @@
   padding: 1rem 1rem 5rem;
 }
 
-.text-col h1 {
+h1 {
   font-family: 'Roboto', sans-serif;
   color: #fff;
 }
-h1 .display-4{
-  font-family: 'Roboto', sans-serif;
-  color: #fff;
-}
+
 
 .text-col h2 {
   font-family: 'Roboto', sans-serif;
