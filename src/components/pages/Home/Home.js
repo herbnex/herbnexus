@@ -11,6 +11,7 @@ import SectionTitle from "../../SectionTitle/SectionTitle";
 import WhyLoveHerbNexus from '../../WhyLoveHerbNexus/WhyLoveHerbNexus'; // Import the new component
 import StatsBanner from '../../StatsBanner/StatsBanner'; // Import the new component
 import ShopPromo from '../../ShopPromo/ShopPromo'; // Import the new component
+import BlogBanner from '../../BlogBanner/BlogBanner';
 
 const Home = () => {
   const { isLoading } = useAuth();
@@ -40,7 +41,8 @@ const Home = () => {
       <ShopPromo />
       {!isSmallScreen && <About home={true} />}
       {!isSmallScreen && <WhyLoveHerbNexus />}
-      <StatsBanner />
+      <BlogBanner />
+      
       <Faq />
     </div>
   );
