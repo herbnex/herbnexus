@@ -21,19 +21,15 @@ import Dashboard from "./components/Dashboard/Dashboard";
 import PrivacyPolicy from "./components/pages/PrivacyPolicy/PrivacyPolicy";
 import TermsOfService from "./components/pages/TermsOfService/TermsOfService";
 
+import useScrollToTop from './hooks/useScrollToTop';
 
-function ScrollToTop() {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    if (window) {
-      window.scrollTo(0, 0);
-    }
-  }, [pathname]);
 
-  return null;
-}
+
+
 
 function App() {
+
+  useScrollToTop();
   return (
     <div className="App">
       <AuthProvider>
