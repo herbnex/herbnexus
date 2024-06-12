@@ -6,14 +6,12 @@
   padding: 1rem 1rem 5rem;
 }
 
-h1 {
-  font-family: 'Roboto', sans-serif;
+.text-col h1{
   color: #fff;
 }
 
 
 .text-col h2 {
-  font-family: 'Roboto', sans-serif;
   color: #00224f; /* Contrast highlight color */
 }
 
