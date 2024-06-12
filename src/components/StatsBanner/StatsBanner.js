@@ -8,8 +8,8 @@ const StatsBanner = () => {
       <Container fluid className="py-5">
         <Row className="align-items-center">
           <Col md={6} className="text1-col">
-            <h1 className="display-4">Connecting you with top herbalists</h1>
-            <h2 className="text-highlight">100% online.</h2>
+            <h1 className="display-4">The World's Largest Network of Alternative Medicine Practitioners</h1>
+            <h2 className="connect text-highlight">100% online.</h2>
           </Col>
           <Col md={6} className="stats-col">
             <div className="stats">

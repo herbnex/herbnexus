@@ -59,4 +59,7 @@
   .stats {
     align-items: center;
   }
+  .connect {
+    display: none;
+}
 }
