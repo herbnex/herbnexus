@@ -28,8 +28,8 @@ const Home = () => {
     <div>
       <Banner />
       <SectionTitle>
-        <h4>Subscribe Now</h4>
-        <h1>Get 24/7 Access to Herbalists</h1>
+        <h4>Subscribe Now For $50 CAD Monthly</h4>
+        <h1>The World's Largest Network of Alternative Medicine Practioners</h1>
       </SectionTitle>
       <DoctorsCards home />
       <Container className="text-center my-5">

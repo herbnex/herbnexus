@@ -15,11 +15,11 @@ const Banner = () => {
               <div className="content-box me-50">
                 <div className="sec-title">
                  
-                  <h2 className="title text-second">Connect live with a Herbalist</h2>
+                  <h2 className="title text-second">Connect 24/7 with a Herbalist</h2>
                 </div>
                 <div>
                   <p>
-                    We invite you to experience personalized herbal consultations with the world's largest network of Alternative Medicine Practioners
+                    We invite you to experience personalized herbal consultations with our accredited herbalists, who are dedicated to crafting tailored remedies just for you.
                   </p>
                 </div>
                 <div className="btn-box">
