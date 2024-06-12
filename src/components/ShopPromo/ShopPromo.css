@@ -61,11 +61,11 @@
     padding: 2rem 0;
   }
   
-  .shop-categories h2 {
+  .shop-categories h1 {
     color: #00224f;
   }
   
-  .shop-categories p {
+  .shop-categories h4 {
     color: #6c757d;
   }
   
@@ -93,8 +93,9 @@
     .promo-images {
       display: none; /* Hide images on small screens */
     }
+  
     .herb {
-        display: none;
+      display: none;
     }
   
     .shop-categories {

@@ -1,6 +1,9 @@
 import React from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
+import Slider from 'react-slick';
 import './ShopPromo.css';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import dh from '../../assets/dh.png'; 
 import hb from '../../assets/hb.png'; 
 import nh from '../../assets/nh.png'; 
@@ -28,6 +31,39 @@ const ShopPromo = () => {
     { icon: hlh, title: "Holistic Health" },
   ];
 
+  const settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+          infinite: true,
+          dots: true
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  };
+
   return (
     <Container fluid className="shop-promo">
       <Container className="herb py-5">
@@ -52,15 +88,15 @@ const ShopPromo = () => {
           <h1>Shop Herbal Supplements</h1>
           <h4>Select the body system you'd like to focus on</h4>
         </SectionTitle>
-        <Row>
+        <Slider {...settings}>
           {categories.map((category, index) => (
-            <Col key={index} xs={12} sm={6} md={4} lg={3} className="mb-4 text-center">
+            <div key={index} className="text-center">
               <img src={category.icon} alt={category.title} className="category-icon mb-3" />
               <h5>{category.title}</h5>
               <Button variant="outline-secondary" className="mt-2">Browse Products</Button>
-            </Col>
+            </div>
           ))}
-        </Row>
+        </Slider>
       </Container>
     </Container>
   );
