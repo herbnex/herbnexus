@@ -49,7 +49,7 @@ const ShopPromo = () => {
       </Container>
       <Container className="shop-categories py-5">
         <SectionTitle>
-          <h4>Shop by Body System</h4>
+          <h4>Shop Herbal Supplements</h4>
           <h1>Select the body system you'd like to focus on</h1>
         </SectionTitle>
         <Row>
