@@ -80,26 +80,28 @@
     transition: transform 0.2s;
   }
   
-  .carousel-indicators {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
+  .slick-prev, .slick-next {
+    width: 40px;
+    height: 40px;
+    z-index: 1;
   }
   
-  .carousel-indicators button {
-    width: 10px;
-    height: 10px;
-    margin: 0 5px;
-    border-radius: 50%;
-    background-color: #00224f; /* Herb Nexus theme color */
-    border: none;
-    cursor: pointer;
-    opacity: 0.5;
-    transition: opacity 0.3s;
+  .slick-prev:before, .slick-next:before {
+    font-size: 40px;
+    color: #00224f; /* Herb Nexus theme color */
   }
   
-  .carousel-indicators button.active {
-    opacity: 1;
+  .slick-dots {
+    bottom: -30px;
+  }
+  
+  .slick-dots li button:before {
+    font-size: 10px;
+    color: #00224f; /* Herb Nexus theme color */
+  }
+  
+  .slick-dots li.slick-active button:before {
+    color: #00224f; /* Herb Nexus theme color */
   }
   
   @media (max-width: 767px) {
