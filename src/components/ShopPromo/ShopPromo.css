@@ -5,7 +5,6 @@
   }
   
   .text-col p.text-uppercase {
-    font-size: 0.75rem;
     font-weight: bold;
     color: #6c757d;
   }
@@ -106,6 +105,17 @@
       position: static;
       transform: none;
     }
+    .image-1 {
+        transform: rotate(-10deg);
+        position: absolute;
+        left: 10%;
+      }
+      
+      .image-2 {
+        transform: rotate(10deg);
+        position: absolute;
+        right: 10%;
+      }
   
     .shop-categories {
       text-align: center;
