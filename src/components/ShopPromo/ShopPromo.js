@@ -67,10 +67,7 @@ const ShopPromo = () => {
           </Col>
           <Col md={6} className="text-col">
           <Container className="shop-categories py-5">
-          <SectionTitle>
-        <h1>Subscribe Now</h1>
-        <h4>The World's Largest Network of Alternative Medicine Practitioners</h4>
-      </SectionTitle>
+          
         <Slider {...settings}>
           {categories.map((category, index) => (
             <div key={index} className="text-center category-slide">
