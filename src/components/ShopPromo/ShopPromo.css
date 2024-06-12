@@ -80,9 +80,27 @@
     transition: transform 0.2s;
   }
   
+  .custom-carousel {
+    position: relative;
+  }
+  
   .carousel-control-prev,
   .carousel-control-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     width: 5%;
+    height: 100%;
+    background: none;
+    border: none;
+  }
+  
+  .carousel-control-prev {
+    left: 0;
+  }
+  
+  .carousel-control-next {
+    right: 0;
   }
   
   .carousel-control-prev-icon,
