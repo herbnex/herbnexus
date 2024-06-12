@@ -18,6 +18,14 @@
 .btn-main {
   margin: 10px 0; /* Ensure some vertical spacing */
 }
+.btn-box .chats {
+  background-color: #ff9900;
+  border: none;
+}
+
+.btn-box .chats:hover {
+  background-color: #cc7a00;
+}
 @media (max-width: 767.98px) {
   .about-style-two .content-box p,
   .about-style-two .btn-box {
