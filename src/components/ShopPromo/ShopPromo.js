@@ -1,9 +1,6 @@
 import React from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
-import Slider from 'react-slick';
+import { Container, Row, Col, Button, Carousel } from 'react-bootstrap';
 import './ShopPromo.css';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 import dh from '../../assets/dh.png'; 
 import hb from '../../assets/hb.png'; 
 import nh from '../../assets/nh.png'; 
@@ -31,38 +28,15 @@ const ShopPromo = () => {
     { icon: hlh, title: "Holistic Health" },
   ];
 
-  const settings = {
-    dots: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: true
-        }
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1
-        }
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
+  const chunkArray = (array, size) => {
+    const result = [];
+    for (let i = 0; i < array.length; i += size) {
+      result.push(array.slice(i, i + size));
+    }
+    return result;
   };
+
+  const categoryChunks = chunkArray(categories, 4);
 
   return (
     <Container fluid className="shop-promo">
@@ -88,15 +62,21 @@ const ShopPromo = () => {
           <h1>Shop Herbal Supplements</h1>
           <h4>Select the body system you'd like to focus on</h4>
         </SectionTitle>
-        <Slider {...settings}>
-          {categories.map((category, index) => (
-            <div key={index} className="text-center">
-              <img src={category.icon} alt={category.title} className="category-icon mb-3" />
-              <h5>{category.title}</h5>
-              <Button variant="outline-secondary" className="mt-2">Browse Products</Button>
-            </div>
+        <Carousel indicators={false}>
+          {categoryChunks.map((chunk, index) => (
+            <Carousel.Item key={index}>
+              <Row>
+                {chunk.map((category, index) => (
+                  <Col key={index} xs={12} sm={6} md={3} className="mb-4 text-center">
+                    <img src={category.icon} alt={category.title} className="category-icon mb-3" />
+                    <h5>{category.title}</h5>
+                    <Button variant="outline-secondary" className="mt-2">Browse Products</Button>
+                  </Col>
+                ))}
+              </Row>
+            </Carousel.Item>
           ))}
-        </Slider>
+        </Carousel>
       </Container>
     </Container>
   );
