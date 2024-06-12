@@ -15,7 +15,7 @@ const Banner = () => {
               <div className="content-box me-50">
                 <div className="sec-title">
                  
-                  <h2 className="title text-second">Connect live with a Herbalist</h2>
+                  <h2 className="title text-second">The World's Largest Network of Alternative Medicine Practioners</h2>
                 </div>
                 <div>
                   <p>
