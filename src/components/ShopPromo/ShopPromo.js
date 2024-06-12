@@ -37,7 +37,6 @@ const ShopPromo = () => {
             <img src={promoImage2} alt="Herbal Products 2" className="promo-image img-fluid" />
           </Col>
           <Col md={6} className="text-col">
-            <p className="text-uppercase">For Your Health Goals</p>
             <h1 className="display-4">Herbal Supplements for Total Wellness</h1>
             <p className="lead">
               Shop our huge selection of herbal supplements and discover why we have thousands of reviews from happy customers who appreciate our quality of herbal supplements at amazing prices. Always manufactured in the USA, always made with quality as our #1 priority!
