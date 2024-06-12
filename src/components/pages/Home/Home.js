@@ -44,6 +44,8 @@ const Home = () => {
       <ShopPromo />
       <About home={true} />
       <WhyLoveHerbNexus /> 
+      <StatsBanner />
+
       
       
       <Faq />
