@@ -91,31 +91,8 @@
     }
   
     .promo-images {
-      text-align: center;
-      flex-direction: column;
+      display: none; /* Hide images on small screens */
     }
-  
-    .promo-image {
-      width: 80%;
-      margin: 1rem 0;
-    }
-  
-    .image-1,
-    .image-2 {
-      position: static;
-      transform: none;
-    }
-    .image-1 {
-        transform: rotate(-10deg);
-        position: absolute;
-        left: 10%;
-      }
-      
-      .image-2 {
-        transform: rotate(10deg);
-        position: absolute;
-        right: 10%;
-      }
   
     .shop-categories {
       text-align: center;
