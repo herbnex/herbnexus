@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Carousel } from 'react-bootstrap';
-import './BlogBanner.css';
+
+import React from 'react';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import './StatsBanner.css';
 import preWorkoutImage from '../../assets/3.png';
 import fadogiaAgrestisImage from '../../assets/3.png';
 import baobabPowderImage from '../../assets/3.png';
@@ -52,29 +53,20 @@ const StatsBanner = () => {
           </Col>
         </Row>
         <Row className="align-items-center mt-4">
-          <Col md={12}>
-            <Carousel>
-              {blogPosts.map(post => (
-                <Carousel.Item key={post.id}>
-                  <img
-                    className="d-block w-100"
-                    src={post.image}
-                    alt={post.title}
-                  />
-                  <Carousel.Caption>
-                    <h3>{post.title}</h3>
-                    <p>{post.summary}</p>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => window.location.href = `/article/${post.id}`}
-                    >
-                      Read More
-                    </button>
-                  </Carousel.Caption>
-                </Carousel.Item>
-              ))}
-            </Carousel>
-          </Col>
+          {blogPosts.slice(0, 3).map(post => (
+            <Col md={4} key={post.id} className="mb-4">
+              <Card className="blog-card">
+                <Card.Img variant="top" src={post.image} />
+                <Card.Body>
+                  <Card.Title>{post.title}</Card.Title>
+                  <Card.Text>{post.summary}</Card.Text>
+                  <Button variant="primary" onClick={() => window.location.href = `/article/${post.id}`}>
+                    Read More
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
         </Row>
       </Container>
       <div className="wave"></div>
