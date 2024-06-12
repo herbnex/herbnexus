@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const useScrollToTop = () => {
   const location = useLocation();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleScroll = () => {
       sessionStorage.setItem('scrollPosition', window.scrollY);
     };
