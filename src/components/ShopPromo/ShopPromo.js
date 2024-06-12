@@ -72,17 +72,7 @@ const ShopPromo = () => {
             <img src={promoImage2} alt="Herbal Products 2" className="promo-image img-fluid image-2" />
           </Col>
           <Col md={6} className="text-col">
-            <h1 className="display-4">Herbal Supplements for Total Wellness</h1>
-            <p className="lead">
-              Shop our huge selection of herbal supplements and discover why we have thousands of reviews from happy customers who appreciate our quality of herbal supplements at amazing prices. Always manufactured in the USA, always made with quality as our #1 priority!
-            </p>
-            <Button href="https://shop.herbnexus.io" target="_blank" className="btn-shop mt-3">
-              Shop Now
-            </Button>
-          </Col>
-        </Row>
-      </Container>
-      <Container className="shop-categories py-5">
+          <Container className="shop-categories py-5">
         <SectionTitle>
           <h1>Shop Herbal Supplements</h1>
           <h4>Select the body system you'd like to focus on</h4>
@@ -97,6 +87,10 @@ const ShopPromo = () => {
           ))}
         </Slider>
       </Container>
+          </Col>
+        </Row>
+      </Container>
+      
     </Container>
   );
 };
