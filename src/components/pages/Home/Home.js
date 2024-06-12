@@ -12,6 +12,7 @@ import WhyLoveHerbNexus from '../../WhyLoveHerbNexus/WhyLoveHerbNexus'; // Impor
 import StatsBanner from '../../StatsBanner/StatsBanner'; // Import the new component
 import ShopPromo from '../../ShopPromo/ShopPromo'; // Import the new component
 import BlogBanner from '../../BlogBanner/BlogBanner';
+import "./Home.css";
 
 const Home = () => {
   const { isLoading } = useAuth();
