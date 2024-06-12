@@ -12,6 +12,8 @@ import ih from '../../assets/ih.png';
 import hlh from '../../assets/hlh.png'; 
 import promoImage1 from '../../assets/a.png'; // Replace with actual image path
 import promoImage2 from '../../assets/b.png'; // Replace with actual image path
+import SectionTitle from "../SectionTitle/SectionTitle";
+
 
 const ShopPromo = () => {
   const categories = [
