@@ -24,7 +24,7 @@ const Banner = () => {
                 </div>
                 <div className="btn-box">
                   <NavLink to="/contact">
-                    <Button variant="outline" className="rounded-pill btn-main chats my-5 p-2 px-3">
+                    <Button variant="outline" className="rounded-pill chats btn-main my-5 p-2 px-3">
                       Chat Live &nbsp;
                       <i className="bi bi-chat-dots"></i>
                     </Button>
@@ -32,7 +32,7 @@ const Banner = () => {
                   <a href="https://shop.herbnexus.io/" target="_blank" rel="noopener noreferrer">
                     <Button variant="outline" className="rounded-pill btn-main my-5 p-2 px-3">
                       Shop &nbsp;
-                      <i className="bi bi-arrow-right"></i>
+                      <i className="bi bi-cart"></i>
                     </Button>
                   </a>
                 </div>
