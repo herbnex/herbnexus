@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Button, Carousel } from 'react-bootstrap';
 import './ShopPromo.css';
 import dh from '../../assets/dh.png'; 
@@ -37,6 +37,11 @@ const ShopPromo = () => {
   };
 
   const categoryChunks = chunkArray(categories, 4);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleSelect = (selectedIndex) => {
+    setActiveIndex(selectedIndex);
+  };
 
   return (
     <Container fluid className="shop-promo">
@@ -62,7 +67,7 @@ const ShopPromo = () => {
           <h1>Shop Herbal Supplements</h1>
           <h4>Select the body system you'd like to focus on</h4>
         </SectionTitle>
-        <Carousel indicators={false} interval={null}>
+        <Carousel activeIndex={activeIndex} onSelect={handleSelect} interval={null} indicators={false}>
           {categoryChunks.map((chunk, index) => (
             <Carousel.Item key={index}>
               <Row>
@@ -77,6 +82,15 @@ const ShopPromo = () => {
             </Carousel.Item>
           ))}
         </Carousel>
+        <div className="carousel-indicators">
+          {categoryChunks.map((_, index) => (
+            <button
+              key={index}
+              className={index === activeIndex ? 'active' : ''}
+              onClick={() => handleSelect(index)}
+            ></button>
+          ))}
+        </div>
       </Container>
     </Container>
   );
