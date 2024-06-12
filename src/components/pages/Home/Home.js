@@ -31,11 +31,10 @@ const Home = () => {
         <h4>The World's Largest Network of Alternative Medicine Practitioners</h4>
       </SectionTitle>
       <DoctorsCards home />
-      <Container className="text-center my-5">
+      <Container className="chat text-center my-5">
         <NavLink to="/doctors" className="mx-auto">
           <Button variant="outline" className="rounded-pill btn-main mt-2 py-3">
-            Chat Live with a Herbalist &nbsp;
-            <i className="bi bi-arrow-right"></i>
+            Chat Live with a Herbalist 
           </Button>
         </NavLink>
       </Container>

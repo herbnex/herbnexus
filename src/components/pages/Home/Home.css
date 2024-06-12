@@ -1,8 +1,8 @@
-button {
+.chat .btn-main {
     background-color: #ff9900;
     border: none;
   }
   
-button:hover {
+  .chat .btn-main:hover {
     background-color: #cc7a00;
   }
