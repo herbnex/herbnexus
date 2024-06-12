@@ -111,14 +111,7 @@
   }
   
   @media (max-width: 767px) {
-    .text-col {
-      text-align: center;
-    }
-  
-    .btn-shop {
-      font-size: 1rem;
-      padding: 0.5rem 1rem;
-    }
+ 
   
     .promo-images {
       display: none; /* Hide images on small screens */
@@ -126,8 +119,6 @@
   
 
   
-    .shop-categories {
-      text-align: center;
-    }
+  
   }
   
