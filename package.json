@@ -3,12 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@azure/communication-administration": "^1.0.0-beta.4",
-    "@azure/communication-calling": "^1.25.1",
-    "@azure/communication-calling-effects": "^1.0.1",
-    "@azure/communication-chat": "^1.5.0",
-    "@azure/communication-common": "^2.3.1",
-    "@azure/communication-react": "^1.17.0",
+ 
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@firebase/firestore": "^4.6.2",
@@ -31,10 +26,8 @@
     "bootstrap": "^5.3.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
     "firebase": "^9.23.0",
     "firebase-admin": "^12.1.0",
-    "peerjs": "^1.5.4",
     "postcss": "^8.4.38",
     "postcss-safe-parser": "^7.0.0",
     "react": "^17.0.2",
@@ -44,7 +37,6 @@
     "react-router-dom": "^5.3.0",
     "react-scripts": "^5.0.1",
     "react-textarea-autosize": "^8.5.3",
-    "simple-peer": "^9.11.1",
     "stripe": "^15.8.0",
     "web-vitals": "^1.0.1"
   },
