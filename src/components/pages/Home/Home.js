@@ -40,7 +40,7 @@ const Home = () => {
       </Container>
       <ShopPromo />
       {!isSmallScreen && <About home={true} />}
-      <WhyLoveHerbNexus />
+      {!isSmallScreen && <WhyLoveHerbNexus />}
       <BlogBanner />
       
       <Faq />
