@@ -1,108 +1,133 @@
 .shop-promo {
-  background-color: #fff; /* Light background */
-  text-align: left;
-  padding: 3rem 0;
-}
-
-.text-col p.text-uppercase {
-  font-weight: bold;
-  color: #6c757d;
-}
-
-.text-col p {
-  color: #6c757d;
-}
-
-.btn-shop {
-  background-color: #ff9900;
-  color: #fff;
-  border: none;
-  font-size: 1.25rem;
-  padding: 0.5rem 1.5rem;
-}
-
-.btn-shop:hover {
-  background-color: #cc7a00;
-  color: #fff;
-}
-
-.promo-images {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.promo-image {
-  max-width: 80%;
-  margin: 0 1rem;
-  box-shadow: 0 10px 40px rgba(0, 24, 73, 0.2);
-  border-radius: 8px;
-}
-
-.image-1 {
-  transform: rotate(-10deg);
-  position: absolute;
-  left: 10%;
-}
-
-.image-2 {
-  transform: rotate(10deg);
-  position: absolute;
-  right: 10%;
-}
-
-.shop-categories {
-  background-color: #f8f9fa;
-  padding: 2rem 0;
-}
-
-.shop-categories h1 {
-  color: #00224f;
-}
-
-.shop-categories h4 {
-  color: #6c757d;
-}
-
-.category-slide {
-  display: flex !important;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.category-icon {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 1rem;
-}
-
-.category-icon:hover {
-  transform: scale(1.1);
-  transition: transform 0.2s;
-}
-
-@media (max-width: 767px) {
-  .text-col {
-    text-align: center;
+    background-color: #fff; /* Light background */
+    text-align: left;
+    padding: 3rem 0;
   }
-
+  
+  .text-col p.text-uppercase {
+    font-weight: bold;
+    color: #6c757d;
+  }
+  
+ 
+  
+  .text-col p {
+    color: #6c757d;
+  }
+  
   .btn-shop {
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
+    background-color: #ff9900;
+    color: #fff;
+    border: none;
+    font-size: 1.25rem;
+    padding: 0.5rem 1.5rem;
   }
-
+  
+  .btn-shop:hover {
+    background-color: #cc7a00;
+    color: #fff;
+  }
+  
   .promo-images {
-    display: none; /* Hide images on small screens */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-
-  .herb {
-    display: none;
+  
+  .promo-image {
+    max-width: 80%;
+    margin: 0 1rem;
+    box-shadow: 0 10px 40px rgba(0, 24, 73, 0.2);
+    border-radius: 8px;
   }
-
+  
+  .image-1 {
+    transform: rotate(-10deg);
+    position: absolute;
+    left: 10%;
+  }
+  
+  .image-2 {
+    transform: rotate(10deg);
+    position: absolute;
+    right: 10%;
+  }
+  
   .shop-categories {
+    background-color: #f8f9fa;
+    padding: 2rem 0;
+  }
+  
+  .shop-categories h1 {
+    color: #00224f;
+  }
+  
+  .shop-categories h4 {
+    color: #6c757d;
+  }
+  
+  .category-slide {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
   }
-}
+  
+  .category-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
+  }
+  
+  .category-icon:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s;
+  }
+  
+  .slick-prev, .slick-next {
+    width: 40px;
+    height: 40px;
+    z-index: 1;
+  }
+  
+  .slick-prev:before, .slick-next:before {
+    font-size: 40px;
+    color: #00224f; /* Herb Nexus theme color */
+  }
+  
+  .slick-dots {
+    bottom: -30px;
+  }
+  
+  .slick-dots li button:before {
+    font-size: 10px;
+    color: #00224f; /* Herb Nexus theme color */
+  }
+  
+  .slick-dots li.slick-active button:before {
+    color: #00224f; /* Herb Nexus theme color */
+  }
+  
+  @media (max-width: 767px) {
+    .text-col {
+      text-align: center;
+    }
+  
+    .btn-shop {
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+    }
+  
+    .promo-images {
+      display: none; /* Hide images on small screens */
+    }
+  
+
+  
+    .shop-categories {
+      text-align: center;
+    }
+  }
+  
