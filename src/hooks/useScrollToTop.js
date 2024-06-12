@@ -11,13 +11,15 @@ const useScrollToTop = () => {
 
     window.addEventListener('scroll', handleScroll);
 
-    const savedPosition = localStorage.getItem('scrollPosition');
-
+    // Check if the user has visited the page before
     if (!sessionStorage.getItem('visitedBefore')) {
       window.scrollTo(0, 0);
       sessionStorage.setItem('visitedBefore', 'true');
-    } else if (savedPosition) {
-      window.scrollTo(0, parseInt(savedPosition, 10));
+    } else {
+      const savedPosition = localStorage.getItem('scrollPosition');
+      if (savedPosition) {
+        window.scrollTo(0, parseInt(savedPosition, 10));
+      }
     }
 
     return () => {
