@@ -25,10 +25,7 @@ const Home = () => {
   return (
     <div>
       <Banner />
-      <SectionTitle>
-        <h1>Subscribe Now</h1>
-        <h4>The World's Largest Network of Alternative Medicine Practitioners</h4>
-      </SectionTitle>
+      
       <DoctorsCards home />
       <Container className="text-center my-5">
         <NavLink to="/doctors" className="mx-auto">
