@@ -33,8 +33,8 @@ const ShopPromo = () => {
       <Container className="py-5">
         <Row className="align-items-center">
           <Col md={6} className="promo-images">
-            <img src={promoImage1} alt="Herbal Products 1" className="promo-image img-fluid" />
-            <img src={promoImage2} alt="Herbal Products 2" className="promo-image img-fluid" />
+            <img src={promoImage1} alt="Herbal Products 1" className="promo-image img-fluid image-1" />
+            <img src={promoImage2} alt="Herbal Products 2" className="promo-image img-fluid image-2" />
           </Col>
           <Col md={6} className="text-col">
             <h1 className="display-4">Herbal Supplements for Total Wellness</h1>
@@ -48,11 +48,10 @@ const ShopPromo = () => {
         </Row>
       </Container>
       <Container className="shop-categories py-5">
-      <SectionTitle>
-        <h4>Shop by Body System</h4>
-        <h1>Select the body system you'd like to focus on</h1>
-      </SectionTitle>
-        
+        <SectionTitle>
+          <h4>Shop by Body System</h4>
+          <h1>Select the body system you'd like to focus on</h1>
+        </SectionTitle>
         <Row>
           {categories.map((category, index) => (
             <Col key={index} xs={12} sm={6} md={4} lg={3} className="mb-4 text-center">
