@@ -19,7 +19,7 @@ const Banner = () => {
                 </div>
                 <div>
                   <p>
-                    We invite you to experience personalized herbal consultations witt the world's largest network of Alternative Medicine Practioners
+                    We invite you to experience personalized herbal consultations with the world's largest network of Alternative Medicine Practioners
                   </p>
                 </div>
                 <div className="btn-box">
