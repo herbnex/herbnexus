@@ -15,13 +15,10 @@ const Banner = () => {
               <div className="content-box me-50">
                 <div className="sec-title">
                  
-                  <h2 className="title text-second">Connect live with a Herbalist</h2>
+                  <h2 className="title text-second">The World's Largest network of Alternative Medicine Practioners
+                  </p></h2>
                 </div>
-                <div>
-                  <p>
-                    We invite you to experience personalized herbal consultations with the world's largest network of Alternative Medicine Practioners
-                  </p>
-                </div>
+              
                 <div className="btn-box">
                   <NavLink to="/contact">
                     <Button variant="outline" className="rounded-pill btn-main my-5 p-2 px-3">
