@@ -1,5 +1,5 @@
 .shop-promo {
-    background-color: #f8f9fa; /* Light background */
+    background-color: #fff; /* Light background */
     text-align: left;
     padding: 3rem 0;
   }
@@ -48,7 +48,7 @@
   }
   
   .shop-categories {
-    background-color: #fff;
+    background-color: #f8f9fa;
     padding: 2rem 0;
   }
   
