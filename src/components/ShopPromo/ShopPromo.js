@@ -10,6 +10,7 @@ import uth from '../../assets/uth.png';
 import bjh from '../../assets/bjh.png'; 
 import ih from '../../assets/ih.png'; 
 import hlh from '../../assets/hlh.png'; 
+import a from '../../assets/a.png'; 
 
 
 const ShopPromo = () => {
@@ -40,7 +41,7 @@ const ShopPromo = () => {
             </Button>
           </Col>
           <Col md={6} className="image-col">
-            <img src="path-to-your-herbal-image.png" alt="Herbal Products" className="img-fluid" />
+            <img src={a.png} alt="Herbal Products" className="img-fluid" />
           </Col>
         </Row>
       </Container>
@@ -49,7 +50,7 @@ const ShopPromo = () => {
         
         <Row>
           {categories.map((category, index) => (
-            <Col key={index} xs={12} sm={6} md={4} lg={3} className="mb-4 text-center">
+            <Col key={index} xs={12} sm={6} className="mb-4 text-center">
               <img src={category.icon} alt={category.title} className="category-icon mb-3" />
               <h5>{category.title}</h5>
               <Button variant="outline-secondary" className="mt-2">Browse Products</Button>
