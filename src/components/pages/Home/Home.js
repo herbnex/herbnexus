@@ -42,9 +42,9 @@ const Home = () => {
       </Container>
       
       <ShopPromo />
-       
-      <WhyLoveHerbNexus /> 
       <About home={true} />
+      <WhyLoveHerbNexus /> 
+      
       
       <Faq />
     </div>
