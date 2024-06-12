@@ -1,12 +1,16 @@
 .stats-banner {
   background-color: #39cabb; /* Herb Nexus theme color */
   position: relative;
-  text-align: center;
+  text-align: left;
   overflow: hidden;
   padding: 1rem 1rem 5rem;
 }
 
 .text-col h1 {
+  font-family: 'Roboto', sans-serif;
+  color: #fff;
+}
+h1 .display-4{
   font-family: 'Roboto', sans-serif;
   color: #fff;
 }
