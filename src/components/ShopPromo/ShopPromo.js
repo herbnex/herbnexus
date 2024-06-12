@@ -41,7 +41,7 @@ const ShopPromo = () => {
             </Button>
           </Col>
           <Col md={6} className="image-col">
-            <img src={a.png} alt="Herbal Products" className="img-fluid" />
+            <img src={a} alt="Herbal Products" className="img-fluid" />
           </Col>
         </Row>
       </Container>
