@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useCallback, useRef } from 'react';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../Firebase/firebase.config';
 
