@@ -1,13 +1,5 @@
-/* src/global.css */
-
-/* Font and base styles */
-
-  
-  
- /* src/global.css */
-
-/* Apply a 75% scale to the entire document */
-html {
+@media (min-width: 768px) {
+  html {
     transform: scale(0.75);
     transform-origin: top left;
     width: 133.33%; /* Compensate for the scale down */
@@ -15,10 +7,16 @@ html {
     overflow-x: hidden;
     overflow-y: auto;
   }
-  
-  /* Optional: Ensure the body takes up the full viewport height */
-  
-  
+
   /* Example: Adjust font sizes and spacing */
   
-  
+}
+
+/* Normal styles for mobile */
+@media (max-width: 767px) {
+  html {
+    transform: none;
+    width: 100%;
+    height: 100%;
+  }
+}
