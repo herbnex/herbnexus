@@ -33,9 +33,15 @@ const ShopPromo = () => {
   const settings = {
     dots: true,
     infinite: true,
-    speed: 500,
+    speed: 2000,
     slidesToShow: 3,
     slidesToScroll: 1,
+    arrows: true,
+    autoplaySpeed: 2000,
+    autoplay: true,
+    cssEase: "linear",
+    pauseOnHover: true,
+    swipeToSlide: true,
     responsive: [
       {
         breakpoint: 1024,
@@ -43,14 +49,33 @@ const ShopPromo = () => {
           slidesToShow: 2,
           slidesToScroll: 1,
           infinite: true,
-          dots: true
+          dots: true,
+          arrows: true,
+    autoplaySpeed: 2000,
+    autoplay: true,
+    cssEase: "linear",
+    pauseOnHover: true,
+    swipeToSlide: true,
         }
       },
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
+          slidesToShow: 3,
+          slidesToScroll: 1,
+          vertical: true, // Enable vertical sliding for mobile
+          verticalSwiping: true ,
+          dots: true,
+    infinite: true,
+    speed: 2000,
+    swipeToSlide: true,
+    arrows: true,
+    autoplaySpeed: 2000,
+    autoplay: true,
+    cssEase: "linear",
+    pauseOnHover: true,
+  
+    
         }
       }
       

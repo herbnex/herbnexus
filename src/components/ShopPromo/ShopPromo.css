@@ -73,6 +73,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
+    padding-bottom: 3rem;
   }
   
   .category-icon {
@@ -123,7 +124,14 @@
       
       padding: 0 !important;
     }
-   
+    .category-slide{
+      padding-bottom: 2rem;
+    }
+    div.section-title.container{
+      padding-bottom: 0;
+    }
+    
+    
    
 
   
