@@ -41,3 +41,10 @@
 .read-more:hover {
   text-decoration: underline;
 }
+
+
+@media screen and (max-width: 767px) {
+  .text-md-right.col-md-3 {
+    padding-top: 1rem;
+  }
+}

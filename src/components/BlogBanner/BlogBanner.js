@@ -1,10 +1,9 @@
-import React from 'react';
-import { Container, Row, Col, Button, Card } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Container, Row, Col, Button, Card, Form } from 'react-bootstrap';
 import './BlogBanner.css';
 import postImage1 from '../../assets/3.png'; // Replace with actual image path
 import postImage2 from '../../assets/3.png'; // Replace with actual image path
 import postImage3 from '../../assets/3.png'; // Replace with actual image path
-import SectionTitle from "../../components/SectionTitle/SectionTitle";
 
 const blogPosts = [
   {
@@ -31,20 +30,40 @@ const blogPosts = [
 ];
 
 const BlogBanner = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredPosts, setFilteredPosts] = useState(blogPosts);
+
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    const filtered = blogPosts.filter(post => 
+      post.title.toLowerCase().includes(query) || 
+      post.category.toLowerCase().includes(query)
+    );
+    setFilteredPosts(filtered);
+  };
+
   return (
     <Container fluid className="blog-banner">
       <Container>
         <Row className="align-items-center mb-4">
           <Col md={9}>
-         
-             <h2 className="display-4">Read the latest posts</h2> 
+            <Form.Control 
+              type="search" 
+              placeholder="Search posts" 
+              className="me-2" 
+              aria-label="Search" 
+              value={searchQuery}
+              onChange={handleSearch}
+            />
           </Col>
           <Col md={3} className="text-md-right">
             <Button variant="outline-dark" className="btn-browse">Browse all posts</Button>
           </Col>
         </Row>
         <Row>
-          {blogPosts.map((post, index) => (
+          {filteredPosts.map((post, index) => (
             <Col md={4} key={index}>
               <Card className="mb-4 blog-post-card">
                 <Card.Img variant="top" src={post.image} className="blog-post-image" />
