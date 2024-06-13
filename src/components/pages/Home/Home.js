@@ -45,8 +45,10 @@ const Home = () => {
               <h4>Select the body system you'd like to focus on</h4>
             </SectionTitle>
       <ShopPromo />
-      {!isSmallScreen && <About home={true} />}
-      {!isSmallScreen && <WhyLoveHerbNexus />}
+      {/* {!isSmallScreen && <About home={true} />} */}
+
+      {/* {!isSmallScreen && <WhyLoveHerbNexus home={true}/>} */}
+      <WhyLoveHerbNexus />
       <BlogBanner />
       
       

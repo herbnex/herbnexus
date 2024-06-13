@@ -5,6 +5,7 @@ import SectionTitle from "../SectionTitle/SectionTitle";
 
 import mobileimg from '../../assets/why-love-ja-mobile-new.png'; // Path to your mobile image
 import desktopimg from '../../assets/why-love-ja.png'; // Path to your desktop image
+import About from '../About/About';
 
 const WhyLoveHerbNexus = () => {
   return (
@@ -15,7 +16,8 @@ const WhyLoveHerbNexus = () => {
           <h4>The World's Largest Network of Alternative Medicine Practioners</h4>
         </SectionTitle>
         <Row className="align-items-center">
-          <Col md={3} className="feature-column">
+          <About />
+          {/* <Col md={3} className="feature-column">
             <div className="feature-box">
               <i className="bi bi-person-check feature-icon"></i>
               <h3>Expert Practitioners</h3>
@@ -42,7 +44,7 @@ const WhyLoveHerbNexus = () => {
               <h3>Convenience</h3>
               <p>Consult with herbalists from the comfort of your home at any time.</p>
             </div>
-          </Col>
+          </Col> */}
         </Row>
       </section>
       <div className="image-container">

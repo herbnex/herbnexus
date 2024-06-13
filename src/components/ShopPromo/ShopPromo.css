@@ -110,6 +110,10 @@
   .slick-dots li.slick-active button:before {
     color: #00224f; /* Herb Nexus theme color */
   }
+  .py-5 {
+    padding-top: 0rem!important;
+    padding-bottom: 0rem!important;
+}
   
   @media (max-width: 767px) {
  

@@ -1,8 +1,9 @@
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import "./About.css";
+import WhyLoveHerbNexus from "../WhyLoveHerbNexus/WhyLoveHerbNexus";
 
-const About = ({ home }) => {
+const About = () => {
   const tiles = [
     { icon: "bi bi-activity", title: "Personalized Herbal Advice" },
     { icon: "bi bi-shield-check", title: "Accredited Herbalists" },
@@ -18,7 +19,7 @@ const About = ({ home }) => {
     { icon: "bi bi-flower1", title: "Eco-friendly Practices" },
   ];
 
-  const displayedTiles = home ? tiles.slice(0, 4) : tiles;
+  const displayedTiles = WhyLoveHerbNexus ? tiles.slice(0, 4) : tiles;
 
   return (
     <Container fluid className="about-bg">

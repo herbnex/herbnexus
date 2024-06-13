@@ -18,6 +18,10 @@
 .service-grid i {
   font-size: 4rem;
   opacity: 0.7;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.service-grid:hover {
+  transform: translateY(-5px);
 }
 
 .about-title {
