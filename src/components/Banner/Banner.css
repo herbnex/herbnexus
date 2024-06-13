@@ -4,7 +4,7 @@
 }
 .auto-container {
   position: static;
-  max-width: 1200px;
+  
   padding: 0px 15px;
   margin: 0 auto;
 }
@@ -13,6 +13,7 @@
   display: flex;
   gap: 20px; /* Adjust the gap between buttons */
   flex-wrap: wrap;
+
 }
 
 .btn-main {
@@ -26,11 +27,16 @@
 .btn-box .chats:hover {
   background-color: #cc7a00;
 }
-@media (max-width: 767.98px) {
+@media (max-width: 992px) {
   .about-style-two .content-box p,
   .about-style-two .btn-box {
-    display: none;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    
   }
+ 
+  
 }
 
 
