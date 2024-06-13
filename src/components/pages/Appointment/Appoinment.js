@@ -51,16 +51,16 @@ const Appointment = () => {
     <div>
       <Container fluid className="appointment-heading">
         <Container className="name h-100">
-          <Row className="h-100">
+          {/* <Row className="h-100">
             <Col xs={12} lg={8} className="d-flex justify-content-center align-items-center">
               <h1 className="title text-white">Book Your Herbal Consultation</h1>
             </Col>
-          </Row>
+          </Row> */}
         </Container>
       </Container>
       <Container className="appointment-panel">
         <Row>
-          <Col xs={12} lg={8}>
+          <Col >
             <h1 className="title text-center">Book an Appointment</h1>
             <p>
               Welcome to HERB NEXUS! Connect with our accredited herbalists for personalized herbal consultations.
@@ -133,30 +133,7 @@ const Appointment = () => {
             </div>
           </Col>
 
-          <Col xs={12} lg={4}>
-            <div className="d-flex justify-content-around align-items-center h-100">
-              <div
-                className="d-flex flex-column mt-3 bg-main text-white p-4 border-start border-5 border-primary"
-                style={{ borderRadius: "1rem" }}
-              >
-                <h3 className="mb-3 fw-bold">Quick Contacts</h3>
-                <p className="mb-3 text-white">
-                  If you have any questions or need help, feel free to contact us for assistance.
-                </p>
-                <h3 className="mb-3 fw-bolder">
-                  <i className="bi bi-telephone-fill"></i> 01501234567
-                </h3>
-                <p className="mb-3 text-white">2307 Beverley Rd, Brooklyn, New York 11226, United States.</p>
-
-                <NavLink to="/contact">
-                  <Button variant="outline" className="rounded-pill btn-primary my-5 p-2 px-3">
-                    Contact &nbsp;
-                    <i className="bi bi-arrow-right"></i>
-                  </Button>
-                </NavLink>
-              </div>
-            </div>
-          </Col>
+          
         </Row>
       </Container>
     </div>

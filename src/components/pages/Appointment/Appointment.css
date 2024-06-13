@@ -11,8 +11,13 @@
   margin-top: -200px;
   margin-bottom: 5rem;
   border-radius: 1rem;
+  max-width: 720px;
 }
 
 .appointment {
   padding-right: 1.5rem;
 }
+.border-primary {
+  border-color: transparent !important;
+}
+
