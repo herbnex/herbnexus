@@ -1,77 +1,65 @@
-
 import React from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import './BlogBanner.css';
-import preWorkoutImage from '../../assets/3.png';
-import fadogiaAgrestisImage from '../../assets/3.png';
-import baobabPowderImage from '../../assets/3.png';
-import postWorkoutWomenImage from '../../assets/3.png';
+import postImage1 from '../../assets/3.png'; // Replace with actual image path
+import postImage2 from '../../assets/3.png'; // Replace with actual image path
+import postImage3 from '../../assets/3.png'; // Replace with actual image path
+import SectionTitle from "../../components/SectionTitle/SectionTitle";
 
-const StatsBanner = () => {
-  const blogPosts = [
-    {
-      id: '1',
-      title: 'Top 10 Pre-Workout Supplements',
-      summary: 'Top 10 Pre-Workout Supplements to Try',
-      content: 'Detailed content about pre-workout supplements...',
-      category: 'Health',
-      image: preWorkoutImage
-    },
-    {
-      id: '2',
-      title: 'Benefits of Fadogia Agrestis',
-      summary: 'Benefits of Fadogia Agrestis (Enhancement)',
-      content: 'Detailed content about Fadogia Agrestis...',
-      category: 'Health',
-      image: fadogiaAgrestisImage
-    },
-    {
-      id: '3',
-      title: 'Benefits of Baobab Powder',
-      summary: 'Benefits of Baobab Powder (Immunity)',
-      content: 'Detailed content about Baobab Powder...',
-      category: 'Nutrition',
-      image: baobabPowderImage
-    },
-    {
-      id: '4',
-      title: 'Top 10 Post-Workout Supplements for Women',
-      summary: 'Top 10 Post-Workout Supplements for Women',
-      content: 'Detailed content about post-workout supplements...',
-      category: 'Wellness',
-      image: postWorkoutWomenImage
-    }
-  ];
+const blogPosts = [
+  {
+    image: postImage1,
+    title: "How TigerEye Uses Slack for Effective Communication as a Fully Remote Team",
+    date: "June 12, 2024",
+    category: "Playbook",
+    link: "#",
+  },
+  {
+    image: postImage2,
+    title: "This Week in GTM - 6/7/24",
+    date: "June 7, 2024",
+    category: "News",
+    link: "#",
+  },
+  {
+    image: postImage3,
+    title: "Over-assignment Drives Sales Culture",
+    date: "June 5, 2024",
+    category: "Playbook",
+    link: "#",
+  },
+];
 
+const BlogBanner = () => {
   return (
-    <div className="stats-banner">
-      <Container fluid className="py-5">
-        <Row className="align-items-center">
-          <Col md={12} className="text1-col text-center">
-            <h1 className="display-4">Our Community Blog</h1>
-            <h2 className="connect text-highlight">Discover the latest articles</h2>
+    <Container fluid className="blog-banner">
+      <Container>
+        <Row className="align-items-center mb-4">
+          <Col md={9}>
+         
+             <h2 className="display-4">Read the latest posts</h2> 
+          </Col>
+          <Col md={3} className="text-md-right">
+            <Button variant="outline-dark" className="btn-browse">Browse all posts</Button>
           </Col>
         </Row>
-        <Row className="align-items-center mt-4">
-          {blogPosts.slice(0, 3).map(post => (
-            <Col md={4} key={post.id} className="mb-4">
-              <Card className="blog-card">
-                <Card.Img variant="top" src={post.image} />
+        <Row>
+          {blogPosts.map((post, index) => (
+            <Col md={4} key={index}>
+              <Card className="mb-4 blog-post-card">
+                <Card.Img variant="top" src={post.image} className="blog-post-image" />
                 <Card.Body>
-                  <Card.Title>{post.title}</Card.Title>
-                  <Card.Text>{post.summary}</Card.Text>
-                  <Button variant="primary" onClick={() => window.location.href = `/article/${post.id}`}>
-                    Read More
-                  </Button>
+                  <Card.Text className="text-muted">{post.category} — {post.date}</Card.Text>
+                  <Card.Title className="blog-post-title">{post.title}</Card.Title>
+                  <Button variant="link" href={post.link} className="p-0 read-more">Read more &rarr;</Button>
                 </Card.Body>
               </Card>
             </Col>
           ))}
         </Row>
       </Container>
-      <div className="wave"></div>
-    </div>
+    </Container>
   );
 };
 
-export default StatsBanner;
+export default BlogBanner;
