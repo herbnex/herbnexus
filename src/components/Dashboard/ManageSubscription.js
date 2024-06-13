@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Button, Spinner, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import useAuth from '../../hooks/useAuth';
+import './ManageSubscription.css'; // Import the CSS file
 
 const ManageSubscription = () => {
   const { user, updateUser } = useAuth();
@@ -49,11 +50,11 @@ const ManageSubscription = () => {
   };
 
   if (loading) {
-    return <Spinner animation="border" />;
+    return <Spinner animation="border" className="spinner-border" />;
   }
 
   return (
-    <Card>
+    <Card className="manage-subscription-card">
       <Card.Header>Manage Subscription</Card.Header>
       <Card.Body>
         {error && <Alert variant="danger">{error}</Alert>}

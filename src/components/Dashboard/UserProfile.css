@@ -7,11 +7,9 @@
   }
   
   .user-profile-header {
-    background-color: #39cabb;
-    color: #fff;
-    text-align: center;
-    font-size: 1.5rem;
-    padding: 10px 0;
+    background-color: #f8f9fa;
+    font-weight: bold;
+    
   }
   
   .user-profile-info {
@@ -40,5 +38,9 @@
   
   .user-profile-form {
     margin-top: 20px;
+  }
+
+  .user-profile-card .btn {
+    margin-top: 1rem;
   }
   

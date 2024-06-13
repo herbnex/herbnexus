@@ -1,0 +1,36 @@
+/* src/components/ManageSubscription/ManageSubscription.css */
+.manage-subscription-card {
+    max-width: 800px;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .manage-subscription-card .card-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+  
+  .manage-subscription-card .card-body {
+    padding: 20px;
+  }
+  
+  .manage-subscription-card .card-text {
+    margin-bottom: 20px;
+  }
+  
+  .manage-subscription-card .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  .manage-subscription-card .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+  }
+  
+  .manage-subscription-card .spinner-border {
+    display: block;
+    margin: 0 auto;
+  }
+  
