@@ -1,0 +1,18 @@
+@media (min-width: 768px) {
+  html {
+    zoom: 0.85; /* Old IE only */
+   
+}
+  
+
+  /* Example: Adjust font sizes and spacing */
+  
+}
+
+/* Normal styles for mobile */
+@media (max-width: 767px) {
+  html {
+    zoom: 1;
+  }
+}
+
