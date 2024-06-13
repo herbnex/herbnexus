@@ -46,7 +46,10 @@ const Home = () => {
       {!isSmallScreen && <About home={true} />}
       {!isSmallScreen && <WhyLoveHerbNexus />}
       <BlogBanner />
-      
+      <SectionTitle>
+          <h1>FAQs</h1>
+          <h4>Frequently Asked Questions</h4>
+        </SectionTitle>
       <Faq />
     </div>
   );
