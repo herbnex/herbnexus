@@ -13,6 +13,8 @@ import StatsBanner from '../../StatsBanner/StatsBanner'; // Import the new compo
 import ShopPromo from '../../ShopPromo/ShopPromo'; // Import the new component
 import BlogBanner from '../../BlogBanner/BlogBanner';
 import "./Home.css";
+import HerbNexusAdditionalBanner from '../../HerbNexusAdditionalBanner/HerbNexusAdditionalBanner';
+
 
 const Home = () => {
   const { isLoading } = useAuth();
@@ -46,6 +48,7 @@ const Home = () => {
       {!isSmallScreen && <About home={true} />}
       {!isSmallScreen && <WhyLoveHerbNexus />}
       <BlogBanner />
+      
       
       <Faq />
     </div>

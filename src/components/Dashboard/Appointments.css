@@ -1,0 +1,22 @@
+/* src/components/Appointments/Appointments.css */
+.appointments-card {
+    max-width: 800px;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .appointments-card .card-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+  
+  .appointments-card .table {
+    margin-top: 20px;
+  }
+  
+  .appointments-card .table th,
+  .appointments-card .table td {
+    vertical-align: middle;
+  }
+  
