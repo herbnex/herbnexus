@@ -4,4 +4,21 @@
 
   
   
- 
+ /* src/global.css */
+
+/* Apply a 75% scale to the entire document */
+html {
+    transform: scale(0.75);
+    transform-origin: top left;
+    width: 133.33%; /* Compensate for the scale down */
+    height: 133.33%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  
+  /* Optional: Ensure the body takes up the full viewport height */
+  
+  
+  /* Example: Adjust font sizes and spacing */
+  
+  
