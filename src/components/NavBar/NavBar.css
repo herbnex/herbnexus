@@ -81,8 +81,6 @@
 	flex-direction: column;
 	align-items: center;
 }
-.offcanvas-end.show .navbar-nav {
-}
 .offcanvas-end.show .nav-item {
 	margin: 0.5rem 0;
 }
