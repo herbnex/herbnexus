@@ -1,6 +1,5 @@
-// src/App.js
-import React, { useEffect } from "react";
-import { Switch, Route, useLocation } from "react-router-dom";
+import React from "react";
+import { Switch, Route, Redirect } from "react-router-dom";
 import "./App.css";
 import Doctors from "./components/pages/Doctors/Doctors";
 import Doctor from "./components/pages/Doctor/Doctor";
@@ -20,21 +19,19 @@ import Subscription from "./components/subscription/subscriptions";
 import Dashboard from "./components/Dashboard/Dashboard";
 import PrivacyPolicy from "./components/pages/PrivacyPolicy/PrivacyPolicy";
 import TermsOfService from "./components/pages/TermsOfService/TermsOfService";
+import withDelayedNavigation from "../src/hooks/withDelayedNavigation"; // Adjust the path if necessary
 
 import useScrollToTop from './hooks/useScrollToTop';
 
+const DelayedContact = withDelayedNavigation(Contact, 2000);
 
-
-
-
-function App() {
-
+const App = () => {
   useScrollToTop();
+
   return (
     <div className="App">
       <AuthProvider>
         <NavBar />
-        
         <Switch>
           <Route exact path="/">
             <Home />
@@ -54,10 +51,7 @@ function App() {
           <Route path="/about">
             <About />
           </Route>
-           
-          <PrivateRoute path="/contact">
-            <Contact />
-          </PrivateRoute>
+          <Route path="/contact" component={DelayedContact} />
           <Route path="/faq">
             <Faq />
           </Route>
@@ -74,10 +68,10 @@ function App() {
             <Dashboard />
           </PrivateRoute>
           <Route path="/privacy-policy">
-            <PrivacyPolicy /> 
+            <PrivacyPolicy />
           </Route>
           <Route path="/terms-of-service">
-            <TermsOfService /> 
+            <TermsOfService />
           </Route>
           <Route path="*">
             <NotFound />
@@ -87,6 +81,6 @@ function App() {
       </AuthProvider>
     </div>
   );
-}
+};
 
 export default App;
