@@ -643,6 +643,11 @@ const Contact = () => {
       console.log(
         `Connection state change: ${peerConnection.current.connectionState}`
       );
+      if (peerConnection.current.connectionState === "disconnected" || 
+          peerConnection.current.connectionState === "failed" || 
+          peerConnection.current.connectionState === "closed") {
+        hangUp();
+      }
     });
 
     peerConnection.current.addEventListener("signalingstatechange", () => {
@@ -655,6 +660,11 @@ const Contact = () => {
       console.log(
         `ICE connection state change: ${peerConnection.current.iceConnectionState}`
       );
+      if (peerConnection.current.iceConnectionState === "disconnected" || 
+          peerConnection.current.iceConnectionState === "failed" || 
+          peerConnection.current.iceConnectionState === "closed") {
+        hangUp();
+      }
     });
 
     peerConnection.current.addEventListener("track", (event) => {
