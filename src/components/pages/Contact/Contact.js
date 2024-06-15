@@ -181,25 +181,32 @@ const Contact = () => {
         );
       });
 
-      const callUnsubscribe = onSnapshot(collection(db, `calls`), (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (
-            change.type === "added" &&
-            change.doc.data().receiverId === user.uid
-          ) {
-            setIncomingCall(change.doc.data());
-            setShowIncomingCallModal(true);
-          }
-        });
-      });
-
       return () => {
         unsubscribe();
         typingUnsubscribe();
-        callUnsubscribe();
       };
     }
   }, [user, selectedParticipant, isDoctor, currentRoom]);
+
+  useEffect(() => {
+    const handleIncomingCalls = (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          const callData = change.doc.data();
+          if (callData.receiverId === user.uid && callData.callerId !== user.uid) {
+            setIncomingCall(callData);
+            setShowIncomingCallModal(true);
+          }
+        }
+      });
+    };
+
+    const callUnsubscribe = onSnapshot(collection(db, `calls`), handleIncomingCalls);
+
+    return () => {
+      callUnsubscribe();
+    };
+  }, [user.uid]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -977,20 +984,22 @@ const Contact = () => {
           )}
         </Col>
       </Row>
-      <Modal show={showIncomingCallModal} onHide={declineCall}>
-        <Modal.Header closeButton>
-          <Modal.Title>Incoming Call</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>{incomingCall?.callerName} is calling you.</p>
-          <Button variant="success" onClick={answerCall}>
-            Answer
-          </Button>
-          <Button variant="danger" onClick={declineCall}>
-            Decline
-          </Button>
-        </Modal.Body>
-      </Modal>
+      {incomingCall && showIncomingCallModal && (
+        <Modal show={showIncomingCallModal} onHide={declineCall}>
+          <Modal.Header closeButton>
+            <Modal.Title>Incoming Call</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>{incomingCall.callerName} is calling you.</p>
+            <Button variant="success" onClick={answerCall}>
+              Answer
+            </Button>
+            <Button variant="danger" onClick={declineCall}>
+              Decline
+            </Button>
+          </Modal.Body>
+        </Modal>
+      )}
       {loading && (
         <Spinner animation="border" role="status">
           <span className="visually-hidden">Loading...</span>
