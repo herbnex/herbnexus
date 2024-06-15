@@ -15,12 +15,7 @@ import {
   ToastContainer,
   Dropdown,
 } from "react-bootstrap";
-import {
-  ref,
-  set,
-  onValue,
-  push,
-} from "firebase/database";
+import { ref, set, onValue, push } from "firebase/database";
 import { db, database } from "../../../Firebase/firebase.config";
 import {
   doc,
@@ -77,7 +72,7 @@ const Contact = () => {
   const remoteVideoRef = useRef(null);
   const peerConnection = useRef(null);
   const localStream = useRef(null);
-  const remoteStream = useRef(null);
+  const remoteStream = useRef(new MediaStream());
   const screenStream = useRef(null);
   const roomIdRef = useRef(null);
   const pendingCandidates = useRef([]);
@@ -163,7 +158,6 @@ const Contact = () => {
 
   useEffect(() => {
     if (user && selectedParticipant) {
-      // Initialize roomIdRef when a participant is selected
       roomIdRef.current = generateRoomId(selectedParticipant.id, user.uid);
 
       const chatId = isDoctor
@@ -335,22 +329,26 @@ const Contact = () => {
     }
   };
 
-  // WebRTC Functions (Moved and Refactored)
+  // WebRTC Functions
 
   useEffect(() => {
     // Handle attaching/detaching streams ONLY when showCallModal changes
-    if (showCallModal) {
-      if (localVideoRef.current && localStream.current) {
-        localVideoRef.current.srcObject = localStream.current;
-      }
-      if (remoteVideoRef.current && remoteStream.current) {
-        remoteVideoRef.current.srcObject = remoteStream.current;
-      }
+    if (showCallModal && localStream.current && remoteStream.current) {
+      attachMediaStreams();
     } else {
-      if (localVideoRef.current) localVideoRef.current.srcObject = null;
-      if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+      detachMediaStreams();
     }
   }, [showCallModal]);
+
+  const attachMediaStreams = () => {
+    localVideoRef.current.srcObject = localStream.current;
+    remoteVideoRef.current.srcObject = remoteStream.current;
+  };
+
+  const detachMediaStreams = () => {
+    if (localVideoRef.current) localVideoRef.current.srcObject = null;
+    if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+  };
 
   const openUserMedia = async () => {
     setLoading(true);
@@ -388,7 +386,6 @@ const Contact = () => {
       peerConnection.current.addTrack(track, localStream.current);
     });
 
-    // Create Firestore references AFTER initializing peerConnection
     const roomRef = doc(db, "rooms", roomIdRef.current); // Use existing roomId
     const callerCandidatesCollection = collection(roomRef, "callerCandidates");
 
@@ -397,7 +394,6 @@ const Contact = () => {
       addDoc(callerCandidatesCollection, event.candidate.toJSON());
     });
 
-    // Create offer
     const offer = await peerConnection.current.createOffer();
     await peerConnection.current.setLocalDescription(offer);
 
@@ -414,7 +410,6 @@ const Contact = () => {
         remoteStream.current.addTrack(track);
       });
 
-      // Ensure the remote video element is updated after all tracks are added
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = remoteStream.current;
       }
@@ -425,8 +420,11 @@ const Contact = () => {
       if (data?.answer) {
         const rtcSessionDescription = new RTCSessionDescription(data.answer);
         try {
-          if (peerConnection.current.signalingState === "stable") {
+          if (peerConnection.current.signalingState === "have-local-offer") {
             await peerConnection.current.setRemoteDescription(rtcSessionDescription);
+            while (pendingCandidates.current.length > 0) {
+              await peerConnection.current.addIceCandidate(pendingCandidates.current.shift());
+            }
           }
         } catch (error) {
           console.error("Error setting remote description:", error);
@@ -485,7 +483,6 @@ const Contact = () => {
           remoteStream.current.addTrack(track);
         });
 
-        // Ensure the remote video element is updated after all tracks are added
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream.current;
         }
@@ -661,13 +658,12 @@ const Contact = () => {
     });
 
     peerConnection.current.addEventListener("track", (event) => {
-      event.streams[0].getTracks().forEach((track) => {
-        remoteStream.current.addTrack(track);
-      });
+      const [remoteTrack] = event.streams[0].getTracks();
+      remoteStream.current.addTrack(remoteTrack);
 
-      // Ensure the remote video element is updated after all tracks are added
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = remoteStream.current;
+      // Attach streams ONLY after remote track is added
+      if (showCallModal && localStream.current && remoteStream.current) {
+        attachMediaStreams();
       }
     });
   };
@@ -845,6 +841,7 @@ const Contact = () => {
                     >
                       {showCallModal && (
                         <>
+                          <div className="video-label">You ({user.displayName || "Anonymous"})</div>
                           <video
                             ref={localVideoRef}
                             autoPlay
@@ -853,6 +850,7 @@ const Contact = () => {
                             className="local-video"
                             id="localVideo"
                           />
+                          <div className="video-label">{selectedParticipant.name}</div>
                           <video
                             ref={remoteVideoRef}
                             autoPlay
