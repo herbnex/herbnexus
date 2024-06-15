@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import Loading from '../components/Loading/Loading'; // Adjust the path if necessary
 
 const withDelayedNavigation = (Component, delay = 2000) => {
   return (props) => {
     const history = useHistory();
+    const location = useLocation();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -17,9 +18,9 @@ const withDelayedNavigation = (Component, delay = 2000) => {
 
     useEffect(() => {
       if (!loading) {
-        history.push(props.location.pathname);
+        history.push(location.pathname);
       }
-    }, [loading, history, props.location.pathname]);
+    }, [loading, history, location.pathname]);
 
     if (loading) {
       return <Loading />;

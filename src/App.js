@@ -51,7 +51,9 @@ const App = () => {
           <Route path="/about">
             <About />
           </Route>
-          <Route path="/contact" component={DelayedContact} />
+          <PrivateRoute path="/contact">
+            <DelayedContact /> 
+          </PrivateRoute> 
           <Route path="/faq">
             <Faq />
           </Route>
