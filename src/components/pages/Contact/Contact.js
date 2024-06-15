@@ -66,6 +66,8 @@ const Contact = () => {
   const screenStream = useRef(null);
   const roomIdRef = useRef(null);
   const pendingCandidates = useRef([]);
+  const sessionId = useRef(null); // New session ID
+  const [initialLoad, setInitialLoad] = useState(true); // New state to track initial load
 
   const configuration = {
     iceServers: [
@@ -149,6 +151,7 @@ const Contact = () => {
   useEffect(() => {
     if (user && selectedParticipant) {
       roomIdRef.current = generateRoomId(selectedParticipant.id, user.uid);
+      sessionId.current = roomIdRef.current; // Set session ID
 
       const chatId = isDoctor
         ? generateChatId(selectedParticipant.id, user.uid)
@@ -193,7 +196,7 @@ const Contact = () => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
           const callData = change.doc.data();
-          if (callData.receiverId === user.uid && callData.callerId !== user.uid) {
+          if (callData.receiverId === user.uid && callData.callerId !== user.uid && callData.sessionId === sessionId.current && !initialLoad) {
             setIncomingCall(callData);
             setShowIncomingCallModal(true);
           }
@@ -203,10 +206,14 @@ const Contact = () => {
 
     const callUnsubscribe = onSnapshot(collection(db, `calls`), handleIncomingCalls);
 
+    setTimeout(() => {
+      setInitialLoad(false); // Set initialLoad to false after initial load
+    }, 1000);
+
     return () => {
       callUnsubscribe();
     };
-  }, [user.uid]);
+  }, [user.uid, initialLoad]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -381,6 +388,7 @@ const Contact = () => {
 
     if (!roomIdRef.current) {
       roomIdRef.current = generateRoomId(selectedParticipant.id, user.uid);
+      sessionId.current = roomIdRef.current; // Set session ID
     }
 
     if (peerConnection.current) {
@@ -409,6 +417,7 @@ const Contact = () => {
     const roomWithOffer = {
       offer: { type: offer.type, sdp: offer.sdp },
       timestamp: new Date(),
+      sessionId: sessionId.current, // Include session ID in room data
     };
     await setDoc(roomRef, roomWithOffer);
 
@@ -508,6 +517,7 @@ const Contact = () => {
 
           const roomWithAnswer = {
             answer: { type: answer.type, sdp: answer.sdp },
+            sessionId: sessionId.current, // Include session ID in room data
           };
           await updateDoc(roomRef, roomWithAnswer);
 
@@ -578,6 +588,7 @@ const Contact = () => {
 
     // Reset states
     roomIdRef.current = null;
+    sessionId.current = null; // Reset session ID
     setIncomingCall(null);
     setShowIncomingCallModal(false);
     setShowCallModal(false);
@@ -712,6 +723,7 @@ const Contact = () => {
     remoteStream.current = new MediaStream();
 
     roomIdRef.current = generateRoomId(selectedParticipant.id, user.uid); // Ensure roomId is set
+    sessionId.current = roomIdRef.current; // Set session ID
     await createRoom();
     setShowCallModal(true);
 
@@ -720,9 +732,11 @@ const Contact = () => {
       callerName: user.displayName || "Anonymous",
       receiverId: selectedParticipant.id,
       roomId: roomIdRef.current,
+      sessionId: sessionId.current, // Include session ID
       timestamp: new Date().toISOString(),
     };
 
+    console.log('Call data being sent:', callData); // Log call data for debugging
     await addDoc(collection(db, "calls"), callData);
   };
 
@@ -736,6 +750,7 @@ const Contact = () => {
     setShowCallModal(true);
     if (incomingCall) {
       roomIdRef.current = incomingCall.roomId;
+      sessionId.current = incomingCall.sessionId; // Set session ID
       await joinRoomById(incomingCall.roomId);
     }
     setIncomingCall(null);
