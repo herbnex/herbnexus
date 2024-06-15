@@ -18,17 +18,7 @@ import {
 import { ref, set, onValue, push } from "firebase/database";
 import { db, database } from "../../../Firebase/firebase.config";
 import {
-  doc,
-  getDocs,
-  collection,
-  query,
-  where,
-  getDoc,
-  setDoc,
-  onSnapshot,
-  updateDoc,
-  deleteDoc,
-  addDoc,
+  doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc
 } from "firebase/firestore";
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
@@ -341,13 +331,21 @@ const Contact = () => {
   }, [showCallModal]);
 
   const attachMediaStreams = () => {
-    localVideoRef.current.srcObject = localStream.current;
-    remoteVideoRef.current.srcObject = remoteStream.current;
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = localStream.current;
+    }
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = remoteStream.current;
+    }
   };
 
   const detachMediaStreams = () => {
-    if (localVideoRef.current) localVideoRef.current.srcObject = null;
-    if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = null;
+    }
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = null;
+    }
   };
 
   const openUserMedia = async () => {
@@ -374,6 +372,10 @@ const Contact = () => {
       await openUserMedia();
     }
 
+    if (!roomIdRef.current) {
+      roomIdRef.current = generateRoomId(selectedParticipant.id, user.uid);
+    }
+
     if (peerConnection.current) {
       peerConnection.current.close();
       peerConnection.current = null;
@@ -386,11 +388,11 @@ const Contact = () => {
       peerConnection.current.addTrack(track, localStream.current);
     });
 
-    const roomRef = doc(db, "rooms", roomIdRef.current); // Use existing roomId
+    const roomRef = doc(db, "rooms", roomIdRef.current);
     const callerCandidatesCollection = collection(roomRef, "callerCandidates");
 
     peerConnection.current.addEventListener("icecandidate", (event) => {
-      if (!peerConnection.current || !event.candidate) return; // Check for null
+      if (!peerConnection.current || !event.candidate) return;
       addDoc(callerCandidatesCollection, event.candidate.toJSON());
     });
 
@@ -437,7 +439,7 @@ const Contact = () => {
         if (change.type === "added") {
           const candidate = new RTCIceCandidate(change.doc.data());
           try {
-            if (peerConnection.current.remoteDescription) {
+            if (peerConnection.current?.remoteDescription) {
               await peerConnection.current.addIceCandidate(candidate);
             } else {
               pendingCandidates.current.push(candidate);
@@ -507,7 +509,7 @@ const Contact = () => {
               if (change.type === "added") {
                 const candidate = new RTCIceCandidate(change.doc.data());
                 try {
-                  if (peerConnection.current.remoteDescription) {
+                  if (peerConnection.current?.remoteDescription) {
                     await peerConnection.current.addIceCandidate(candidate);
                   } else {
                     pendingCandidates.current.push(candidate);
@@ -567,8 +569,20 @@ const Contact = () => {
       await deleteDoc(roomRef);
     }
 
+    // Reset states
+    roomIdRef.current = null;
+    setIncomingCall(null);
+    setShowIncomingCallModal(false);
+    setShowCallModal(false);
+    setIsMuted(false);
+    setIsCameraOff(false);
+    setIsScreenSharing(false);
+    setError(null);
+
+    // Close the modal without refreshing the page
     setCurrentRoom(null);
-    document.location.reload(true);
+    localStream.current = null;
+    remoteStream.current = new MediaStream();
   };
 
   const toggleMute = () => {
@@ -681,8 +695,18 @@ const Contact = () => {
   const handleCall = async () => {
     if (!selectedParticipant) return;
 
+    // Reset states before making a new call
+    setCurrentRoom(null);
+    if (peerConnection.current) {
+      peerConnection.current.close();
+      peerConnection.current = null;
+    }
+    localStream.current = null;
+    remoteStream.current = new MediaStream();
+
+    roomIdRef.current = generateRoomId(selectedParticipant.id, user.uid); // Ensure roomId is set
     await createRoom();
-    setShowCallModal(true); // Show modal only after the room is created
+    setShowCallModal(true);
 
     const callData = {
       callerId: user.uid,
