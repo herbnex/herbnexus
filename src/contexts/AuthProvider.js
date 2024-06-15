@@ -75,6 +75,7 @@ const AuthProvider = ({ children }) => {
       updateUser(userCredential.user);
     } catch (error) {
       console.error("Error logging in with email and password:", error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
