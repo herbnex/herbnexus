@@ -43,7 +43,10 @@ const Login = () => {
 
 	useEffect(() => {
 		if (user) {
-			history.replace(refferer);
+			const timer = setTimeout(() => {
+				history.replace(refferer);
+			}, 2000); // 1 second delay
+			return () => clearTimeout(timer);
 		}
 	}, [user, history, refferer]);
 
