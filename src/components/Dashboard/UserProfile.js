@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
 import useAuth from '../../hooks/useAuth';
-import './UserProfile.css';
 import { db } from '../../Firebase/firebase.config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import './UserProfile.css';
 
 const UserProfile = () => {
-  const { user, isDoctor, isLoading, error, setError, updateUser } = useAuth(); // Add isLoading
+  const { user, isDoctor, isLoading, error, setError, updateUser } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updateError, setUpdateError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [avatar, setAvatar] = useState(null);
+  const storage = getStorage();
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -35,6 +38,10 @@ const UserProfile = () => {
     }
   }, [user, isDoctor]);
 
+  const handleAvatarChange = (e) => {
+    setAvatar(e.target.files[0]);
+  };
+
   const handleUpdateProfile = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -46,6 +53,13 @@ const UserProfile = () => {
     };
 
     try {
+      if (avatar) {
+        const avatarRef = storageRef(storage, `avatars/${user.uid}`);
+        await uploadBytes(avatarRef, avatar);
+        const avatarURL = await getDownloadURL(avatarRef);
+        updatedProfileData.photoURL = avatarURL;
+      }
+
       const collection = isDoctor ? 'doctors' : 'users';
       const userDocRef = doc(db, collection, user.uid);
       await updateDoc(userDocRef, updatedProfileData);
@@ -91,6 +105,14 @@ const UserProfile = () => {
               type="text" 
               placeholder="Enter display name" 
               defaultValue={profileData?.name}
+            />
+          </Form.Group>
+          <Form.Group controlId="formAvatar">
+            <Form.Label>Avatar</Form.Label>
+            <Form.Control 
+              type="file" 
+              accept="image/*" 
+              onChange={handleAvatarChange}
             />
           </Form.Group>
           <Button variant="primary" type="submit">
