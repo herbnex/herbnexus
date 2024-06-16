@@ -23,7 +23,7 @@ import {
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
-import { FaPhoneAlt, FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaDesktop, FaGlobe } from "react-icons/fa";
+import { FaPhoneAlt, FaVideo, FaEllipsisV , FaGlobe,FaMicrophoneSlash,FaMicrophone,FaVideoSlash,FaDesktop} from "react-icons/fa";
 import { ChatContext } from './ChatContext'; // Import the context
 import "./Contact.css";
 
@@ -68,6 +68,7 @@ const Contact = () => {
   const pendingCandidates = useRef([]);
   const sessionId = useRef(null); // New session ID
   const [initialLoad, setInitialLoad] = useState(true); // New state to track initial load
+  const [searchQuery, setSearchQuery] = useState(""); // New state for search query
 
   const configuration = {
     iceServers: [
@@ -517,7 +518,7 @@ const Contact = () => {
 
           const roomWithAnswer = {
             answer: { type: answer.type, sdp: answer.sdp },
-            sessionId: sessionId.current, // Include session ID in room data
+            sessionId: sessionId.current, // Include session ID
           };
           await updateDoc(roomRef, roomWithAnswer);
 
@@ -778,11 +779,16 @@ const Contact = () => {
     setTimeout(() => setShowNotification(false), 5000);
   };
 
+  // Filter participants based on the search query
+  const filteredParticipants = (isDoctor ? activeUsers : onlineDoctors).filter(participant =>
+    participant.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <Container fluid className="chat-room">
       <Row>
         <Col md={4} className="participants-list">
-          <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex justify-content-between align-items-center mb-3">
             <h3>{isDoctor ? "Users" : "Online Doctors"}</h3>
             <Dropdown>
               <Dropdown.Toggle variant="secondary" id="dropdown-basic">
@@ -797,8 +803,17 @@ const Contact = () => {
               </Dropdown.Menu>
             </Dropdown>
           </div>
+          <InputGroup className="mb-3">
+            <Form.Control
+              placeholder="Search"
+              aria-label="Search"
+              aria-describedby="search-addon"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+          </InputGroup>
           <ListGroup>
-            {(isDoctor ? activeUsers : onlineDoctors).map((participant) => (
+            {filteredParticipants.map((participant) => (
               <ListGroup.Item
                 key={`${isDoctor ? "user" : "doctor"}-${participant.id}`}
                 active={
@@ -808,7 +823,7 @@ const Contact = () => {
               >
                 <div className="d-flex justify-content-between align-items-center">
                   <div>
-                    <h5>{participant.name}</h5>
+                    <h5>{participant.name || "No Name"}</h5>
                     <p>{isDoctor ? participant.email : participant.speciality}</p>
                   </div>
                   <Badge bg="success">Online</Badge>
@@ -820,12 +835,16 @@ const Contact = () => {
         <Col md={8} className="chat-section" ref={chatSectionRef}>
           {selectedParticipant ? (
             <>
-              <h4>Chat with {selectedParticipant.name}</h4>
-              <div className="d-flex align-items-center justify-content-between mb-2">
-                <div>{currentRoom}</div>
-                <Button variant="link" onClick={handleCall}>
-                  <FaPhoneAlt size={20} />
-                </Button>
+              <div className="chat-top-bar d-flex justify-content-between align-items-center p-2 bg-light">
+                <div className="d-flex align-items-center">
+                  <div className="user-avatar bg-secondary rounded-circle me-2" style={{ width: '40px', height: '40px' }}></div>
+                  <span>{selectedParticipant.name}</span>
+                </div>
+                <div className="chat-icons">
+                  <FaPhoneAlt className="me-2" style={{ cursor: 'pointer' }} onClick={handleCall} />
+                  <FaVideo className="me-2" style={{ cursor: 'pointer' }} />
+                  <FaEllipsisV style={{ cursor: 'pointer' }} />
+                </div>
               </div>
               <div className="msg-box" ref={msgBoxRef}>
                 {msgList.map((msg, index) => (

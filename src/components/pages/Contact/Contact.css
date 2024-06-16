@@ -201,3 +201,37 @@ button:hover {
   height: 200px;
   overflow-y: auto;
 }
+.participants-list .form-control {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .participants-list {
+    padding: 10px;
+  }
+
+  .chat-section {
+    height: calc(100vh - 60px); /* Adjust height to prevent excessive scrolling */
+    padding: 10px;
+  }
+
+  .chat-room {
+    padding: 10px;
+  }
+}
+
+.chat-top-bar {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 0.5rem;
+}
+
+.chat-icons {
+  display: flex;
+  align-items: center;
+}
+
+.chat-icons svg {
+  font-size: 1.25rem;
+  cursor: pointer;
+}
