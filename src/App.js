@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 import "./App.css";
 import Doctors from "./components/pages/Doctors/Doctors";
 import Doctor from "./components/pages/Doctor/Doctor";
@@ -63,9 +63,9 @@ const App = () => {
           <Route path="/signup">
             <Signup />
           </Route>
-          <PrivateRoute path="/subscribe" redirectToContactIfSubscribed={true}>
-            <Subscription />
-          </PrivateRoute>
+          <Route path="/subscribe">
+            <Subscription /> {/* Updated component name */}
+          </Route>
           <PrivateRoute path="/dashboard" requireSubscription={false}>
             <Dashboard />
           </PrivateRoute>

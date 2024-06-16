@@ -3,7 +3,7 @@ import { Redirect, Route } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import Loading from "../Loading/Loading";
 
-const PrivateRoute = ({ children, requireSubscription = true, redirectToContactIfSubscribed = false, ...rest }) => {
+const PrivateRoute = ({ children, requireSubscription = true, ...rest }) => {
   const { user, isLoading, isSubscribed, isDoctor } = useAuth();
 
   if (isLoading) {
@@ -20,8 +20,6 @@ const PrivateRoute = ({ children, requireSubscription = true, redirectToContactI
         user ? (
           requireSubscription && !isSubscribed && !isDoctor ? (
             <Redirect to={{ pathname: "/subscribe", state: { from: location } }} />
-          ) : redirectToContactIfSubscribed && isSubscribed ? (
-            <Redirect to={{ pathname: "/contact", state: { from: location } }} />
           ) : (
             children
           )
