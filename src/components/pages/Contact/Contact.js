@@ -27,6 +27,19 @@ import { FaPhoneAlt, FaVideo, FaEllipsisV , FaGlobe,FaMicrophoneSlash,FaMicropho
 import { ChatContext } from './ChatContext'; // Import the context
 import "./Contact.css";
 
+const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
+  <div
+    ref={ref}
+    onClick={(e) => {
+      e.preventDefault();
+      onClick(e);
+    }}
+    style={{ cursor: 'pointer' }}
+  >
+    {children}
+  </div>
+));
+
 const Contact = () => {
   const { user } = useAuth();
   const history = useHistory();
@@ -860,7 +873,17 @@ const Contact = () => {
                 <div className="chat-icons">
                   {/* <FaPhoneAlt className="me-2" style={{ cursor: 'pointer' }} onClick={handleCall} /> */}
                   <FaVideo className="me-2" style={{ cursor: 'pointer' }} onClick={handleCall} />
-                  {/* <FaEllipsisV style={{ cursor: 'pointer' }} /> */}
+                  <Dropdown>
+  <Dropdown.Toggle as={CustomToggle} id="dropdown-ellipsis">
+    <FaEllipsisV />
+  </Dropdown.Toggle>
+
+  <Dropdown.Menu>
+    <Dropdown.Item onClick={() => history.push(`/doctor/${selectedParticipant.id}`)}>View Profile</Dropdown.Item>
+    <Dropdown.Item onClick={() => history.push('/dashboard')}>Settings</Dropdown.Item>
+  </Dropdown.Menu>
+</Dropdown>
+
                 </div>
               </div>
               <div className="msg-box" ref={msgBoxRef}>
