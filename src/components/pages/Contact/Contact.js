@@ -874,28 +874,12 @@ const Contact = () => {
         link.rel = 'noopener noreferrer';
         document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
         setDownloadModal({ show: false, fileUrl: '', fileName: '' });
       })
       .catch(error => console.error('Error downloading file:', error));
   };
-  // const downloadFile = () => {
-  //   const filePath = decodeURIComponent(new URL(downloadModal.fileUrl).pathname.split('/o/')[1].split('?alt=media')[0]);
-  //   fetch(`https://us-central1-health-de695.cloudfunctions.net/getDownloadUrl?filePath=${encodeURIComponent(filePath)}`)
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       const url = data.url;
-  //       const link = document.createElement('a');
-  //       link.href = url;
-  //       link.download = downloadModal.fileName; // Set the suggested file name
-  //       link.target = '_blank'; // Open in a new tab to prompt download
-  //       link.rel = 'noopener noreferrer';
-  //       document.body.appendChild(link);
-  //       link.click();
-  //       document.body.removeChild(link);
-  //       setDownloadModal({ show: false, fileUrl: '', fileName: '' });
-  //     })
-  //     .catch(error => console.error('Error generating signed URL:', error));
-  // };
+  
   
 
   return (
@@ -1065,12 +1049,15 @@ const Contact = () => {
                 show={showCallModal}
                 onHide={() => setShowCallModal(false)}
                 size="lg"
+                backdrop="static" // Prevent modal from closing by clicking outside
+                keyboard={false} // Prevent modal from closing by pressing Esc
               >
-                <Modal.Header closeButton>
+                <Modal.Header >
                   <Modal.Title>Video Call</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                   <Row>
+                    
                     <Col
                       md={8}
                       className="d-flex flex-column align-items-center video-container"
@@ -1109,7 +1096,7 @@ const Contact = () => {
                         </Button>
                       </div>
                     </Col>
-                    <Col md={4}>
+                    <Col md={4} className="chat-section">
                       <div className="msg-box" ref={msgBoxRef}>
                         {msgList.map((msg, index) => (
                           <div
