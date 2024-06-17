@@ -788,30 +788,32 @@ const Contact = () => {
     <Container fluid className="chat-room">
       <Row>
         <Col md={4} className="participants-list">
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h3>{isDoctor ? "Users" : "Online Doctors"}</h3>
-            <Dropdown>
-              <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-                <FaGlobe /> {language}
-              </Dropdown.Toggle>
+          <div className="title-container">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h3>{isDoctor ? "Users" : "Online Doctors"}</h3>
+              <Dropdown>
+                <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                  <FaGlobe /> {language}
+                </Dropdown.Toggle>
 
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={() => handleLanguageChange('en')}>English</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleLanguageChange('es')}>Spanish</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleLanguageChange('fr')}>French</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleLanguageChange('de')}>German</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={() => handleLanguageChange('en')}>English</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleLanguageChange('es')}>Spanish</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleLanguageChange('fr')}>French</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleLanguageChange('de')}>German</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+            <InputGroup className="mb-3 search-container">
+              <Form.Control
+                placeholder="Search"
+                aria-label="Search"
+                aria-describedby="search-addon"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+            </InputGroup>
           </div>
-          <InputGroup className="mb-3">
-            <Form.Control
-              placeholder="Search"
-              aria-label="Search"
-              aria-describedby="search-addon"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-          </InputGroup>
           <ListGroup>
             {filteredParticipants.map((participant) => (
               <ListGroup.Item
@@ -822,11 +824,19 @@ const Contact = () => {
                 onClick={() => handleParticipantClick(participant)}
               >
                 <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <h5>{participant.name || "No Name"}</h5>
-                    <p>{isDoctor ? participant.email : participant.speciality}</p>
+                  <div className="d-flex align-items-center">
+                    <img
+                      src={participant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"} // Replace "default-avatar-url" with the actual default avatar URL
+                      alt="Avatar"
+                      className="rounded-circle me-2"
+                      style={{ width: '40px', height: '40px' }}
+                    />
+                    <div>
+                      <h5>{participant.name || "No Name"}</h5>
+                      <p>{isDoctor ? participant.email : participant.speciality}</p>
+                    </div>
                   </div>
-                  <Badge bg="success">Online</Badge>
+                  <Badge bg="success" >Online</Badge>
                 </div>
               </ListGroup.Item>
             ))}
@@ -837,13 +847,20 @@ const Contact = () => {
             <>
               <div className="chat-top-bar d-flex justify-content-between align-items-center p-2 bg-light">
                 <div className="d-flex align-items-center">
-                  <div className="user-avatar bg-secondary rounded-circle me-2" style={{ width: '40px', height: '40px' }}></div>
+                  <div className="user-avatar bg-secondary rounded-circle me-2" style={{ width: '40px', height: '40px' }}>
+                    <img
+                      src={selectedParticipant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"} // Replace "default-avatar-url" with the actual default avatar URL
+                      alt="Avatar"
+                      className="rounded-circle"
+                      style={{ width: '40px', height: '40px' }}
+                    />
+                  </div>
                   <span>{selectedParticipant.name}</span>
                 </div>
                 <div className="chat-icons">
-                  <FaPhoneAlt className="me-2" style={{ cursor: 'pointer' }} onClick={handleCall} />
-                  <FaVideo className="me-2" style={{ cursor: 'pointer' }} />
-                  <FaEllipsisV style={{ cursor: 'pointer' }} />
+                  {/* <FaPhoneAlt className="me-2" style={{ cursor: 'pointer' }} onClick={handleCall} /> */}
+                  <FaVideo className="me-2" style={{ cursor: 'pointer' }} onClick={handleCall} />
+                  {/* <FaEllipsisV style={{ cursor: 'pointer' }} /> */}
                 </div>
               </div>
               <div className="msg-box" ref={msgBoxRef}>
