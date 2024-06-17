@@ -292,3 +292,22 @@ button:hover {
   top: 50%;
   transform: translateY(-50%);
 }
+.list-group-item.active {
+  z-index: 0;
+}
+
+@media (max-width: 1149px) {
+  .badge {
+    display: none !important;
+  }
+}
+@media (max-width: 767px) {
+  .badge {
+    display:flex!important;
+  }
+}
+@media (max-width: 336px) {
+  .badge {
+    display: none !important;
+  }
+}
