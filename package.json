@@ -25,6 +25,7 @@
     "bootstrap": "^5.3.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "emoji-picker-react": "^4.10.0",
     "firebase": "^9.23.0",
     "firebase-admin": "^12.1.0",
     "postcss": "^8.4.38",

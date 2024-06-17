@@ -1,30 +1,15 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  ListGroup,
-  Form,
-  Button,
-  InputGroup,
-  Badge,
-  Modal,
-  Spinner,
-  Alert,
-  Toast,
-  ToastContainer,
-  Dropdown,
-} from "react-bootstrap";
-import { ref, set, onValue, push } from "firebase/database";
-import { db, database } from "../../../Firebase/firebase.config";
-import {
-  doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc
-} from "firebase/firestore";
+import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge, Modal, Spinner, Alert, Toast, ToastContainer, Dropdown } from "react-bootstrap";
+import { ref as databaseRef, set, onValue, push } from "firebase/database";
+import { db, database, storage } from "../../../Firebase/firebase.config"; // Import storage
+import { doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
+import { ref as storageRef, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Import upload functions
 import useAuth from "../../../hooks/useAuth";
 import { generateChatId } from "../../../utils/generateChatId";
 import { useHistory, useLocation } from "react-router-dom";
-import { FaPhoneAlt, FaVideo, FaEllipsisV , FaGlobe,FaMicrophoneSlash,FaMicrophone,FaVideoSlash,FaDesktop} from "react-icons/fa";
+import { FaPhoneAlt, FaVideo, FaEllipsisV, FaGlobe, FaMicrophoneSlash, FaMicrophone, FaVideoSlash, FaDesktop, FaPaperclip, FaSmile, FaFileAlt } from "react-icons/fa";
 import { ChatContext } from './ChatContext'; // Import the context
+import EmojiPicker from 'emoji-picker-react'; // Import Emoji Picker
 import "./Contact.css";
 
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
@@ -82,6 +67,8 @@ const Contact = () => {
   const sessionId = useRef(null); // New session ID
   const [initialLoad, setInitialLoad] = useState(true); // New state to track initial load
   const [searchQuery, setSearchQuery] = useState(""); // New state for search query
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // State for emoji picker
+  const [downloadModal, setDownloadModal] = useState({ show: false, fileUrl: '', fileName: '' }); // State for download modal
 
   const configuration = {
     iceServers: [
@@ -172,8 +159,8 @@ const Contact = () => {
         : generateChatId(user.uid, selectedParticipant.id);
 
       console.log("Generated Chat ID:", chatId);
-      const chatRef = ref(database, `chats/${chatId}/messages`);
-      const typingRef = ref(database, `chats/${chatId}/typing`);
+      const chatRef = databaseRef(database, `chats/${chatId}/messages`);
+      const typingRef = databaseRef(database, `chats/${chatId}/typing`);
 
       const unsubscribe = onValue(chatRef, (snapshot) => {
         const data = snapshot.val();
@@ -247,14 +234,14 @@ const Contact = () => {
         ? generateChatId(selectedParticipant.id, user.uid)
         : generateChatId(user.uid, selectedParticipant.id);
 
-      const chatRef = ref(database, `chats/${chatId}/messages`);
+      const chatRef = databaseRef(database, `chats/${chatId}/messages`);
       const newMessageRef = push(chatRef);
 
       await set(newMessageRef, newMessage);
       setMessage("");
       resetTextarea();
 
-      await set(ref(database, `chats/${chatId}/typing`), { typing: false });
+      await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
 
       setTimeout(() => {
         if (msgBoxRef.current) {
@@ -275,17 +262,17 @@ const Contact = () => {
 
     try {
       if (e.target.value.trim()) {
-        await set(ref(database, `chats/${chatId}/typing`), { typing: user.uid });
+        await set(databaseRef(database, `chats/${chatId}/typing`), { typing: user.uid });
 
         if (typingTimeoutRef.current) {
           clearTimeout(typingTimeoutRef.current);
         }
 
         typingTimeoutRef.current = setTimeout(async () => {
-          await set(ref(database, `chats/${chatId}/typing`), { typing: false });
+          await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
         }, 7000);
       } else {
-        await set(ref(database, `chats/${chatId}/typing`), { typing: false });
+        await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
       }
     } catch (error) {
       console.error("Error handling typing:", error);
@@ -797,6 +784,120 @@ const Contact = () => {
     participant.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleEmojiClick = (emojiObject) => {
+    setMessage(prevMessage => prevMessage + emojiObject.emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const storageReference = storageRef(storage, `chat-files/${file.name}`);
+      const uploadTask = uploadBytesResumable(storageReference, file);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          // Optional: handle upload progress
+        },
+        (error) => {
+          console.error("Error uploading file:", error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            const newMessage = {
+              user: user.displayName || "Anonymous",
+              userId: user.uid,
+              fileName: file.name,
+              fileType: file.type,
+              fileUrl: downloadURL,
+              timestamp: new Date().toISOString(),
+            };
+
+            const chatId = isDoctor
+              ? generateChatId(selectedParticipant.id, user.uid)
+              : generateChatId(user.uid, selectedParticipant.id);
+
+            const chatRef = databaseRef(database, `chats/${chatId}/messages`);
+            const newMessageRef = push(chatRef);
+
+            set(newMessageRef, newMessage).then(() => {
+              setMessage("");
+              resetTextarea();
+            });
+
+            setTimeout(() => {
+              if (msgBoxRef.current) {
+                msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
+              }
+            }, 100);
+          });
+        }
+      );
+    }
+  };
+
+  const handleFileDownload = (fileUrl, fileName) => {
+    setDownloadModal({ show: true, fileUrl, fileName });
+  };
+
+  const renderMessage = (msg) => {
+    if (msg.fileUrl) {
+      const fileTypeIcon = (type) => {
+        if (type.startsWith("image/")) return <FaFileAlt />;
+        if (type.startsWith("video/")) return <FaFileAlt />;
+        if (type.startsWith("audio/")) return <FaFileAlt />;
+        return <FaFileAlt />;
+      };
+
+      return (
+        <div onClick={() => handleFileDownload(msg.fileUrl, msg.fileName)} style={{ cursor: 'pointer' }}>
+          {fileTypeIcon(msg.fileType)}
+          <span style={{ marginLeft: '10px' }}>{msg.fileName}</span>
+        </div>
+      );
+    } else {
+      return <p title={msg.user}>{msg.text}</p>;
+    }
+  };
+
+  const downloadFile = () => {
+    const filePath = decodeURIComponent(new URL(downloadModal.fileUrl).pathname.split('/o/')[1].split('?alt=media')[0]);
+    fetch(`https://us-central1-health-de695.cloudfunctions.net/getDownloadUrl?filePath=${encodeURIComponent(filePath)}`)
+      .then(response => response.json())
+      .then(data => {
+        const url = data.url;
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = downloadModal.fileName;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        setDownloadModal({ show: false, fileUrl: '', fileName: '' });
+      })
+      .catch(error => console.error('Error downloading file:', error));
+  };
+  // const downloadFile = () => {
+  //   const filePath = decodeURIComponent(new URL(downloadModal.fileUrl).pathname.split('/o/')[1].split('?alt=media')[0]);
+  //   fetch(`https://us-central1-health-de695.cloudfunctions.net/getDownloadUrl?filePath=${encodeURIComponent(filePath)}`)
+  //     .then(response => response.json())
+  //     .then(data => {
+  //       const url = data.url;
+  //       const link = document.createElement('a');
+  //       link.href = url;
+  //       link.download = downloadModal.fileName; // Set the suggested file name
+  //       link.target = '_blank'; // Open in a new tab to prompt download
+  //       link.rel = 'noopener noreferrer';
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //       setDownloadModal({ show: false, fileUrl: '', fileName: '' });
+  //     })
+  //     .catch(error => console.error('Error generating signed URL:', error));
+  // };
+  
+
   return (
     <Container fluid className="chat-room">
       <Row>
@@ -871,19 +972,16 @@ const Contact = () => {
                   <span>{selectedParticipant.name}</span>
                 </div>
                 <div className="chat-icons">
-                  {/* <FaPhoneAlt className="me-2" style={{ cursor: 'pointer' }} onClick={handleCall} /> */}
                   <FaVideo className="me-2" style={{ cursor: 'pointer' }} onClick={handleCall} />
                   <Dropdown>
-  <Dropdown.Toggle as={CustomToggle} id="dropdown-ellipsis">
-    <FaEllipsisV />
-  </Dropdown.Toggle>
-
-  <Dropdown.Menu>
-    <Dropdown.Item onClick={() => history.push(`/doctor/${selectedParticipant.id}`)}>View Profile</Dropdown.Item>
-    <Dropdown.Item onClick={() => history.push('/dashboard')}>Settings</Dropdown.Item>
-  </Dropdown.Menu>
-</Dropdown>
-
+                    <Dropdown.Toggle as={CustomToggle} id="dropdown-ellipsis">
+                      <FaEllipsisV />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item onClick={() => history.push(`/doctor/${selectedParticipant.id}`)}>View Profile</Dropdown.Item>
+                      <Dropdown.Item onClick={() => history.push('/dashboard')}>Settings</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                 </div>
               </div>
               <div className="msg-box" ref={msgBoxRef}>
@@ -897,7 +995,7 @@ const Contact = () => {
                     }`}
                     onClick={() => toggleTimestamp(index)}
                   >
-                    <p title={msg.user}>{msg.text}</p>
+                    {renderMessage(msg)}
                     {visibleTimestamps[index] && (
                       <span
                         className={`timestamp ${
@@ -933,12 +1031,35 @@ const Contact = () => {
                   />
                   <Button
                     variant="outline-secondary"
+                    onClick={() => setShowEmojiPicker(val => !val)}
+                    className="message-icon-button"
+                  >
+                    <FaSmile />
+                  </Button>
+                  <Form.Control
+                    type="file"
+                    style={{ display: "none" }}
+                    id="file-input"
+                    onChange={handleFileChange}
+                  />
+                  <Button
+                    variant="outline-secondary"
+                    onClick={() => document.getElementById("file-input").click()}
+                    className="message-icon-button"
+                  >
+                    <FaPaperclip />
+                  </Button>
+                  <Button
+                    variant="outline-secondary"
                     type="submit"
                     className="message-send-button"
                   >
                     Send
                   </Button>
                 </InputGroup>
+                {showEmojiPicker && (
+                  <EmojiPicker onEmojiClick={handleEmojiClick} />
+                )}
               </Form>
               <Modal
                 show={showCallModal}
@@ -1000,7 +1121,7 @@ const Contact = () => {
                             }`}
                             onClick={() => toggleTimestamp(index)}
                           >
-                            <p title={msg.user}>{msg.text}</p>
+                            {renderMessage(msg)}
                             {visibleTimestamps[index] && (
                               <span
                                 className={`timestamp ${
@@ -1094,6 +1215,21 @@ const Contact = () => {
           <Toast.Body>{notification}</Toast.Body>
         </Toast>
       </ToastContainer>
+
+      <Modal show={downloadModal.show} onHide={() => setDownloadModal({ show: false, fileUrl: '', fileName: '' })}>
+        <Modal.Header closeButton>
+          <Modal.Title>Download File</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Do you want to download the file: {downloadModal.fileName}?</p>
+          <Button variant="success" onClick={downloadFile}>
+            Yes
+          </Button>
+          <Button variant="danger" onClick={() => setDownloadModal({ show: false, fileUrl: '', fileName: '' })}>
+            No
+          </Button>
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };

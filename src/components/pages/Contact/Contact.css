@@ -181,6 +181,20 @@
   max-height: 200px;
 }
 
+.message-icon-button {
+  padding: 10px;
+  margin-left: 10px;
+  border: none;
+  background-color: #39cabb;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.message-icon-button:hover {
+  background-color: #33b3a3;
+}
+
 .message-send-button {
   padding: 10px;
   margin-left: 10px;
@@ -208,11 +222,7 @@
   .participants-list {
     height: calc(100vh - 60px); /* Adjust height to prevent excessive scrolling */
   }
-  .participants-list .badge {
-    margin-left: 0;
-    margin-top: 10px; /* Add some margin-top for better spacing on mobile */
-    align-self: flex-start; /* Align badge to the start on mobile */
-  }
+ 
 }
 
 .video-call-container {
