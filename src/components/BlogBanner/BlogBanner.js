@@ -19,21 +19,21 @@ const blogPosts = [
     title: "Enhance Your Focus: Natural Herbs and Supplements for Cognitive Support",
     date: "June 18, 2024",
     category: "Health",
-    link: "https://www.linkedin.com/pulse/optimizing-your-health-best-supplements-gut-herbnexus-fv6tc/?trackingId=by46EHZu6F6rlMSkCHPtdQ%3D%3D", // Replace with actual link to the article
+    link: "https://www.linkedin.com/pulse/enhance-your-focus-natural-herbs-supplements-cognitive-support-ek0qc", // Replace with actual link to the article
   },
   {
     image: postImage3,
     title: "Achieving Lustrous Locks: Top Herbs and Supplements for Hair Health",
     date: "June 19, 2024",
     category: "Health",
-    link: "https://www.linkedin.com/pulse/optimizing-your-health-best-supplements-gut-herbnexus-fv6tc/?trackingId=by46EHZu6F6rlMSkCHPtdQ%3D%3D", // Replace with actual link to the article
+    link: "https://www.linkedin.com/pulse/achieving-lustrous-locks-top-herbs-supplements-hair-health-et4ec", // Replace with actual link to the article
   },
   {
     image: postImage4,
     title: "Boost Your Fitness: Herbal Supplements for Enhanced Performance",
     date: "June 20, 2024",
     category: "Health",
-    link: "https://www.linkedin.com/pulse/optimizing-your-health-best-supplements-gut-herbnexus-fv6tc/?trackingId=by46EHZu6F6rlMSkCHPtdQ%3D%3D", // Replace with actual link to the article
+    link: "https://www.linkedin.com/pulse/boost-your-fitness-herbal-supplements-enhanced-performance-bylzc", // Replace with actual link to the article
   },
 ];
 
