@@ -87,7 +87,7 @@ const Footer = () => {
               <h5 className="mb-3 fw-bolder">
                 <i className="bi bi-envelope-fill"></i> contact@herbnexus.io
               </h5>
-              <p className="mb-3">6161 Tisdall St, Vancouver, Canada</p>
+              {/* <p className="mb-3">6161 Tisdall St, Vancouver, Canada</p> */}
             </div>
           </Col>
         </Row>
