@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
+import './PrivacyPolicyModal.css'; // Import the CSS file
+
 
 const PrivacyPolicyModal = () => {
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
   const [isPrivacyPolicyAccepted, setIsPrivacyPolicyAccepted] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShow(true);
+    }, 5000); // Show the modal after 2 seconds
+
+    return () => clearTimeout(timer); // Cleanup the timer on component unmount
+  }, []);
 
   const handleClose = () => {
     if (isPrivacyPolicyAccepted && isTermsAccepted) {
@@ -20,24 +30,20 @@ const PrivacyPolicyModal = () => {
     setIsTermsAccepted(!isTermsAccepted);
   };
 
-  useEffect(() => {
-    setShow(true);
-  }, []);
-
   return (
     <Modal show={show} onHide={handleClose} size="lg" centered>
-      <Modal.Header closeButton>
+      <Modal.Header >
         <Modal.Title>Privacy Policy and Legal Terms and Conditions</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>Do not use this tool as a substitute for professional medical advice, diagnosis or treatment.</p>
+        {/* <p>Do not use this tool as a substitute for professional medical advice, diagnosis or treatment.</p> */}
         <p>If you think you may have a medical emergency, call your doctor or emergency room immediately.</p>
         <p>The confidentiality of your data is important to us. We comply with the established data protection regulations.</p>
         <p>For more information, please read the legal terms and conditions in detail.</p>
         <h5>Data Protection</h5>
         <p>Last update: 06/18/2024</p>
         <h6>Basic information on data protection</h6>
-        <table className="table table-bordered">
+        <table className="table table-striped table-hover">
           <tbody>
             <tr>
               <th>Data Controller</th>

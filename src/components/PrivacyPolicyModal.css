@@ -1,0 +1,17 @@
+/* PrivacyPolicyModal.css */
+
+/* Ensure the modal content scrolls within the modal and not the background */
+.modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+  
+  /* Add styles for the modal to look modern */
+  .modal-header {
+    background-color: #f8f9fa;
+  }
+  
+  .modal-footer {
+    background-color: #f8f9fa;
+  }
+  
