@@ -22,6 +22,8 @@ import TermsOfService from "./components/pages/TermsOfService/TermsOfService";
 import withDelayedNavigation from "../src/hooks/withDelayedNavigation"; // Adjust the path if necessary
 
 import useScrollToTop from './hooks/useScrollToTop';
+import PrivacyPolicyModal from './components/PrivacyPolicyModal'; // Import the modal component
+
 
 const DelayedContact = withDelayedNavigation(Contact, 2000);
 
@@ -32,6 +34,7 @@ const App = () => {
     <div className="App">
       <AuthProvider>
         <NavBar />
+        <PrivacyPolicyModal />
         <Switch>
           <Route exact path="/">
             <Home />
