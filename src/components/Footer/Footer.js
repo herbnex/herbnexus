@@ -24,7 +24,7 @@ const Footer = () => {
               </p>
 
               <NavLink to="/contact">
-                <i className="bi bi-arrow-right"></i>
+                {/* <i className="bi bi-arrow-right"></i> */}
                 Chat Live with a Herbalist
               </NavLink>
             </div>
@@ -34,37 +34,20 @@ const Footer = () => {
             <div className="d-flex flex-column mt-3">
               <h6 className="text-white mb-3">Departments</h6>
               <ul>
+                
                 <li className="mb-2">
-                  <NavLink className="text-muted" to="/doctors">
-                    Herbal Consultations
+                <a className="text-muted" href="https://shop.herbnexus.io" target="_blank" rel="noopener noreferrer">
+  Shop
+</a>
+                </li>
+                <li className="mb-2">
+                  <NavLink className="text-muted" to="/subscribe">
+                    Subscribe
                   </NavLink>
                 </li>
                 <li className="mb-2">
-                  <NavLink className="text-muted" to="/doctors">
-                    Tailored Remedies
-                  </NavLink>
-                </li>
-                <li className="mb-2">
-                  <NavLink className="text-muted" to="/doctors">
-                    Wellness Advice
-                  </NavLink>
-                </li>
-                <li className="mb-2">
-                  <NavLink className="text-muted" to="/doctors">
-                    24/7 Support
-                  </NavLink>
-                </li>
-              </ul>
-            </div>
-          </Col>
-
-          <Col xs={12} sm={6} md={2}>
-            <div className="d-flex flex-column mt-3">
-              <h6 className="text-white mb-3">Quick Links</h6>
-              <ul>
-                <li className="mb-2">
-                  <NavLink className="text-muted" to="/home">
-                    Home
+                  <NavLink className="text-muted" to="/faq">
+                    FAQ
                   </NavLink>
                 </li>
                 <li className="mb-2">
@@ -72,26 +55,15 @@ const Footer = () => {
                     About
                   </NavLink>
                 </li>
-                <li className="mb-2">
-                  <NavLink className="text-muted" to="/doctors">
-                    Our Herbalists
-                  </NavLink>
-                </li>
-                <li className="mb-2">
-                  <NavLink className="text-muted" to="/contact">
-                    Chat Live
-                  </NavLink>
-                </li>
-                <li className="mb-2">
-                  <NavLink className="text-muted" to="/faq">
-                    FAQs
-                  </NavLink>
-                </li>
-                <li className="mb-2">
-                  <NavLink className="text-muted" to="/subscribe">
-                    Subscribe
-                  </NavLink>
-                </li>
+                  
+              </ul>
+            </div>
+          </Col>
+
+          <Col xs={12} sm={6} md={2}>
+            <div className="d-flex flex-column mt-3">
+              <h6 className="text-white mb-3">Legal</h6>
+              <ul>
                 <li className="mb-2">
                   <NavLink className="text-muted" to="/privacy-policy">
                     Privacy Policy
@@ -113,9 +85,9 @@ const Footer = () => {
                 If you have any questions or need help, feel free to reach out to us for assistance.
               </p>
               <h5 className="mb-3 fw-bolder">
-                <i className="bi bi-telephone-fill"></i> 01501234567
+                <i className="bi bi-envelope-fill"></i> contact@herbnexus.io
               </h5>
-              <p className="mb-3">2307 Beverley Rd, Brooklyn, New York 11226, United States.</p>
+              <p className="mb-3">6161 Tisdall St, Vancouver, Canada</p>
             </div>
           </Col>
         </Row>

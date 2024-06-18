@@ -73,8 +73,8 @@ const TermsOfService = () => {
           <h4>Contact Us</h4>
           <p>
             If you have any questions about these Terms of Service, please contact us at: <br />
-            Email: support@herbnexus.com <br />
-            Address: 123 Herbal Lane, Greenfield, Canada
+            Email: contact@herbnexus.io <br />
+            Address: 6161 Tisdall St, Vancouver, Canada
           </p>
         </Card.Body>
       </Card>
