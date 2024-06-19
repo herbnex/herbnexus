@@ -18,7 +18,7 @@ const PrivateRoute = ({ children, requireSubscription = true, ...rest }) => {
     <Route {...rest}>
       {({ location }) =>
         user ? (
-          requireSubscription && !isSubscribed && !isDoctor ? (
+          requireSubscription && !isSubscribed  ? (//&& !isDoctor
             <Redirect to={{ pathname: "/subscribe", state: { from: location } }} />
           ) : (
             children
