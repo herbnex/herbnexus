@@ -202,30 +202,34 @@ const HerbalChat = () => {
     <>
       <Container className="herbal-chat-container">
         <div className="chat-window">
-          <div className="chat-header">
-            <FaPlus className="new-chat-icon" onClick={startNewChatSession} />
-            <FaExpand className="fullscreen-icon" onClick={toggleModal} />
-          </div>
-          <div className="chat-messages" ref={chatMessagesRef}>
-            {messages.map((msg, index) => (
-              <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
-                <strong>{msg.user === 'You' ? 'You' : 'Bot'}: </strong>
-                {renderMessageContent(msg.text)}
+          {!showModal && (
+            <>
+              <div className="chat-header">
+                <FaPlus className="icon new-chat-icon" onClick={startNewChatSession} />
+                <FaExpand className="icon fullscreen-icon" onClick={toggleModal} />
               </div>
-            ))}
-            {isLoading && <div className="loading">Bot is typing...</div>}
-            <div ref={messagesEndRef}></div>
-          </div>
-          <InputGroup className="mb-3 input-group">
-            <Form.Control
-              as="textarea"
-              rows={1}
-              placeholder="Type your message..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-            />
-            <Button onClick={handleSendMessage}>Send</Button>
-          </InputGroup>
+              <div className="chat-messages" ref={chatMessagesRef}>
+                {messages.map((msg, index) => (
+                  <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
+                    <strong>{msg.user === 'You' ? 'You' : 'Bot'}: </strong>
+                    {renderMessageContent(msg.text)}
+                  </div>
+                ))}
+                {isLoading && <div className="loading">Bot is typing...</div>}
+                <div ref={messagesEndRef}></div>
+              </div>
+              <InputGroup className="mb-3 input-group">
+                <Form.Control
+                  as="textarea"
+                  rows={1}
+                  placeholder="Type your message..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                />
+                <Button onClick={handleSendMessage}>Send</Button>
+              </InputGroup>
+            </>
+          )}
         </div>
       </Container>
 
@@ -257,8 +261,8 @@ const HerbalChat = () => {
             </div>
             <div className={`chat-area ${sidebarCollapsed ? 'collapsed' : ''}`}>
               <div className="chat-header">
-                <FaPlus className="new-chat-icon" onClick={startNewChatSession} />
-                <FaCompress className="fullscreen-icon" onClick={toggleModal} />
+                <FaPlus className="icon new-chat-icon" onClick={startNewChatSession} />
+                <FaCompress className="icon fullscreen-icon" onClick={toggleModal} />
               </div>
               <div className="chat-messages" ref={chatMessagesRef}>
                 {messages.map((msg, index) => (
