@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Form, InputGroup, Container, Table, Modal, Dropdown } from 'react-bootstrap';
 import { FaExpand, FaCompress, FaBars, FaPlus, FaEllipsisV } from 'react-icons/fa';
+import { FiFolderPlus } from "react-icons/fi";
+
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../Firebase/firebase.config';
 import axios from 'axios';
@@ -205,7 +207,7 @@ const HerbalChat = () => {
           {!showModal && (
             <>
               <div className="chat-header">
-                <FaPlus className="icon new-chat-icon" onClick={startNewChatSession} />
+                <FiFolderPlus className="icon new-chat-icon" onClick={startNewChatSession} />
                 <FaExpand className="icon fullscreen-icon" onClick={toggleModal} />
               </div>
               <div className="chat-messages" ref={chatMessagesRef}>
@@ -261,7 +263,7 @@ const HerbalChat = () => {
             </div>
             <div className={`chat-area ${sidebarCollapsed ? 'collapsed' : ''}`}>
               <div className="chat-header">
-                <FaPlus className="icon new-chat-icon" onClick={startNewChatSession} />
+                <FiFolderPlus className="icon new-chat-icon" onClick={startNewChatSession} />
                 <FaCompress className="icon fullscreen-icon" onClick={toggleModal} />
               </div>
               <div className="chat-messages" ref={chatMessagesRef}>
