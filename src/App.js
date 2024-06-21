@@ -21,14 +21,14 @@ import PrivacyPolicy from "./components/pages/PrivacyPolicy/PrivacyPolicy";
 import TermsOfService from "./components/pages/TermsOfService/TermsOfService";
 import withDelayedNavigation from "../src/hooks/withDelayedNavigation"; // Adjust the path if necessary
 
-import useScrollToTop from './hooks/useScrollToTop';
+import useScrollHandler from './hooks/useScrollHandler';
 import PrivacyPolicyModal from './components/PrivacyPolicyModal'; // Import the modal component
 
 
 const DelayedContact = withDelayedNavigation(Contact, 2000);
 
 const App = () => {
-  useScrollToTop();
+  useScrollHandler();
 
   return (
     <div className="App">
