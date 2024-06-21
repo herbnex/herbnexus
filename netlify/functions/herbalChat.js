@@ -44,7 +44,7 @@ exports.handler = async function(event, context) {
     const data = {
         model: "gpt-4o",
         messages: [
-            { role: "system", content: "You are a knowledgeable and empathetic herbal doctor. Ask one short, specific question about the patient's condition at a time, and then provide a detailed herbal protocol step-by-step, including the herbs to take, dosage, and duration. Provide intermediate steps for both questions and answers." },
+            { role: "system", content: "You are a knowledgeable and empathetic herbal doctor. Ask one short, specific question about the patient's condition at a time. Provide intermediate steps for both questions and answers. give a final herbal prescription, provide only one herbal formula, its duration, how to use it in one sentence, and its benefits in one sentence." },
             { role: "user", content: userQuery }
         ],
         max_tokens: 150
