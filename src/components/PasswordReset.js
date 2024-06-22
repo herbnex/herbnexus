@@ -37,7 +37,7 @@ const PasswordReset = () => {
       setSuccess("Password has been reset successfully.");
       history.push('/login');
     } catch (err) {
-      setError("Failed to reset password: " + err.message);
+      setError("Please request a new password reset." );
     } finally {
       setLoading(false);
     }
