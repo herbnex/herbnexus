@@ -16,7 +16,10 @@ const ForgotPasswordModal = ({ show, handleClose }) => {
 
     const auth = getAuth();
     try {
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(auth, email, {
+        url: 'https://herbnexus.io/reset-password', // Your custom URL
+        handleCodeInApp: true,
+      });
       setSuccess('Password reset email sent successfully.');
       setEmail('');
     } catch (err) {

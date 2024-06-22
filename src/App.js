@@ -24,7 +24,7 @@ import withDelayedNavigation from "../src/hooks/withDelayedNavigation"; // Adjus
 import useScrollHandler from './hooks/useScrollHandler';
 import PrivacyPolicyModal from './components/PrivacyPolicyModal'; // Import the modal component
 
-
+import PasswordReset from './components/PasswordReset';
 const DelayedContact = withDelayedNavigation(Contact, 2000);
 
 const App = () => {
@@ -36,6 +36,10 @@ const App = () => {
         <NavBar />
         <PrivacyPolicyModal />
         <Switch>
+        <Route path="/reset-password" >
+          <PasswordReset />
+        </Route>
+
           <Route exact path="/">
             <Home />
           </Route>
