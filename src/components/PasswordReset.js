@@ -45,7 +45,7 @@ const PasswordReset = () => {
 
   return (
     <Container className="password-reset-container">
-      <Row className="justify-content-md-center">
+      <Row className="justify-content-center">
         <Col md={6}>
           <Card className="p-4 mt-5 shadow-sm">
             <Card.Body>
@@ -53,7 +53,7 @@ const PasswordReset = () => {
               {error && <Alert variant="danger">{error}</Alert>}
               {success && <Alert variant="success">{success}</Alert>}
               <Form onSubmit={handleResetPassword}>
-                <Form.Group controlId="formPassword">
+                <Form.Group controlId="formPassword" className="mb-3">
                   <Form.Label>New Password</Form.Label>
                   <Form.Control
                     type="password"
@@ -63,7 +63,7 @@ const PasswordReset = () => {
                     required
                   />
                 </Form.Group>
-                <Form.Group controlId="formConfirmPassword" className="mt-3">
+                <Form.Group controlId="formConfirmPassword" className="mb-3">
                   <Form.Label>Confirm New Password</Form.Label>
                   <Form.Control
                     type="password"
@@ -73,7 +73,7 @@ const PasswordReset = () => {
                     required
                   />
                 </Form.Group>
-                <Button variant="primary" type="submit" className="w-100 mt-4" disabled={loading}>
+                <Button variant="primary" type="submit" className="w-100" disabled={loading}>
                   {loading ? <Spinner animation="border" size="sm" /> : 'Reset Password'}
                 </Button>
               </Form>
