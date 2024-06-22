@@ -2,24 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import './PrivacyPolicyModal.css'; // Import the CSS file
 
-
 const PrivacyPolicyModal = () => {
   const [show, setShow] = useState(false);
   const [isPrivacyPolicyAccepted, setIsPrivacyPolicyAccepted] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShow(true);
-    }, 3000); // Show the modal after 3 seconds
+    const privacyShown = localStorage.getItem('privacyShown');
+    if (!privacyShown) {
+      const timer = setTimeout(() => {
+        setShow(true);
+        localStorage.setItem('privacyShown', 'true'); // Store the flag in local storage
+      }, 3000); // Show the modal after 3 seconds
 
-    return () => clearTimeout(timer); // Cleanup the timer on component unmount
+      return () => clearTimeout(timer); // Cleanup the timer on component unmount
+    }
   }, []);
 
   const handleClose = () => {
-    if (isPrivacyPolicyAccepted && isTermsAccepted) {
-      setShow(false);
-    }
+    setShow(false);
   };
 
   const handlePrivacyPolicyChange = () => {
@@ -32,11 +33,10 @@ const PrivacyPolicyModal = () => {
 
   return (
     <Modal show={show} onHide={handleClose} size="lg" centered>
-      <Modal.Header >
+      <Modal.Header>
         <Modal.Title>Privacy Policy and Legal Terms and Conditions</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {/* <p>Do not use this tool as a substitute for professional medical advice, diagnosis or treatment.</p> */}
         <p>If you think you may have a medical emergency, call your doctor or emergency room immediately.</p>
         <p>The confidentiality of your data is important to us. We comply with the established data protection regulations.</p>
         <p>For more information, please read the legal terms and conditions in detail.</p>
@@ -103,7 +103,7 @@ const PrivacyPolicyModal = () => {
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => setShow(false)}>
+        <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
         <Button variant="primary" onClick={handleClose} disabled={!(isPrivacyPolicyAccepted && isTermsAccepted)}>
