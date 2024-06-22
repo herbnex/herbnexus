@@ -11,7 +11,7 @@ const PrivacyPolicyModal = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShow(true);
-    }, 5000); // Show the modal after 2 seconds
+    }, 3000); // Show the modal after 3 seconds
 
     return () => clearTimeout(timer); // Cleanup the timer on component unmount
   }, []);
