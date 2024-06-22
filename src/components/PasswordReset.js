@@ -45,9 +45,9 @@ const PasswordReset = () => {
 
   return (
     <Container className="password-reset-container">
-      <Row className="justify-content-center">
-        <Col md={6}>
-          <Card className="p-4 mt-5 shadow-sm">
+      <Row className="justify-content-center align-items-center min-vh-100">
+        <Col xs={12} sm={8} md={6} lg={5}>
+          <Card className="shadow-lg">
             <Card.Body>
               <h2 className="mb-4 text-center">Reset Password</h2>
               {error && <Alert variant="danger">{error}</Alert>}
