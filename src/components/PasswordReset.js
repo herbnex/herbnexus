@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { getAuth, verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth';
-import { Form, Button, Alert } from 'react-bootstrap';
+import { Form, Button, Alert, Container, Row, Col, Card, Spinner } from 'react-bootstrap';
+import './PasswordReset.css';
 
 const PasswordReset = () => {
   const [password, setPassword] = useState('');
@@ -43,36 +44,44 @@ const PasswordReset = () => {
   };
 
   return (
-    <div className="password-reset-container">
-      <h2>Reset Password</h2>
-      {error && <Alert variant="danger">{error}</Alert>}
-      {success && <Alert variant="success">{success}</Alert>}
-      <Form onSubmit={handleResetPassword}>
-        <Form.Group controlId="formPassword">
-          <Form.Label>New Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Enter new password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </Form.Group>
-        <Form.Group controlId="formConfirmPassword">
-          <Form.Label>Confirm New Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Confirm new password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </Form.Group>
-        <Button variant="primary" type="submit" disabled={loading}>
-          {loading ? 'Resetting...' : 'Reset Password'}
-        </Button>
-      </Form>
-    </div>
+    <Container className="password-reset-container">
+      <Row className="justify-content-md-center">
+        <Col md={6}>
+          <Card className="p-4 mt-5 shadow-sm">
+            <Card.Body>
+              <h2 className="mb-4 text-center">Reset Password</h2>
+              {error && <Alert variant="danger">{error}</Alert>}
+              {success && <Alert variant="success">{success}</Alert>}
+              <Form onSubmit={handleResetPassword}>
+                <Form.Group controlId="formPassword">
+                  <Form.Label>New Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder="Enter new password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="formConfirmPassword" className="mt-3">
+                  <Form.Label>Confirm New Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Button variant="primary" type="submit" className="w-100 mt-4" disabled={loading}>
+                  {loading ? <Spinner animation="border" size="sm" /> : 'Reset Password'}
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
