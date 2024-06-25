@@ -170,11 +170,21 @@ td {
   border: 1px solid #dcdcdc;
   border-radius: 10px;
   margin-bottom: 10px;
+  box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+  white-space: normal; /* Ensures text wraps */
+  max-width: 100%; 
+  
+  
 }
 
 .chat-session {
   flex-grow: 1;
   cursor: pointer;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal; /* Ensures text wraps */
+  max-width: 100%; 
+  
 }
 
 .dropdown-toggle {
@@ -184,12 +194,12 @@ td {
 .dropdown-menu {
   position: absolute;
   top: 100%;
-  right: 0;
-  left: auto;
-  transform: none !important;
+  left: 50%;
+  transform: translateX(-50%);
   white-space: nowrap;
-  z-index: 1050;
+  z-index: 1100; /* Ensures it appears on top */
 }
+
 
 @media (max-width: 768px) {
   .fullscreen-modal-content {
@@ -218,4 +228,5 @@ td {
   .chat-area.collapsed {
     width: calc(100% - 40px);
   }
+  
 }
