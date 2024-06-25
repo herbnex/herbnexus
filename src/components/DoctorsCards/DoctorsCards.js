@@ -8,7 +8,7 @@ const DoctorsCards = (props) => {
   const history = useHistory();
 
   const handleChatLive = (doctorId) => {
-    history.push(`/contact?doctorId=${doctorId}`);
+    history.push(`/doctors`);
   };
 
   const limit = props.home ? 6 : doctors.length;
