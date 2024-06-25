@@ -29,7 +29,9 @@ const Home = () => {
     <div>
       <Banner />
       <SectionTitle>
+        <NavLink to ="/subscribe">
         <h1>Subscribe Now</h1>
+        </NavLink>
         <h4>The World's Largest Network of Alternative Medicine Practitioners</h4>
       </SectionTitle>
       <DoctorsCards home />
@@ -41,7 +43,11 @@ const Home = () => {
         </NavLink>
       </Container>
       <SectionTitle>
-              <h1>Shop Herbal Supplements</h1>
+      <a href="https://shop.herbnexus.io" style={{ textDecoration: 'none' }} target="_blank" rel="noopener noreferrer">
+
+             <h1>Shop Herbal Supplements</h1> 
+             </a>
+              
               <h4>Select the body system you'd like to focus on</h4>
             </SectionTitle>
       <ShopPromo />
