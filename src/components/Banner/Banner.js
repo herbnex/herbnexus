@@ -23,7 +23,7 @@ const Banner = () => {
                   </p>
                 </div>
                 <div className="btn-box">
-                  <NavLink to="/contact">
+                  <NavLink to="/doctors">
                     <Button variant="outline" className="rounded-pill btn-main my-5 p-2 px-3">
                       Chat Live &nbsp;
                       <i className="bi bi-chat-dots"></i>

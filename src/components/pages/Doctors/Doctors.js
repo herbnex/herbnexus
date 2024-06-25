@@ -5,6 +5,7 @@ import useDoctorList from "../../../hooks/useDoctorList";
 import Loading from "../../Loading/Loading";
 import SectionTitle from "../../SectionTitle/SectionTitle";
 import DoctorCard from "../../DoctorCard/DoctorCard";
+import { useHistory } from "react-router-dom";
 import "./Doctors.css"; // Import the CSS file
 
 const Doctors = () => {
@@ -13,6 +14,11 @@ const Doctors = () => {
   const [filterSpeciality, setFilterSpeciality] = useState("");
   const [filterOnlineStatus, setFilterOnlineStatus] = useState("");
   const [doctors] = useDoctorList();
+  const history = useHistory();
+
+  const handleChatLive = (doctorId) => {
+    history.push(`/contact?doctorId=${doctorId}`);
+  };
 
   if (isLoading) {
     return <Loading />;
@@ -89,6 +95,7 @@ const Doctors = () => {
               key={doctor.id}
               doctor={doctor}
               isOnline={doctor.isOnline}
+              handleChatLive={handleChatLive}
             />
           ))}
         </Row>

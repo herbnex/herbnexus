@@ -5,6 +5,7 @@ import "./DoctorCard.css";
 
 const DoctorCard = ({ doctor, isOnline, handleChatLive }) => {
   const { id, name, image, bio, degrees, speciality, rating, office } = doctor;
+
   return (
     <Col xs={12} md={6}>
       <div className="card-box">
