@@ -5,24 +5,40 @@ import { Dropdown, DropdownButton } from 'react-bootstrap';
 import { useProduct } from './ProductContext';
 import './NavBar.css';
 
-const NavBar = ({ cartCount, onSearch, onToggleCategories, showCategories, onCategorySelect }) => {
+const NavBar = ({ cartCount, onToggleCategories, showCategories, onCategorySelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
   const categoriesDropdownRef = useRef(null);
+  const searchDropdownRef = useRef(null);
   const categories = ['Home & Garden', 'Electronics', 'Books', 'Fashion', 'Toys', 'Health & Beauty', 'Sports', 'Automotive', 'Jewelry', 'Music'];
-  const { cart } = useProduct();
+  const { cart, allProducts } = useProduct();
   const history = useHistory();
 
-  const handleSearch = () => {
-    onSearch(searchTerm);
-  };
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setSearchResults([]);
+    } else {
+      const results = allProducts.filter(product => 
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setSearchResults(results);
+    }
+  }, [searchTerm, allProducts]);
 
   const handleCategorySelect = (category) => {
     onCategorySelect(category);
     history.push(`/shop/category/${category}`);
   };
 
+  const handleProductClick = (product) => {
+    setSearchResults([]); // Hide search results
+    setSearchTerm(''); // Clear search term
+    history.push(`/shop/product/${product.id}`);
+  };
+
   const handleCheckout = () => {
     history.push('/shop/checkout');
+    setSearchResults([]); // Hide search results
   };
 
   useEffect(() => {
@@ -30,12 +46,24 @@ const NavBar = ({ cartCount, onSearch, onToggleCategories, showCategories, onCat
       if (categoriesDropdownRef.current && !categoriesDropdownRef.current.contains(event.target)) {
         onToggleCategories(false);
       }
+      if (searchDropdownRef.current && !searchDropdownRef.current.contains(event.target)) {
+        setSearchResults([]);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onToggleCategories]);
+
+  useEffect(() => {
+    const unlisten = history.listen(() => {
+      setSearchResults([]);
+    });
+    return () => {
+      unlisten();
+    };
+  }, [history]);
 
   return (
     <div className="navbar-container">
@@ -54,16 +82,31 @@ const NavBar = ({ cartCount, onSearch, onToggleCategories, showCategories, onCat
           </div>
         )}
       </div>
-      <div className="navbar-search">
+      <div className="navbar-search" ref={searchDropdownRef}>
         <input
           type="text"
           placeholder="Search for anything"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <button onClick={handleSearch}>
+        <button>
           <FaSearch size={16} color="#fff" />
         </button>
+        {searchResults.length > 0 && (
+          <div className="search-results-dropdown">
+            <ul>
+              {searchResults.map((result, index) => (
+                <li key={index} onClick={() => handleProductClick(result)}>
+                  <img src={result.image} alt={result.name} />
+                  <div>
+                    <h6>{result.name}</h6>
+                    <p>${result.price.toFixed(2)}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
       <div className="cart-container">
         <DropdownButton
