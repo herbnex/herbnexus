@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import useAuth from '../../../src/hooks/useAuth';
 import { useStripe, useElements, PaymentElement, Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
-import { Container, Row, Col, Form, Button, Alert, Image } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Alert, Image, Spinner } from 'react-bootstrap';
 import { useProduct } from './ProductContext';
+import useAuth from '../../../src/hooks/useAuth';
 import './Checkout.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
@@ -63,25 +63,40 @@ const CheckoutForm = ({ clientSecret }) => {
 
 const Checkout = () => {
   const { cart, removeFromCart, updateCartQuantity } = useProduct();
+  const { user } = useAuth();
   const [clientSecret, setClientSecret] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
-  const { user, updateUser } = useAuth();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchClientSecret = async () => {
-      try {
-        const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
-          userId: user.uid,
-          cart
-        });
-        setClientSecret(response.data.clientSecret);
-      } catch (error) {
-        console.error("Error fetching client secret:", error);
-        setErrorMessage('An error occurred while initializing the payment process. Please try again.');
+      if (user && user.uid) {
+        try {
+          const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
+            userId: user.uid,
+            cart
+          });
+          setClientSecret(response.data.clientSecret);
+        } catch (error) {
+          console.error("Error fetching client secret:", error);
+          setErrorMessage('An error occurred while initializing the payment process. Please try again.');
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
       }
     };
     fetchClientSecret();
-  }, [cart]);
+  }, [user, cart]);
+
+  if (loading) {
+    return (
+      <Container className="checkout-container">
+        <Spinner animation="border" />
+      </Container>
+    );
+  }
 
   return (
     <Container className="checkout-container">
