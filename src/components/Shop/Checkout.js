@@ -31,7 +31,7 @@ const CheckoutForm = ({ clientSecret }) => {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          // Don't include return_url here
+          return_url: 'https://herbnexus.io/shop',
         },
         redirect: 'if_required'
       });
