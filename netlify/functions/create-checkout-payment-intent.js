@@ -34,7 +34,7 @@ exports.handler = async (event) => {
     // Create a payment intent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalAmount,
-      currency: 'usd',
+      currency: 'cad',
       customer: customerId,
       metadata: { userId },
     });
