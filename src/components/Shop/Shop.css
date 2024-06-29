@@ -1,0 +1,70 @@
+/* General Container Styling */
+.container {
+  padding: 0rem 1rem;
+}
+
+/* Navbar Styling */
+
+
+/* Featured Products Styling */
+.featured-products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.featured-products .card {
+  flex: 1 1 calc(25% - 1rem);
+  margin-bottom: 1rem;
+  transition: transform 0.3s;
+}
+
+.featured-products .card:hover {
+  transform: scale(1.05);
+}
+
+.product-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.product-card .card-body {
+  text-align: center;
+}
+
+.product-card .card-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.product-card .card-text {
+  font-size: 0.9rem;
+}
+
+/* Modal Image Styling */
+.modal img {
+  max-width: 100%;
+}
+
+/* Badge Styling */
+.badge {
+  background-color: #17a2b8;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .category-section {
+    gap: 0.5rem;
+  }
+
+  .featured-products .card {
+    flex: 1 1 calc(50% - 0.5rem);
+  }
+}
+
+@media (max-width: 576px) {
+  .featured-products .card {
+    flex: 1 1 100%;
+  }
+}

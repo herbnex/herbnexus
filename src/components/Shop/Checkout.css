@@ -1,0 +1,85 @@
+.container {
+    padding: 1rem;
+  }
+  
+  h4 {
+    margin-top: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #eaeaea;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .list-group-item img {
+    width: 60px;
+    margin-right: 10px;
+  }
+  
+  .list-group-item .form-control {
+    width: 60px;
+    margin-right: 10px;
+  }
+  
+  .list-group-item .btn-danger {
+    padding: 0.5rem 0.75rem;
+    font-size: 1.25rem;
+  }
+  
+  .list-group-item .d-flex {
+    flex-direction: row;
+  }
+  
+  .list-group-item div {
+    margin-bottom: 0;
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      padding: 0.5rem;
+    }
+  
+    .form-group {
+      margin-bottom: 1rem;
+    }
+  
+    .list-group-item {
+      flex-wrap: wrap;
+    }
+  
+    .list-group-item .d-flex {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .list-group-item .form-control {
+      margin-bottom: 0.5rem;
+      width: 100%;
+    }
+  
+    .list-group-item .btn-danger {
+      margin-top: 0.5rem;
+      width: 100%;
+    }
+  
+    .list-group-item img {
+      width: 100px;
+      margin-bottom: 0.5rem;
+    }
+  
+    .list-group-item div {
+      width: 100%;
+      text-align: left;
+    }
+  }
+  

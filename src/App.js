@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import "./App.css";
 import Doctors from "./components/pages/Doctors/Doctors";
 import Doctor from "./components/pages/Doctor/Doctor";
@@ -23,8 +23,11 @@ import withDelayedNavigation from "../src/hooks/withDelayedNavigation"; // Adjus
 
 import useScrollHandler from './hooks/useScrollHandler';
 import PrivacyPolicyModal from './components/PrivacyPolicyModal'; // Import the modal component
-
 import PasswordReset from './components/PasswordReset';
+import ProductPage from "./components/Shop/ProductPage";
+import ShopLayout from "./components/Shop/ShopLayout";
+import { ProductProvider } from './components/Shop/ProductContext'; // Import ProductProvider
+
 const DelayedContact = withDelayedNavigation(Contact, 2000);
 
 const App = () => {
@@ -33,60 +36,67 @@ const App = () => {
   return (
     <div className="App">
       <AuthProvider>
-        <NavBar />
-        <PrivacyPolicyModal />
-        <Switch>
-        <Route path="/reset-password" >
-          <PasswordReset />
-        </Route>
-
-          <Route exact path="/">
-            <Home />
-          </Route>
-          <Route path="/home">
-            <Home />
-          </Route>
-          <Route path="/doctors">
-            <Doctors />
-          </Route>
-          <PrivateRoute path="/doctor/:doctorId">
-            <Doctor />
-          </PrivateRoute>
-          <PrivateRoute path="/appointment">
-            <Appointment />
-          </PrivateRoute>
-          <Route path="/about">
-            <About />
-          </Route>
-          <PrivateRoute path="/contact">
-            <DelayedContact /> 
-          </PrivateRoute> 
-          <Route path="/faq">
-            <Faq />
-          </Route>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/signup">
-            <Signup />
-          </Route>
-          <Route path="/subscribe">
-            <Subscription /> {/* Updated component name */}
-          </Route>
-          <PrivateRoute path="/dashboard" requireSubscription={false}>
-            <Dashboard />
-          </PrivateRoute>
-          <Route path="/privacy-policy">
-            <PrivacyPolicy />
-          </Route>
-          <Route path="/terms-of-service">
-            <TermsOfService />
-          </Route>
-          <Route path="*">
-            <NotFound />
-          </Route>
-        </Switch>
-        <Footer />
+        <ProductProvider>
+          <NavBar />
+          <PrivacyPolicyModal />
+          <Switch>
+            <Route path="/reset-password">
+              <PasswordReset />
+            </Route>
+            <Route exact path="/">
+              <Home />
+            </Route>
+            <Route path="/home">
+              <Home />
+            </Route>
+            <Route path="/shop">
+              <ShopLayout />
+            </Route>
+            <Route path="/product/:id">
+              <ProductPage />
+            </Route>
+            <Route path="/doctors">
+              <Doctors />
+            </Route>
+            <PrivateRoute path="/doctor/:doctorId">
+              <Doctor />
+            </PrivateRoute>
+            <PrivateRoute path="/appointment">
+              <Appointment />
+            </PrivateRoute>
+            <Route path="/about">
+              <About />
+            </Route>
+            <PrivateRoute path="/contact">
+              <DelayedContact />
+            </PrivateRoute>
+            <Route path="/faq">
+              <Faq />
+            </Route>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <Route path="/signup">
+              <Signup />
+            </Route>
+            <Route path="/subscribe">
+              <Subscription /> {/* Updated component name */}
+            </Route>
+            <PrivateRoute path="/dashboard" requireSubscription={false}>
+              <Dashboard />
+            </PrivateRoute>
+            <Route path="/privacy-policy">
+              <PrivacyPolicy />
+            </Route>
+            <Route path="/terms-of-service">
+              <TermsOfService />
+            </Route>
+            <Route path="*">
+              <NotFound />
+            </Route>
+          </Switch>
+          <Footer />
+        </ProductProvider>
       </AuthProvider>
     </div>
   );

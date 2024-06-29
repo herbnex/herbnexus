@@ -1,0 +1,49 @@
+.popular-gifts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+  }
+  
+  .popular-gifts .product-card {
+    flex: 1 1 calc(20% - 1rem); /* Ensure five cards fit in a row with equal width */
+    margin-bottom: 1rem;
+    transition: transform 0.3s;
+    margin-top: 1rem;;
+  }
+  
+  .popular-gifts .product-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .product-card .card-body {
+    text-align: center;
+  }
+  
+  .product-card .card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  
+  .product-card .card-text {
+    font-size: 0.9rem;
+  }
+  
+  @media (max-width: 768px) {
+    .popular-gifts .product-card {
+      flex: 1 1 calc(50% - 0.5rem);
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .popular-gifts .product-card {
+      flex: 1 1 100%;
+    }
+  }
+  

@@ -35,10 +35,10 @@ const Footer = () => {
               <h6 className="text-white mb-3">Departments</h6>
               <ul>
                 
-                <li className="mb-2">
-                <a className="text-muted" href="https://shop.herbnexus.io" target="_blank" rel="noopener noreferrer">
-  Shop
-</a>
+              <li className="mb-2">
+                  <NavLink className="text-muted" to="/shop">
+                    Shop
+                  </NavLink>
                 </li>
                 <li className="mb-2">
                   <NavLink className="text-muted" to="/subscribe">

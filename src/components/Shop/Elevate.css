@@ -1,0 +1,62 @@
+.elevate-container {
+    margin: 2rem 0;
+  }
+  
+  .elevate-container h5 {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .elevate-container h2 {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+  }
+  
+  .elevate-container p {
+    color: #666;
+  }
+  
+  .elevate-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .elevate-item {
+    padding: 0.5rem;
+  }
+  
+  .elevate-card {
+    border: none;
+    background: none;
+    text-align: center;
+    transition: transform 0.3s;
+  }
+  
+  .elevate-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .elevate-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+  
+  .elevate-large-text {
+    grid-column: span 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem;
+    background-color: #f8f9fa;
+  }
+  
+  .elevate-small-image {
+    grid-column: span 1;
+  }
+  
+  .elevate-large-image {
+    grid-column: span 3;
+  }
+  

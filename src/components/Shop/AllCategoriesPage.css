@@ -1,0 +1,121 @@
+.all-categories-page-container {
+    padding: 1rem;
+  }
+  
+  .category-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  
+  .category-tab {
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: none;
+    border-radius: 2rem;
+    background-color: #f7f7f7;
+    color: black;
+    cursor: pointer;
+  }
+  
+  .category-tab.active {
+    background-color: #39cabb;
+    color: white;
+  }
+  
+  .header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  
+  .header-left {
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  .sort-label {
+    margin-right: 0.5rem !important;
+  }
+  
+  .header-right {
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  .item-count {
+    margin-right: 1rem !important;
+  }
+  
+  .view-toggle .view-icon {
+    cursor: pointer;
+    margin-left: 0.5rem !important;
+  }
+  
+  .product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .product-grid.grid .product-card {
+    flex: 0 0 48%;
+  }
+  
+  .product-grid.list .product-card {
+    flex: 0 0 100%;
+  }
+  
+  .product-card img {
+    cursor: pointer;
+  }
+  
+  .product-card .card-body {
+    text-align: center;
+  }
+  
+  .product-card.list .card-body {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .product-card .card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  
+  .product-card .card-text {
+    margin-bottom: 1rem;
+  }
+  
+  .product-card .btn {
+    background-color: #007bff;
+    border: none;
+  }
+  
+  .product-card .btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .product-description {
+    margin-top: 0.5rem;
+    color: #666;
+  }
+  
+  @media (max-width: 576px) {
+    .product-grid.grid .product-card {
+      flex: 0 0 48%;
+    }
+  }
+  
+  @media (min-width: 576px) and (max-width: 768px) {
+    .product-grid.grid .product-card {
+      flex: 0 0 48%;
+    }
+  }
+  

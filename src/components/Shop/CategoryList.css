@@ -1,0 +1,150 @@
+.category-section {
+    display: flex;
+    justify-content: center; /* Center the categories horizontally */
+    align-items: center;
+    flex-wrap: wrap; /* Allow wrapping for better responsiveness */
+    gap: 1rem; /* Increased gap for better spacing */
+    margin-bottom: 2rem;
+  }
+  
+  .category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .category-card {
+    border: none;
+    background: none;
+    text-align: center;
+    transition: transform 0.3s;
+    padding: 0.5rem;
+    height: 100%; /* Ensure the card takes up the full height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .category-card:hover {
+    transform: translateY(-5px); /* Adds a subtle lift effect on hover */
+  }
+  
+  .category-image {
+    width: 100px; /* Adjusted size for better display */
+    height: 100px; /* Adjusted size for better display */
+    border-radius: 50%;
+    margin: 0 auto;
+    object-fit: cover; /* Ensures the image covers the entire area */
+    transition: transform 0.3s;
+  }
+  
+  .category-card:hover .category-image {
+    transform: scale(1.1); /* Increased scale for better visual impact */
+  }
+  
+  .category-card .card-body {
+    padding: 0; /* Remove padding for better alignment */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .category-card .card-title-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2.5rem; /* Fixed height to align items */
+  }
+  
+  .category-card .card-title {
+    margin-top: 0.75rem; /* Increased margin for better spacing */
+    font-size: 1rem; /* Adjusted font size for better readability */
+    font-weight: bold;
+    color: #333;
+    text-align: center; /* Ensure text is centered */
+  }
+  
+  /* Ensure the category list doesn't exceed a certain width */
+  .category-list-container {
+    max-width: 80%; /* Adjust as needed */
+    margin: 0 auto;
+    padding: 0 1rem; /* Added padding for better alignment on smaller screens */
+  }
+  
+  @media (max-width: 768px) {
+    .category-image {
+      width: 80px; /* Adjust size for smaller screens */
+      height: 80px; /* Adjust size for smaller screens */
+    }
+  
+    .category-card .card-title {
+      font-size: 0.875rem; /* Adjusted font size for smaller screens */
+    }
+  
+    .category-list-container {
+      max-width: 90%; /* Adjust max-width for smaller screens */
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .category-section {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  
+  .product-card {
+    height: 100%; /* Ensure the card takes up the full height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s;
+  }
+  
+  .product-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .product-card .card-body {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .product-card .card-title-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2.5rem; /* Fixed height to align items */
+  }
+  
+  .product-card .card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  
+  .product-card .card-text {
+    font-size: 0.9rem;
+  }
+  
+  @media (max-width: 768px) {
+    .product-card {
+      flex: 1 1 calc(50% - 0.5rem);
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .product-card {
+      flex: 1 1 100%;
+    }
+  }
+  
