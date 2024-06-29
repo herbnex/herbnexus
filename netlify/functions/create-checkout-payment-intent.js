@@ -3,11 +3,11 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { db } = require("../../src/Firebase/setupFirebaseAdmin");
 
 exports.handler = async (event) => {
-  const { userId, cart } = JSON.parse(event.body);
-  console.log("Received userId:", userId);
-  console.log("Cart items:", cart);
-
   try {
+    const { userId, cart } = JSON.parse(event.body);
+    console.log("Received userId:", userId);
+    console.log("Received cart:", cart);
+
     // Check if customer already exists in the database
     const userRef = db.collection("users").doc(userId);
     const userDoc = await userRef.get();
@@ -28,22 +28,24 @@ exports.handler = async (event) => {
       await userRef.set({ stripeCustomerId: customerId }, { merge: true });
     }
 
-    // Calculate the total amount from the cart
-    const amount = cart.reduce((total, item) => total + (item.price * item.quantity), 0) * 100; // Convert to cents
+    // Calculate the total amount for the cart
+    const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) * 100; // Amount in cents
 
-    // Create a payment intent for one-time payment
+    // Create a payment intent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount), // Amount in cents
+      amount: totalAmount,
       currency: 'usd',
       customer: customerId,
-      metadata: { userId, description: "One-time payment" },
+      metadata: { userId },
     });
 
-    console.log("PaymentIntent created with ID:", paymentIntent.id);
+    console.log("Payment intent created with ID:", paymentIntent.id);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ clientSecret: paymentIntent.client_secret }),
+      body: JSON.stringify({
+        clientSecret: paymentIntent.client_secret,
+      }),
     };
   } catch (error) {
     console.error("Error creating payment intent:", error);

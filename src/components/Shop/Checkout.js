@@ -72,10 +72,12 @@ const Checkout = () => {
     const fetchClientSecret = async () => {
       if (user && user.uid) {
         try {
+          console.log('Cart data being sent:', cart); // Log cart data
           const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
             userId: user.uid,
             cart
           });
+          console.log('Response data:', response.data); // Log response data
           setClientSecret(response.data.clientSecret);
         } catch (error) {
           console.error("Error fetching client secret:", error);
