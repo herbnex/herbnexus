@@ -68,7 +68,7 @@ const Checkout = () => {
   useEffect(() => {
     const fetchClientSecret = async () => {
       try {
-        const response = await axios.post("/api/create-payment-intent", { cart });
+        const response = await axios.post("/.netlify/functions/create-payment-intent", { cart });
         setClientSecret(response.data.clientSecret);
       } catch (error) {
         console.error("Error fetching client secret:", error);
