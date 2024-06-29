@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import useAuth from '../../../src/hooks/useAuth';
 import { useStripe, useElements, PaymentElement, Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
@@ -64,11 +65,15 @@ const Checkout = () => {
   const { cart, removeFromCart, updateCartQuantity } = useProduct();
   const [clientSecret, setClientSecret] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
+  const { user, updateUser } = useAuth();
 
   useEffect(() => {
     const fetchClientSecret = async () => {
       try {
-        const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", { cart });
+        const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
+          userId: user.uid,
+          cart
+        });
         setClientSecret(response.data.clientSecret);
       } catch (error) {
         console.error("Error fetching client secret:", error);
