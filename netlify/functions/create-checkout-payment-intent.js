@@ -29,7 +29,7 @@ exports.handler = async (event) => {
     }
 
     // Calculate the total amount for the cart
-    const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) * 100; // Amount in cents
+    const totalAmount = Math.round(cart.reduce((sum, item) => sum + item.price * item.quantity, 0) * 100); // Amount in cents
 
     // Create a payment intent
     const paymentIntent = await stripe.paymentIntents.create({
