@@ -10,7 +10,8 @@ const NavBar = ({ cartCount, onToggleCategories, showCategories, onCategorySelec
   const [searchResults, setSearchResults] = useState([]);
   const categoriesDropdownRef = useRef(null);
   const searchDropdownRef = useRef(null);
-  const categories = ['Home & Garden', 'Electronics', 'Books', 'Fashion', 'Toys', 'Health & Beauty', 'Sports', 'Automotive', 'Jewelry', 'Music'];
+  const categories = ['Lung Health', 'Digestive Health', 'Hormone Health', 'Neurological Health', 'Immune Health', 'Healthy  Blood', 'Urinary Tract Health', 'Bone And Joint Health', 'Holistic Health'];
+  
   const { cart, allProducts } = useProduct();
   const history = useHistory();
 

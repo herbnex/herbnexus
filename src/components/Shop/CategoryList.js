@@ -1,13 +1,22 @@
 import React from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
+import dh from '../../assets/dh.png'; 
+import hb from '../../assets/hb.png'; 
+import nh from '../../assets/nh.png'; 
+import hh from '../../assets/hh.png'; 
+import lh from '../../assets/lh.png'; 
+import uth from '../../assets/uth.png'; 
+import bjh from '../../assets/bjh.png'; 
+import ih from '../../assets/ih.png'; 
+import hlh from '../../assets/hlh.png'; 
 import './CategoryList.css';
 
 const categories = [
-  { name: 'Back-to-School Savings', image: 'https://via.placeholder.com/100' },
-  { name: 'Birthday Gifts', image: 'https://via.placeholder.com/100' },
-  { name: 'Wedding Gifts', image: 'https://via.placeholder.com/100' },
-  { name: 'Home Gifts', image: 'https://via.placeholder.com/100' },
-  { name: 'Garden & Floral Gifts', image: 'https://via.placeholder.com/100' },
+  { name: 'Lung Health', image: lh },
+  { name: 'Digestive Health', image: dh },
+  { name: 'Hormone Health', image: hh },
+  { name: 'Neurological Health', image: nh },
+  { name: 'Immune Health', image: ih },
 
 ];
 

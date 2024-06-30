@@ -43,6 +43,9 @@
   .list-group-item div {
     margin-bottom: 0;
   }
+  .quan{
+    width: 3rem;
+  }
   
   @media (max-width: 768px) {
     .container {

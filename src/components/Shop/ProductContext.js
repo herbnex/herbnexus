@@ -6,161 +6,221 @@ const ProductProvider = ({ children }) => {
   const allProducts = [
     { 
       id: 1, 
-      name: 'Custom Air Freshener', 
+      name: '5-HTP', 
       price: 18.49, 
       discountPrice: 15.99, 
-      image: 'https://via.placeholder.com/200', 
-      category: 'Home & Garden', 
+      image: 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088684-generated-label-image-4.jpg?v=1716655113', 
+      category: 'Digestive Health', 
       rating: 4.5, 
       reviews: [{ user: 'Jamie', date: '25 Jun, 2024', comment: 'Great product!', rating: 5 }], 
-      additionalImages: ['https://via.placeholder.com/200', 'https://via.placeholder.com/200'], 
-      colors: ['White', 'Black', 'Pink'], 
-      designOptions: ['Option 1', 'Option 2'], 
+      additionalImages: ['https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20220815154310-vox45htp-sf.png?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088681-generated-label-image-2.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088678-generated-label-image-0.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088680-generated-label-image-1.jpg?v=1716655113', 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088683-generated-label-image-3.jpg?v=1716655113'],  
       demandText: '294 people bought this in the last 24 hours.', 
       saleEndDate: '06 July',
-      quantity: 1 
+      quantity: 1,
+      description: `<p>Bee Pearl is a pollen, nectar, and enzyme blend. Each capsule contains vitamins, microelements, polyphenols, unsaturated fatty acids, and antioxidants. This natural blend helps maintain your health, immunity, and energy level.</p><p><br></p><p>Bee Pearl contains a variety of naturally occurring vitamins, minerals, and other vital substances:</p><p><br></p><p>- Amino acids (15 from 20 possible)</p><p>- Numerous fatty acids (includes OMEGA-3, OMEGA-6)</p><p>- All Vitamins (a substantial amount of A, E, B3, B1, B, H)</p><p>- Minerals (a substantial amount of Zn, Cu, Fe, K, Na)</p><p>- Microelements and Polyphenolic compounds.</p><p><br></p><p><strong>Ingredients: </strong>Freeze Dried Extract of Bee Bread, Vitamin C.</p><p><strong>Manufacturer Country: </strong>Latvia</p><p><strong>Product Amount: </strong>30 caps</p><p><strong>Gross Weight: </strong>0.11lb (50g)</p><p><strong>Suggested Use:¬†</strong>One (1) capsule per day during the main meal or immediately after it with a glass of water. Suitable for vegetarians. Gluten-free. Suitable for long-term use.</p><p><strong>Caution:</strong> Recommended to anyone who is not allergic to bee products. If you are prone to allergic reactions, consult a doctor or pharmacist before use. Do not exceed the recommended daily dose. Do not use on an empty stomach.¬†Consult a doctor or pharmacist before using this product during pregnancy or when breastfeeding. Do not use after the expiry of the validity period. Do not use food supplements as a substitute for a diverse and balanced diet. Keep out of reach and sight of children. Store at room temperature from +15C to +25C in a dry place, away from direct sunlight.</p><p><strong>Warning: </strong>This product is not intended to diagnose, treat, cure or prevent any disease. Do not use if the safety seal is damaged or missing. Store in a cool, dry place.</p><p><br></p><p><strong>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</strong></p> <p>
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206094907-gluten-free-2x.png" alt="Gluten-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206124537-vegetarian.png" alt="Vegetarian" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095432-lactose-free-2x.png" alt="Lactose-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095601-allergen-free-2x.png" alt="Allergen-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095715-hormone-free-2x.png" alt="Hormone-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100008-100--natural-2x.png" alt="All natural" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100829-no-fillers-2x.png" alt="No fillers" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100927-non-gmo-2x.png" alt="Non-GMO" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206101002-corn-free-2x.png" alt="Corn-free" style="height: 6rem; width: auto;"></p>`
     },
     { 
       id: 2, 
-      name: 'Travel Jewelry Box', 
-      price: 29.97, 
-      discountPrice: 25.97, 
-      image: 'https://via.placeholder.com/200', 
-      category: 'Fashion', 
-      rating: 4.8, 
+      name: '5-HTP', 
+      price: 18.49, 
+      discountPrice: 15.99, 
+      image: 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088684-generated-label-image-4.jpg?v=1716655113', 
+      category: 'Healthy Blood', 
+      rating: 4.5, 
       reviews: [{ user: 'Jamie', date: '25 Jun, 2024', comment: 'Great product!', rating: 5 }], 
-      additionalImages: ['https://via.placeholder.com/200', 'https://via.placeholder.com/200'], 
-      colors: ['White', 'Black', 'Pink'], 
-      designOptions: ['Option 1', 'Option 2'], 
+      additionalImages: ['https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20220815154310-vox45htp-sf.png?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088681-generated-label-image-2.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088678-generated-label-image-0.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088680-generated-label-image-1.jpg?v=1716655113', 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088683-generated-label-image-3.jpg?v=1716655113'],  
       demandText: '294 people bought this in the last 24 hours.', 
       saleEndDate: '06 July',
-      quantity: 1 
+      quantity: 1,
+      description: `<p>Bee Pearl is a pollen, nectar, and enzyme blend. Each capsule contains vitamins, microelements, polyphenols, unsaturated fatty acids, and antioxidants. This natural blend helps maintain your health, immunity, and energy level.</p><p><br></p><p>Bee Pearl contains a variety of naturally occurring vitamins, minerals, and other vital substances:</p><p><br></p><p>- Amino acids (15 from 20 possible)</p><p>- Numerous fatty acids (includes OMEGA-3, OMEGA-6)</p><p>- All Vitamins (a substantial amount of A, E, B3, B1, B, H)</p><p>- Minerals (a substantial amount of Zn, Cu, Fe, K, Na)</p><p>- Microelements and Polyphenolic compounds.</p><p><br></p><p><strong>Ingredients: </strong>Freeze Dried Extract of Bee Bread, Vitamin C.</p><p><strong>Manufacturer Country: </strong>Latvia</p><p><strong>Product Amount: </strong>30 caps</p><p><strong>Gross Weight: </strong>0.11lb (50g)</p><p><strong>Suggested Use:¬†</strong>One (1) capsule per day during the main meal or immediately after it with a glass of water. Suitable for vegetarians. Gluten-free. Suitable for long-term use.</p><p><strong>Caution:</strong> Recommended to anyone who is not allergic to bee products. If you are prone to allergic reactions, consult a doctor or pharmacist before use. Do not exceed the recommended daily dose. Do not use on an empty stomach.¬†Consult a doctor or pharmacist before using this product during pregnancy or when breastfeeding. Do not use after the expiry of the validity period. Do not use food supplements as a substitute for a diverse and balanced diet. Keep out of reach and sight of children. Store at room temperature from +15C to +25C in a dry place, away from direct sunlight.</p><p><strong>Warning: </strong>This product is not intended to diagnose, treat, cure or prevent any disease. Do not use if the safety seal is damaged or missing. Store in a cool, dry place.</p><p><br></p><p><strong>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</strong></p> <p>
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206094907-gluten-free-2x.png" alt="Gluten-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206124537-vegetarian.png" alt="Vegetarian" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095432-lactose-free-2x.png" alt="Lactose-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095601-allergen-free-2x.png" alt="Allergen-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095715-hormone-free-2x.png" alt="Hormone-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100008-100--natural-2x.png" alt="All natural" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100829-no-fillers-2x.png" alt="No fillers" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100927-non-gmo-2x.png" alt="Non-GMO" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206101002-corn-free-2x.png" alt="Corn-free" style="height: 6rem; width: auto;"></p>`
     },
     { 
       id: 3, 
-      name: 'School Supplies', 
-      price: 8.49, 
-      image: 'https://via.placeholder.com/200', 
-      category: 'Books', 
-      rating: 4.2, 
-      reviews: [{ user: 'Alex', date: '20 Jun, 2024', comment: 'Very useful!', rating: 4 }], 
-      additionalImages: ['https://via.placeholder.com/200', 'https://via.placeholder.com/200'], 
-      colors: ['Blue', 'Red'], 
-      designOptions: ['Standard', 'Premium'], 
-      demandText: '150 people bought this in the last week.', 
-      saleEndDate: '10 July',
-      quantity: 1 
+      name: '5-HTP', 
+      price: 18.49, 
+      discountPrice: 15.99, 
+      image: 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088684-generated-label-image-4.jpg?v=1716655113', 
+      category: 'Hormone Health', 
+      rating: 4.5, 
+      reviews: [{ user: 'Jamie', date: '25 Jun, 2024', comment: 'Great product!', rating: 5 }], 
+      additionalImages: ['https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20220815154310-vox45htp-sf.png?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088681-generated-label-image-2.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088678-generated-label-image-0.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088680-generated-label-image-1.jpg?v=1716655113', 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088683-generated-label-image-3.jpg?v=1716655113'],  
+      demandText: '294 people bought this in the last 24 hours.', 
+      saleEndDate: '06 July',
+      quantity: 1,
+      description: `<p>Bee Pearl is a pollen, nectar, and enzyme blend. Each capsule contains vitamins, microelements, polyphenols, unsaturated fatty acids, and antioxidants. This natural blend helps maintain your health, immunity, and energy level.</p><p><br></p><p>Bee Pearl contains a variety of naturally occurring vitamins, minerals, and other vital substances:</p><p><br></p><p>- Amino acids (15 from 20 possible)</p><p>- Numerous fatty acids (includes OMEGA-3, OMEGA-6)</p><p>- All Vitamins (a substantial amount of A, E, B3, B1, B, H)</p><p>- Minerals (a substantial amount of Zn, Cu, Fe, K, Na)</p><p>- Microelements and Polyphenolic compounds.</p><p><br></p><p><strong>Ingredients: </strong>Freeze Dried Extract of Bee Bread, Vitamin C.</p><p><strong>Manufacturer Country: </strong>Latvia</p><p><strong>Product Amount: </strong>30 caps</p><p><strong>Gross Weight: </strong>0.11lb (50g)</p><p><strong>Suggested Use:¬†</strong>One (1) capsule per day during the main meal or immediately after it with a glass of water. Suitable for vegetarians. Gluten-free. Suitable for long-term use.</p><p><strong>Caution:</strong> Recommended to anyone who is not allergic to bee products. If you are prone to allergic reactions, consult a doctor or pharmacist before use. Do not exceed the recommended daily dose. Do not use on an empty stomach.¬†Consult a doctor or pharmacist before using this product during pregnancy or when breastfeeding. Do not use after the expiry of the validity period. Do not use food supplements as a substitute for a diverse and balanced diet. Keep out of reach and sight of children. Store at room temperature from +15C to +25C in a dry place, away from direct sunlight.</p><p><strong>Warning: </strong>This product is not intended to diagnose, treat, cure or prevent any disease. Do not use if the safety seal is damaged or missing. Store in a cool, dry place.</p><p><br></p><p><strong>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</strong></p> <p>
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206094907-gluten-free-2x.png" alt="Gluten-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206124537-vegetarian.png" alt="Vegetarian" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095432-lactose-free-2x.png" alt="Lactose-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095601-allergen-free-2x.png" alt="Allergen-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095715-hormone-free-2x.png" alt="Hormone-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100008-100--natural-2x.png" alt="All natural" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100829-no-fillers-2x.png" alt="No fillers" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100927-non-gmo-2x.png" alt="Non-GMO" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206101002-corn-free-2x.png" alt="Corn-free" style="height: 6rem; width: auto;"></p>`
     },
     { 
       id: 4, 
-      name: 'Gift Basket', 
-      price: 25.00, 
-      image: 'https://via.placeholder.com/200', 
-      category: 'Home & Garden', 
-      rating: 4.7, 
-      reviews: [{ user: 'Sam', date: '15 Jun, 2024', comment: 'Loved it!', rating: 5 }], 
-      additionalImages: ['https://via.placeholder.com/200', 'https://via.placeholder.com/200'], 
-      colors: ['Green', 'Yellow'], 
-      designOptions: ['Option 1', 'Option 2'], 
-      demandText: '50 people bought this in the last 24 hours.', 
-      saleEndDate: '05 July',
-      quantity: 1 
+      name: '5-HTP', 
+      price: 18.49, 
+      discountPrice: 15.99, 
+      image: 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088684-generated-label-image-4.jpg?v=1716655113', 
+      category: 'Lung Health', 
+      rating: 4.5, 
+      reviews: [{ user: 'Jamie', date: '25 Jun, 2024', comment: 'Great product!', rating: 5 }], 
+      additionalImages: ['https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20220815154310-vox45htp-sf.png?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088681-generated-label-image-2.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088678-generated-label-image-0.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088680-generated-label-image-1.jpg?v=1716655113', 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088683-generated-label-image-3.jpg?v=1716655113'],  
+      demandText: '294 people bought this in the last 24 hours.', 
+      saleEndDate: '06 July',
+      quantity: 1,
+      description: `<p>Bee Pearl is a pollen, nectar, and enzyme blend. Each capsule contains vitamins, microelements, polyphenols, unsaturated fatty acids, and antioxidants. This natural blend helps maintain your health, immunity, and energy level.</p><p><br></p><p>Bee Pearl contains a variety of naturally occurring vitamins, minerals, and other vital substances:</p><p><br></p><p>- Amino acids (15 from 20 possible)</p><p>- Numerous fatty acids (includes OMEGA-3, OMEGA-6)</p><p>- All Vitamins (a substantial amount of A, E, B3, B1, B, H)</p><p>- Minerals (a substantial amount of Zn, Cu, Fe, K, Na)</p><p>- Microelements and Polyphenolic compounds.</p><p><br></p><p><strong>Ingredients: </strong>Freeze Dried Extract of Bee Bread, Vitamin C.</p><p><strong>Manufacturer Country: </strong>Latvia</p><p><strong>Product Amount: </strong>30 caps</p><p><strong>Gross Weight: </strong>0.11lb (50g)</p><p><strong>Suggested Use:¬†</strong>One (1) capsule per day during the main meal or immediately after it with a glass of water. Suitable for vegetarians. Gluten-free. Suitable for long-term use.</p><p><strong>Caution:</strong> Recommended to anyone who is not allergic to bee products. If you are prone to allergic reactions, consult a doctor or pharmacist before use. Do not exceed the recommended daily dose. Do not use on an empty stomach.¬†Consult a doctor or pharmacist before using this product during pregnancy or when breastfeeding. Do not use after the expiry of the validity period. Do not use food supplements as a substitute for a diverse and balanced diet. Keep out of reach and sight of children. Store at room temperature from +15C to +25C in a dry place, away from direct sunlight.</p><p><strong>Warning: </strong>This product is not intended to diagnose, treat, cure or prevent any disease. Do not use if the safety seal is damaged or missing. Store in a cool, dry place.</p><p><br></p><p><strong>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</strong></p> <p>
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206094907-gluten-free-2x.png" alt="Gluten-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206124537-vegetarian.png" alt="Vegetarian" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095432-lactose-free-2x.png" alt="Lactose-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095601-allergen-free-2x.png" alt="Allergen-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095715-hormone-free-2x.png" alt="Hormone-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100008-100--natural-2x.png" alt="All natural" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100829-no-fillers-2x.png" alt="No fillers" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100927-non-gmo-2x.png" alt="Non-GMO" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206101002-corn-free-2x.png" alt="Corn-free" style="height: 6rem; width: auto;"></p>`
     },
     { 
       id: 5, 
-      name: 'Yoga Mat', 
-      price: 20.00, 
-      image: 'https://via.placeholder.com/200', 
-      category: 'Sports', 
-      rating: 4.9, 
-      reviews: [{ user: 'Chris', date: '10 Jun, 2024', comment: 'Best yoga mat ever!', rating: 5 }], 
-      additionalImages: ['https://via.placeholder.com/200', 'https://via.placeholder.com/200'], 
-      colors: ['Purple', 'Blue'], 
-      designOptions: ['Standard', 'Thick'], 
-      demandText: '200 people bought this in the last month.', 
-      saleEndDate: '12 July',
-      quantity: 1 
+      name: '5-HTP', 
+      price: 18.49, 
+      discountPrice: 15.99, 
+      image: 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088684-generated-label-image-4.jpg?v=1716655113', 
+      category: 'Urinary Tract Health', 
+      rating: 4.5, 
+      reviews: [{ user: 'Jamie', date: '25 Jun, 2024', comment: 'Great product!', rating: 5 }], 
+      additionalImages: ['https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20220815154310-vox45htp-sf.png?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088681-generated-label-image-2.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088678-generated-label-image-0.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088680-generated-label-image-1.jpg?v=1716655113', 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088683-generated-label-image-3.jpg?v=1716655113'],  
+      demandText: '294 people bought this in the last 24 hours.', 
+      saleEndDate: '06 July',
+      quantity: 1,
+      description: `<p>Bee Pearl is a pollen, nectar, and enzyme blend. Each capsule contains vitamins, microelements, polyphenols, unsaturated fatty acids, and antioxidants. This natural blend helps maintain your health, immunity, and energy level.</p><p><br></p><p>Bee Pearl contains a variety of naturally occurring vitamins, minerals, and other vital substances:</p><p><br></p><p>- Amino acids (15 from 20 possible)</p><p>- Numerous fatty acids (includes OMEGA-3, OMEGA-6)</p><p>- All Vitamins (a substantial amount of A, E, B3, B1, B, H)</p><p>- Minerals (a substantial amount of Zn, Cu, Fe, K, Na)</p><p>- Microelements and Polyphenolic compounds.</p><p><br></p><p><strong>Ingredients: </strong>Freeze Dried Extract of Bee Bread, Vitamin C.</p><p><strong>Manufacturer Country: </strong>Latvia</p><p><strong>Product Amount: </strong>30 caps</p><p><strong>Gross Weight: </strong>0.11lb (50g)</p><p><strong>Suggested Use:¬†</strong>One (1) capsule per day during the main meal or immediately after it with a glass of water. Suitable for vegetarians. Gluten-free. Suitable for long-term use.</p><p><strong>Caution:</strong> Recommended to anyone who is not allergic to bee products. If you are prone to allergic reactions, consult a doctor or pharmacist before use. Do not exceed the recommended daily dose. Do not use on an empty stomach.¬†Consult a doctor or pharmacist before using this product during pregnancy or when breastfeeding. Do not use after the expiry of the validity period. Do not use food supplements as a substitute for a diverse and balanced diet. Keep out of reach and sight of children. Store at room temperature from +15C to +25C in a dry place, away from direct sunlight.</p><p><strong>Warning: </strong>This product is not intended to diagnose, treat, cure or prevent any disease. Do not use if the safety seal is damaged or missing. Store in a cool, dry place.</p><p><br></p><p><strong>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</strong></p> <p>
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206094907-gluten-free-2x.png" alt="Gluten-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206124537-vegetarian.png" alt="Vegetarian" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095432-lactose-free-2x.png" alt="Lactose-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095601-allergen-free-2x.png" alt="Allergen-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095715-hormone-free-2x.png" alt="Hormone-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100008-100--natural-2x.png" alt="All natural" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100829-no-fillers-2x.png" alt="No fillers" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100927-non-gmo-2x.png" alt="Non-GMO" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206101002-corn-free-2x.png" alt="Corn-free" style="height: 6rem; width: auto;"></p>`
     },
     { 
       id: 6, 
-      name: 'Bluetooth Headphones', 
-      price: 59.99, 
-      discountPrice: 49.99, 
-      image: 'https://via.placeholder.com/200', 
-      category: 'Electronics', 
-      rating: 4.6, 
-      reviews: [{ user: 'Jordan', date: '05 Jun, 2024', comment: 'Great sound quality!', rating: 5 }], 
-      additionalImages: ['https://via.placeholder.com/200', 'https://via.placeholder.com/200'], 
-      colors: ['Black', 'White'], 
-      designOptions: ['Option 1', 'Option 2'], 
-      demandText: '100 people bought this in the last week.', 
-      saleEndDate: '15 July',
-      quantity: 1 
+      name: '5-HTP', 
+      price: 18.49, 
+      discountPrice: 15.99, 
+      image: 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088684-generated-label-image-4.jpg?v=1716655113', 
+      category: 'Bone And Joint Health', 
+      rating: 4.5, 
+      reviews: [{ user: 'Jamie', date: '25 Jun, 2024', comment: 'Great product!', rating: 5 }], 
+      additionalImages: ['https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20220815154310-vox45htp-sf.png?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088681-generated-label-image-2.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088678-generated-label-image-0.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088680-generated-label-image-1.jpg?v=1716655113', 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088683-generated-label-image-3.jpg?v=1716655113'],  
+      demandText: '294 people bought this in the last 24 hours.', 
+      saleEndDate: '06 July',
+      quantity: 1,
+      description: `<p>Bee Pearl is a pollen, nectar, and enzyme blend. Each capsule contains vitamins, microelements, polyphenols, unsaturated fatty acids, and antioxidants. This natural blend helps maintain your health, immunity, and energy level.</p><p><br></p><p>Bee Pearl contains a variety of naturally occurring vitamins, minerals, and other vital substances:</p><p><br></p><p>- Amino acids (15 from 20 possible)</p><p>- Numerous fatty acids (includes OMEGA-3, OMEGA-6)</p><p>- All Vitamins (a substantial amount of A, E, B3, B1, B, H)</p><p>- Minerals (a substantial amount of Zn, Cu, Fe, K, Na)</p><p>- Microelements and Polyphenolic compounds.</p><p><br></p><p><strong>Ingredients: </strong>Freeze Dried Extract of Bee Bread, Vitamin C.</p><p><strong>Manufacturer Country: </strong>Latvia</p><p><strong>Product Amount: </strong>30 caps</p><p><strong>Gross Weight: </strong>0.11lb (50g)</p><p><strong>Suggested Use:¬†</strong>One (1) capsule per day during the main meal or immediately after it with a glass of water. Suitable for vegetarians. Gluten-free. Suitable for long-term use.</p><p><strong>Caution:</strong> Recommended to anyone who is not allergic to bee products. If you are prone to allergic reactions, consult a doctor or pharmacist before use. Do not exceed the recommended daily dose. Do not use on an empty stomach.¬†Consult a doctor or pharmacist before using this product during pregnancy or when breastfeeding. Do not use after the expiry of the validity period. Do not use food supplements as a substitute for a diverse and balanced diet. Keep out of reach and sight of children. Store at room temperature from +15C to +25C in a dry place, away from direct sunlight.</p><p><strong>Warning: </strong>This product is not intended to diagnose, treat, cure or prevent any disease. Do not use if the safety seal is damaged or missing. Store in a cool, dry place.</p><p><br></p><p><strong>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</strong></p> <p>
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206094907-gluten-free-2x.png" alt="Gluten-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206124537-vegetarian.png" alt="Vegetarian" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095432-lactose-free-2x.png" alt="Lactose-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095601-allergen-free-2x.png" alt="Allergen-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095715-hormone-free-2x.png" alt="Hormone-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100008-100--natural-2x.png" alt="All natural" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100829-no-fillers-2x.png" alt="No fillers" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100927-non-gmo-2x.png" alt="Non-GMO" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206101002-corn-free-2x.png" alt="Corn-free" style="height: 6rem; width: auto;"></p>`
     },
     { 
       id: 7, 
-      name: 'Coffee Maker', 
-      price: 75.00, 
-      discountPrice: 65.00, 
-      image: 'https://via.placeholder.com/200', 
-      category: 'Home & Garden', 
-      rating: 4.3, 
-      reviews: [{ user: 'Taylor', date: '01 Jun, 2024', comment: 'Makes great coffee!', rating: 4 }], 
-      additionalImages: ['https://via.placeholder.com/200', 'https://via.placeholder.com/200'], 
-      colors: ['Silver', 'Black'], 
-      designOptions: ['Standard', 'Deluxe'], 
-      demandText: '300 people bought this in the last month.', 
-      saleEndDate: '20 July',
-      quantity: 1 
+      name: '5-HTP', 
+      price: 18.49, 
+      discountPrice: 15.99, 
+      image: 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088684-generated-label-image-4.jpg?v=1716655113', 
+      category: 'Immune Health', 
+      rating: 4.5, 
+      reviews: [{ user: 'Jamie', date: '25 Jun, 2024', comment: 'Great product!', rating: 5 }], 
+      additionalImages: ['https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20220815154310-vox45htp-sf.png?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088681-generated-label-image-2.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088678-generated-label-image-0.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088680-generated-label-image-1.jpg?v=1716655113', 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088683-generated-label-image-3.jpg?v=1716655113'],  
+      demandText: '294 people bought this in the last 24 hours.', 
+      saleEndDate: '06 July',
+      quantity: 1,
+      description: `<p>Bee Pearl is a pollen, nectar, and enzyme blend. Each capsule contains vitamins, microelements, polyphenols, unsaturated fatty acids, and antioxidants. This natural blend helps maintain your health, immunity, and energy level.</p><p><br></p><p>Bee Pearl contains a variety of naturally occurring vitamins, minerals, and other vital substances:</p><p><br></p><p>- Amino acids (15 from 20 possible)</p><p>- Numerous fatty acids (includes OMEGA-3, OMEGA-6)</p><p>- All Vitamins (a substantial amount of A, E, B3, B1, B, H)</p><p>- Minerals (a substantial amount of Zn, Cu, Fe, K, Na)</p><p>- Microelements and Polyphenolic compounds.</p><p><br></p><p><strong>Ingredients: </strong>Freeze Dried Extract of Bee Bread, Vitamin C.</p><p><strong>Manufacturer Country: </strong>Latvia</p><p><strong>Product Amount: </strong>30 caps</p><p><strong>Gross Weight: </strong>0.11lb (50g)</p><p><strong>Suggested Use:¬†</strong>One (1) capsule per day during the main meal or immediately after it with a glass of water. Suitable for vegetarians. Gluten-free. Suitable for long-term use.</p><p><strong>Caution:</strong> Recommended to anyone who is not allergic to bee products. If you are prone to allergic reactions, consult a doctor or pharmacist before use. Do not exceed the recommended daily dose. Do not use on an empty stomach.¬†Consult a doctor or pharmacist before using this product during pregnancy or when breastfeeding. Do not use after the expiry of the validity period. Do not use food supplements as a substitute for a diverse and balanced diet. Keep out of reach and sight of children. Store at room temperature from +15C to +25C in a dry place, away from direct sunlight.</p><p><strong>Warning: </strong>This product is not intended to diagnose, treat, cure or prevent any disease. Do not use if the safety seal is damaged or missing. Store in a cool, dry place.</p><p><br></p><p><strong>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</strong></p> <p>
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206094907-gluten-free-2x.png" alt="Gluten-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206124537-vegetarian.png" alt="Vegetarian" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095432-lactose-free-2x.png" alt="Lactose-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095601-allergen-free-2x.png" alt="Allergen-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095715-hormone-free-2x.png" alt="Hormone-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100008-100--natural-2x.png" alt="All natural" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100829-no-fillers-2x.png" alt="No fillers" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100927-non-gmo-2x.png" alt="Non-GMO" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206101002-corn-free-2x.png" alt="Corn-free" style="height: 6rem; width: auto;"></p>`
     },
     { 
       id: 8, 
-      name: 'Electric Toothbrush', 
-      price: 40.00, 
-      discountPrice: 35.00, 
-      image: 'https://via.placeholder.com/200', 
-      category: 'Health & Beauty', 
-      rating: 4.8, 
-      reviews: [{ user: 'Morgan', date: '28 May, 2024', comment: 'Very effective!', rating: 5 }], 
-      additionalImages: ['https://via.placeholder.com/200', 'https://via.placeholder.com/200'], 
-      colors: ['White', 'Blue'], 
-      designOptions: ['Standard', 'Premium'], 
-      demandText: '120 people bought this in the last 24 hours.', 
-      saleEndDate: '25 July',
-      quantity: 1 
+      name: '5-HTP', 
+      price: 18.49, 
+      discountPrice: 15.99, 
+      image: 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088684-generated-label-image-4.jpg?v=1716655113', 
+      category: 'Holistic Health', 
+      rating: 4.5, 
+      reviews: [{ user: 'Jamie', date: '25 Jun, 2024', comment: 'Great product!', rating: 5 }], 
+      additionalImages: ['https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20220815154310-vox45htp-sf.png?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088681-generated-label-image-2.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088678-generated-label-image-0.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088680-generated-label-image-1.jpg?v=1716655113', 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088683-generated-label-image-3.jpg?v=1716655113'],  
+      demandText: '294 people bought this in the last 24 hours.', 
+      saleEndDate: '06 July',
+      quantity: 1,
+      description: `<p>Bee Pearl is a pollen, nectar, and enzyme blend. Each capsule contains vitamins, microelements, polyphenols, unsaturated fatty acids, and antioxidants. This natural blend helps maintain your health, immunity, and energy level.</p><p><br></p><p>Bee Pearl contains a variety of naturally occurring vitamins, minerals, and other vital substances:</p><p><br></p><p>- Amino acids (15 from 20 possible)</p><p>- Numerous fatty acids (includes OMEGA-3, OMEGA-6)</p><p>- All Vitamins (a substantial amount of A, E, B3, B1, B, H)</p><p>- Minerals (a substantial amount of Zn, Cu, Fe, K, Na)</p><p>- Microelements and Polyphenolic compounds.</p><p><br></p><p><strong>Ingredients: </strong>Freeze Dried Extract of Bee Bread, Vitamin C.</p><p><strong>Manufacturer Country: </strong>Latvia</p><p><strong>Product Amount: </strong>30 caps</p><p><strong>Gross Weight: </strong>0.11lb (50g)</p><p><strong>Suggested Use:¬†</strong>One (1) capsule per day during the main meal or immediately after it with a glass of water. Suitable for vegetarians. Gluten-free. Suitable for long-term use.</p><p><strong>Caution:</strong> Recommended to anyone who is not allergic to bee products. If you are prone to allergic reactions, consult a doctor or pharmacist before use. Do not exceed the recommended daily dose. Do not use on an empty stomach.¬†Consult a doctor or pharmacist before using this product during pregnancy or when breastfeeding. Do not use after the expiry of the validity period. Do not use food supplements as a substitute for a diverse and balanced diet. Keep out of reach and sight of children. Store at room temperature from +15C to +25C in a dry place, away from direct sunlight.</p><p><strong>Warning: </strong>This product is not intended to diagnose, treat, cure or prevent any disease. Do not use if the safety seal is damaged or missing. Store in a cool, dry place.</p><p><br></p><p><strong>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</strong></p> <p>
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206094907-gluten-free-2x.png" alt="Gluten-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206124537-vegetarian.png" alt="Vegetarian" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095432-lactose-free-2x.png" alt="Lactose-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095601-allergen-free-2x.png" alt="Allergen-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095715-hormone-free-2x.png" alt="Hormone-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100008-100--natural-2x.png" alt="All natural" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100829-no-fillers-2x.png" alt="No fillers" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100927-non-gmo-2x.png" alt="Non-GMO" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206101002-corn-free-2x.png" alt="Corn-free" style="height: 6rem; width: auto;"></p>`
     },
     { 
       id: 9, 
-      name: 'Running Shoes', 
-      price: 90.00, 
-      discountPrice: 80.00, 
-      image: 'https://via.placeholder.com/200', 
-      category: 'Sports', 
-      rating: 4.7, 
-      reviews: [{ user: 'Alex', date: '22 May, 2024', comment: 'Very comfortable!', rating: 5 }], 
-      additionalImages: ['https://via.placeholder.com/200', 'https://via.placeholder.com/200'], 
-      colors: ['Black', 'Red'], 
-      designOptions: ['Standard', 'Deluxe'], 
-      demandText: '500 people bought this in the last month.', 
-      saleEndDate: '30 July',
-      quantity: 1 
+      name: '5-HTP', 
+      price: 18.49, 
+      discountPrice: 15.99, 
+      image: 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088684-generated-label-image-4.jpg?v=1716655113', 
+      category: 'Neurological Health', 
+      rating: 4.5, 
+      reviews: [{ user: 'Jamie', date: '25 Jun, 2024', comment: 'Great product!', rating: 5 }], 
+      additionalImages: ['https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20220815154310-vox45htp-sf.png?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088681-generated-label-image-2.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088678-generated-label-image-0.jpg?v=1716655113','https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088680-generated-label-image-1.jpg?v=1716655113', 'https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1716655088683-generated-label-image-3.jpg?v=1716655113'],  
+      demandText: '294 people bought this in the last 24 hours.', 
+      saleEndDate: '06 July',
+      quantity: 1,
+      description: `<p>Bee Pearl is a pollen, nectar, and enzyme blend. Each capsule contains vitamins, microelements, polyphenols, unsaturated fatty acids, and antioxidants. This natural blend helps maintain your health, immunity, and energy level.</p><p><br></p><p>Bee Pearl contains a variety of naturally occurring vitamins, minerals, and other vital substances:</p><p><br></p><p>- Amino acids (15 from 20 possible)</p><p>- Numerous fatty acids (includes OMEGA-3, OMEGA-6)</p><p>- All Vitamins (a substantial amount of A, E, B3, B1, B, H)</p><p>- Minerals (a substantial amount of Zn, Cu, Fe, K, Na)</p><p>- Microelements and Polyphenolic compounds.</p><p><br></p><p><strong>Ingredients: </strong>Freeze Dried Extract of Bee Bread, Vitamin C.</p><p><strong>Manufacturer Country: </strong>Latvia</p><p><strong>Product Amount: </strong>30 caps</p><p><strong>Gross Weight: </strong>0.11lb (50g)</p><p><strong>Suggested Use:¬†</strong>One (1) capsule per day during the main meal or immediately after it with a glass of water. Suitable for vegetarians. Gluten-free. Suitable for long-term use.</p><p><strong>Caution:</strong> Recommended to anyone who is not allergic to bee products. If you are prone to allergic reactions, consult a doctor or pharmacist before use. Do not exceed the recommended daily dose. Do not use on an empty stomach.¬†Consult a doctor or pharmacist before using this product during pregnancy or when breastfeeding. Do not use after the expiry of the validity period. Do not use food supplements as a substitute for a diverse and balanced diet. Keep out of reach and sight of children. Store at room temperature from +15C to +25C in a dry place, away from direct sunlight.</p><p><strong>Warning: </strong>This product is not intended to diagnose, treat, cure or prevent any disease. Do not use if the safety seal is damaged or missing. Store in a cool, dry place.</p><p><br></p><p><strong>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</strong></p> <p>
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206094907-gluten-free-2x.png" alt="Gluten-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206124537-vegetarian.png" alt="Vegetarian" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095432-lactose-free-2x.png" alt="Lactose-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095601-allergen-free-2x.png" alt="Allergen-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206095715-hormone-free-2x.png" alt="Hormone-free" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100008-100--natural-2x.png" alt="All natural" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100829-no-fillers-2x.png" alt="No fillers" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206100927-non-gmo-2x.png" alt="Non-GMO" style="height: 6rem; width: auto;">
+      <img src="https://supliful.s3.amazonaws.com/categories/images/20221206101002-corn-free-2x.png" alt="Corn-free" style="height: 6rem; width: auto;"></p>`
     },
-    { 
-      id: 10, 
-      name: 'Smart Watch', 
-      price: 150.00, 
-      discountPrice: 120.00, 
-      image: 'https://via.placeholder.com/200', 
-      category: 'Electronics', 
-      rating: 4.9, 
-      reviews: [{ user: 'Jordan', date: '18 May, 2024', comment: 'Love the features!', rating: 5 }], 
-      additionalImages: ['https://via.placeholder.com/200', 'https://via.placeholder.com/200'], 
-      colors: ['Black', 'Silver'], 
-      designOptions: ['Standard', 'Premium'], 
-      demandText: '700 people bought this in the last month.', 
-      saleEndDate: '05 August',
-      quantity: 1 
-    }
+    // ... other products with similar structure
   ];
   
   const loadCartFromLocalStorage = () => {

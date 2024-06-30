@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { Container, Row, Col, Image, Button, Form, ListGroup, Dropdown } from 'react-bootstrap';
+import { Container, Row, Col, Image, Button, Form, ListGroup, Tabs, Tab } from 'react-bootstrap';
 import { useProduct } from './ProductContext';
-import { FaTh, FaThList } from 'react-icons/fa';
+import { FaShieldAlt, FaTruck, FaUndo } from 'react-icons/fa';
+
 import './ProductPage.css';
 
 const ProductPage = () => {
@@ -11,24 +12,9 @@ const ProductPage = () => {
   const { allProducts, addToCart } = useProduct();
   const product = allProducts.find((p) => p.id === parseInt(id));
 
-  const categories = ['All', ...new Set(allProducts.map(product => product.category))];
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [view, setView] = useState('grid');
-
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    history.push(`/shop/category/${category}`);
-  };
-
-  const handleViewToggle = (viewType) => {
-    setView(viewType);
-  };
-
-  const filteredProducts = selectedCategory === 'All' ? allProducts : allProducts.filter(product => product.category === selectedCategory);
-
   if (!product) return <div>Product not found.</div>;
 
-  const { image, additionalImages = [], name, price, rating, reviews = [], colors = [], designOptions = [], demandText, saleEndDate } = product;
+  const { image, additionalImages = [], name, price, rating, reviews = [], demandText, saleEndDate, description } = product;
 
   const handleAddToCart = () => {
     addToCart(product);
@@ -36,94 +22,57 @@ const ProductPage = () => {
 
   return (
     <Container className="product-page-container">
-      <div className="category-tabs">
-        {categories.map((cat, index) => (
-          <button
-            key={index}
-            className={`category-tab ${selectedCategory === cat ? 'active' : ''}`}
-            onClick={() => handleCategorySelect(cat)}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-      <div className="header">
-        <div className="sort-options">
-          <span className="sort-label">Sort by:</span>
-          <Dropdown>
-            <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-              Featured
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item href="#">Price: Low to High</Dropdown.Item>
-              <Dropdown.Item href="#">Price: High to Low</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
-        <div className="header-right">
-          <div className="item-count">
-            {filteredProducts.length} items
-          </div>
-          <div className="view-toggle">
-            <FaTh
-              size={24}
-              color={view === 'grid' ? '#a42f37' : '#ccc'}
-              onClick={() => handleViewToggle('grid')}
-              className="view-icon"
-            />
-            <FaThList
-              size={24}
-              color={view === 'list' ? '#a42f37' : '#ccc'}
-              onClick={() => handleViewToggle('list')}
-              className="view-icon"
-            />
-          </div>
-        </div>
-      </div>
       <Row>
         <Col md={6}>
-          <Image src={image} fluid />
-          <Row className="mt-3">
+          <Image src={image} fluid className="main-image" />
+          <Row className="mt-3 additional-images">
             {additionalImages.map((img, idx) => (
-              <Col key={idx} xs={3}>
+              <Col key={idx} xs={4}>
                 <Image src={img} thumbnail />
               </Col>
             ))}
           </Row>
         </Col>
         <Col md={6}>
-          <h2>{name}</h2>
-          <p>CA${price}</p>
-          <p><strong>{rating}</strong> stars ({reviews.length} reviews)</p>
-          <Form.Group>
-            <Form.Label>Color</Form.Label>
-            <Form.Control as="select">
-              {colors.map((color, idx) => (
-                <option key={idx} value={color}>{color}</option>
-              ))}
-            </Form.Control>
-          </Form.Group>
+          <h2 className="product-name">{name}</h2>
+          <p className="product-price">CA${price}</p>
+          <p className="product-rating"><strong>{rating}</strong> stars ({reviews.length} reviews)</p>
+         
           <Form.Group className="mt-3">
-            <Form.Label>Design Option</Form.Label>
-            <Form.Control as="select">
-              {designOptions.map((option, idx) => (
-                <option key={idx} value={option}>{option}</option>
-              ))}
-            </Form.Control>
+            <Form.Label>Quantity</Form.Label>
+            <Form.Control type="number" defaultValue={1} min={1} className='quant'/>
           </Form.Group>
-          <Form.Group className="mt-3">
-            <Form.Label>Add your personalization</Form.Label>
-            <Form.Control type="text" placeholder="Enter personalization" />
-          </Form.Group>
-          <Button className="mt-4" onClick={handleAddToCart}>Add to basket</Button>
-          <p className="mt-3">In demand. {demandText}</p>
-          <p className="mt-1">Sale ends on {saleEndDate}</p>
+          <Button className="mt-4 add-to-cart-button" onClick={handleAddToCart}>Add to cart</Button>
+          <p className="mt-3 in-demand-text">In demand. {demandText}</p>
+          <p className="mt-1 sale-end-date">Sale ends on {saleEndDate}</p>
+          <div className="policy-icons mt-4">
+            <div className="policy-icon">
+              <FaShieldAlt size={24} />
+              <span>Security policy</span>
+            </div>
+            <div className="policy-icon">
+              <FaTruck size={24} />
+              <span>Delivery policy</span>
+            </div>
+            <div className="policy-icon">
+              <FaUndo size={24} />
+              <span>Return policy</span>
+            </div>
+          </div>
+         
         </Col>
       </Row>
-      <Row className="mt-4">
-        <Col md={12}>
-          <h3>Reviews</h3>
-          <ListGroup>
+      <Tabs defaultActiveKey="description" id="product-details-tabs" className="mt-4">
+        <Tab eventKey="description" title="Description">
+          <div className="mt-3" dangerouslySetInnerHTML={{ __html: description }} />
+        </Tab>
+        <Tab eventKey="ingredients" title="Ingredients">
+          <div className="mt-3 ingr">
+            <Image src="https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20220815154310-vox45htp-sf.png?v=1716655113" fluid />
+          </div>
+        </Tab>
+        <Tab eventKey="reviews" title="Product reviews">
+          <ListGroup className="mt-3">
             {reviews.map((review, idx) => (
               <ListGroup.Item key={idx}>
                 <strong>{review.user}</strong> ({review.date})
@@ -132,8 +81,8 @@ const ProductPage = () => {
               </ListGroup.Item>
             ))}
           </ListGroup>
-        </Col>
-      </Row>
+        </Tab>
+      </Tabs>
     </Container>
   );
 };

@@ -62,7 +62,7 @@ const Shop = ({ searchTerm }) => {
     <Container className="my-4">
       {orderPlaced && <Alert variant="success">Your order has been placed successfully!</Alert>}
 
-      <h4 className="text-center">Shop from talented creators and curators!</h4>
+      <h4 className="text-center">Shop by Body System</h4>
       <CategoryList />
 
       {selectedCategory ? (

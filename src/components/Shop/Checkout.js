@@ -123,6 +123,7 @@ const Checkout = () => {
                     min="1"
                     value={item.quantity}
                     onChange={(e) => updateCartQuantity(item.id, e.target.value)}
+                    className='quan'
                   />
                 </Col>
                 <Col xs={2} className="text-right">
