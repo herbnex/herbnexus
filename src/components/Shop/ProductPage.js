@@ -62,7 +62,7 @@ const ProductPage = () => {
          
         </Col>
       </Row>
-      <Tabs defaultActiveKey="description" id="product-details-tabs" className="mt-4">
+      <Tabs defaultActiveKey="description" id="product-details-tabs" className="mt-4 prodtabs">
         <Tab eventKey="description" title="Description">
           <div className="mt-3" dangerouslySetInnerHTML={{ __html: description }} />
         </Tab>

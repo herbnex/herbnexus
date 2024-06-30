@@ -7,7 +7,7 @@ const PopularGifts = ({ products, onAddToCart, onShowProductDetail }) => {
     <>
       <h4 className="text-left">Popular gifts right now</h4>
       <Row className="popular-gifts">
-        {products.slice(0, 5).map(product => (
+        {products.slice(0, 4).map(product => (
           <Col key={product.id} className="product-card">
             <Card className="mb-4">
               <Card.Img

@@ -17,7 +17,6 @@ const categories = [
   { name: 'Hormone Health', image: hh },
   { name: 'Neurological Health', image: nh },
   { name: 'Immune Health', image: ih },
-
 ];
 
 const CategoryList = () => {
@@ -25,7 +24,7 @@ const CategoryList = () => {
     <div className="category-list-container">
       <Row className="category-section">
         {categories.map((category, index) => (
-          <Col key={index} xs={6} sm={4} md={2} className="category-item">
+          <Col key={index} xs={4} sm={4} md={2} className="category-item">
             <Card className="text-center category-card">
               <Card.Img variant="top" src={category.image} className="category-image" />
               <Card.Body>

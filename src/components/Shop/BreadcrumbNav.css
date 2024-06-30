@@ -26,4 +26,7 @@
   .breadcrumb-separator {
     margin: 0 0.5rem;
   }
+  a:hover {
+    color: #090909;
+}
   

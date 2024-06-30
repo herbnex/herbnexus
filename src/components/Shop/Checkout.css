@@ -2,7 +2,7 @@
     padding: 1rem;
   }
   
-  h4 {
+  .check > h4 {
     margin-top: 1.5rem;
     font-weight: bold;
   }

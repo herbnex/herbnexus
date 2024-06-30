@@ -43,7 +43,7 @@
   
   @media (max-width: 576px) {
     .popular-gifts .product-card {
-      flex: 1 1 100%;
+      flex: 0.5;
     }
   }
   

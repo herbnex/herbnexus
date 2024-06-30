@@ -91,6 +91,9 @@
   width:3rem;
   
 }
+.prodtabs .nav-link{
+  color: black;
+}
 
 @media (max-width: 576px) {
   .product-grid.grid .product-card {

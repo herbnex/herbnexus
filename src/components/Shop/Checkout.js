@@ -103,7 +103,7 @@ const Checkout = () => {
   return (
     <Container className="checkout-container">
       <Row>
-        <Col md={7}>
+        <Col md={7} className='check'>
           <h2>Order Summary</h2>
           {cart.length === 0 ? (
             <Alert variant="info">Your cart is empty.</Alert>
