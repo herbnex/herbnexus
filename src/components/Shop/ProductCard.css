@@ -32,11 +32,15 @@
   }
   
   .product-card .btn:hover {
-    background-color: #0056b3;
+    background-color: #453f85;
   }
   
   .product-description {
     margin-top: 0.5rem;
     color: #666;
   }
-  
+  .btn-primary {
+    color: #fff;
+    background-color: #39cabb !important;
+    border-color: #39cabb;  
+  }

@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Button } from 'react-bootstrap';
 
 const ProductCard = ({ product, handleAddToCart, handleShowProductDetail }) => (
-  <Card className="mb-4">
+  <Card className="mb-4 prod">
     <Card.Img
       variant="top"
       src={product.image}

@@ -58,13 +58,13 @@ const AllProductsPage = () => {
           <div className="view-toggle">
             <FaTh
               size={24}
-              color={view === 'grid' ? '#a42f37' : '#ccc'}
+              color={view === 'grid' ? '#39CABB' : '#ccc'}
               onClick={() => handleViewToggle('grid')}
               className="view-icon"
             />
             <FaThList
               size={24}
-              color={view === 'list' ? '#a42f37' : '#ccc'}
+              color={view === 'list' ? '#39CABB' : '#ccc'}
               onClick={() => handleViewToggle('list')}
               className="view-icon"
             />
@@ -74,7 +74,7 @@ const AllProductsPage = () => {
       <Row className={`product-grid ${view}`}>
         {filteredProducts.map(product => (
           <Col key={product.id} xs={6} sm={4} md={3} className={`product-card ${view}`}>
-            <Card className="mb-4">
+            <Card className="mb-4 prod">
               <Row noGutters>
                 <Col md={view === 'list' ? 4 : 12}>
                   <Card.Img

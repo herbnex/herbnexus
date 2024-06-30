@@ -54,3 +54,13 @@
   cursor: pointer;
   margin-left: 0.5rem;
 }
+.btn-primary {
+  color: #fff;
+  background-color: #39cabb;
+  border-color: #39cabb;
+}
+.btn-primary:hover {
+  color: #fff;
+  background-color: #453f85;
+  border-color: #453f85;
+}

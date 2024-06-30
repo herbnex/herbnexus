@@ -56,13 +56,13 @@ const AllCategoriesPage = ({ handleAddToCart, handleShowProductDetail }) => {
           <div className="view-toggle">
             <FaTh
               size={24}
-              color={view === 'grid' ? '#a42f37' : '#ccc'}
+              color={view === 'grid' ? '#39CABB' : '#ccc'}
               onClick={() => handleViewToggle('grid')}
               className="view-icon"
             />
             <FaThList
               size={24}
-              color={view === 'list' ? '#a42f37' : '#ccc'}
+              color={view === 'list' ? '#39CABB' : '#ccc'}
               onClick={() => handleViewToggle('list')}
               className="view-icon"
             />
