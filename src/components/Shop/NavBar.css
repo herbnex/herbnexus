@@ -168,7 +168,7 @@
   }
 
   .navbar-search button {
-    
+    display: none;
     padding: 0.25rem; /* Reduce padding on smaller screens */
   }
 
