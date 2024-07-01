@@ -36,7 +36,8 @@ const ShopLayout = () => {
   };
 
   const handleShowProductDetail = (product) => {
-    history.push(`/shop/product/${product.id}`);
+    const formattedName = product.name.toLowerCase().replace(/ /g, '-');
+    history.push(`/shop/product/${formattedName}`);
   };
 
   return (
@@ -51,7 +52,7 @@ const ShopLayout = () => {
       <BreadcrumbNav />
       <Switch>
         <Route exact path={`${path}/`} render={(props) => <Shop {...props} searchTerm={searchTerm} />} />
-        <Route path={`${path}/product/:id`} render={(props) => <ProductPage {...props} />} />
+        <Route path={`${path}/product/:name`} render={(props) => <ProductPage {...props} />} />
         <Route 
           path={`${path}/category/:category`} 
           render={(props) => (

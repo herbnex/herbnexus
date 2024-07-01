@@ -3,9 +3,11 @@ import { Row, Col, Card, Button, Container, Dropdown } from 'react-bootstrap';
 import { useProduct } from './ProductContext';
 import { FaTh, FaThList } from 'react-icons/fa';
 import { useHistory } from 'react-router-dom';
+import ProductList from './ProductList';
+
 import './AllProductsPage.css';
 
-const AllProductsPage = () => {
+const AllProductsPage = ({ handleAddToCart, handleShowProductDetail }) => {
   const { allProducts, addToCart } = useProduct();
   const history = useHistory();
 
@@ -71,43 +73,12 @@ const AllProductsPage = () => {
           </div>
         </div>
       </div>
-      <Row className={`product-grid ${view}`}>
-        {filteredProducts.map(product => (
-          <Col key={product.id} xs={6} sm={4} md={3} className={`product-card ${view}`}>
-            <Card className="mb-4 prod">
-              <Row noGutters>
-                <Col md={view === 'list' ? 4 : 12}>
-                  <Card.Img
-                    variant="top"
-                    src={product.image}
-                    onClick={() => history.push(`/shop/product/${product.id}`)}
-                  />
-                </Col>
-                <Col md={view === 'list' ? 8 : 12}>
-                  <Card.Body>
-                    <Card.Title>{product.name}</Card.Title>
-                    <Card.Text>
-                      <span className="fw-bolder">
-                        ${product.price}
-                      </span>{' '}
-                      {/* ${product.discountPrice} */}
-                    </Card.Text>
-                    {view === 'list' && (
-                      <Card.Text className="product-description">
-                        This is a brief description of the product to give users more context
-                        about what it is and its benefits.
-                      </Card.Text>
-                    )}
-                    <Button variant="primary" onClick={() => addToCart(product)}>
-                      Add to Cart
-                    </Button>
-                  </Card.Body>
-                </Col>
-              </Row>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+      <ProductList
+        products={filteredProducts}
+        view={view}
+        handleAddToCart={handleAddToCart}
+        handleShowProductDetail={handleShowProductDetail}
+      />
     </Container>
   );
 };

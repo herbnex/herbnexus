@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Container, Alert } from 'react-bootstrap';
 import './Shop.css';
 import EditorsPicks from './EditorsPicks';
-import AllCategoriesPage from './AllCategoriesPage';
+import AllProductsPage from './AllProductsPage';
 import CartModal from './CartModal';
 import CategoryList from './CategoryList';
 import SearchResultsModal from './SearchResultsModal';
@@ -36,7 +36,9 @@ const Shop = ({ searchTerm }) => {
   const handleCloseCheckout = () => setShowCheckout(false);
 
   const handleShowProductDetail = (product) => {
-    history.push(`/shop/product/${product.id}`);
+    const formattedName = product.name.toLowerCase().replace(/ /g, '-');
+    history.push(`/shop/product/${formattedName}`);
+    
   };
 
   const handlePlaceOrder = (e) => {
@@ -84,7 +86,7 @@ const Shop = ({ searchTerm }) => {
             handleAddToCart={handleAddToCart}
             handleShowProductDetail={handleShowProductDetail} 
           /> */}
-          <AllCategoriesPage 
+          <AllProductsPage 
             handleAddToCart={handleAddToCart}
             handleShowProductDetail={handleShowProductDetail}
           />

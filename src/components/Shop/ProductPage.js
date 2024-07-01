@@ -7,14 +7,18 @@ import { FaShieldAlt, FaTruck, FaUndo } from 'react-icons/fa';
 import './ProductPage.css';
 
 const ProductPage = () => {
-  const { id } = useParams();
+  const { name } = useParams();
   const history = useHistory();
   const { allProducts, addToCart } = useProduct();
-  const product = allProducts.find((p) => p.id === parseInt(id));
+  
+  // Find the product by name
+  const product = allProducts.find(
+    (p) => p.name.toLowerCase().replace(/ /g, '-') === name
+  );
 
   if (!product) return <div>Product not found.</div>;
 
-  const { image, additionalImages = [], name, price, rating, reviews = [], demandText, saleEndDate, description } = product;
+  const { image, additionalImages = [], name: productName, price, rating, reviews = [], demandText, saleEndDate, description } = product;
 
   const handleAddToCart = () => {
     addToCart(product);
@@ -34,7 +38,7 @@ const ProductPage = () => {
           </Row>
         </Col>
         <Col md={6}>
-          <h2 className="product-name">{name}</h2>
+          <h2 className="product-name">{productName}</h2>
           <p className="product-price fw-bolder">CA${price}</p>
           <p className="product-rating">{rating} stars ({reviews.length} reviews)</p>
          
