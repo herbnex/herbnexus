@@ -82,9 +82,9 @@ const ShopLayout = () => {
             />
           )} 
         />
-        <PrivateRoute path={`${path}/checkout`} requireSubscription={false}>
+        <Route path={`${path}/checkout`} >
           <Checkout />
-        </PrivateRoute>
+        </Route>
       </Switch>
     </>
   );

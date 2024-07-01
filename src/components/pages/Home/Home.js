@@ -43,11 +43,11 @@ const Home = () => {
         </NavLink>
       </Container>
       <SectionTitle>
-      <a href="https://shop.herbnexus.io" style={{ textDecoration: 'none' }} target="_blank" rel="noopener noreferrer">
+      <NavLink to="/shop" className="mx-auto">
 
              <h1>Shop Herbal Supplements</h1> 
-             </a>
-              
+             
+             </NavLink>
               <h4>Select the body system you'd like to focus on</h4>
             </SectionTitle>
       <ShopPromo />

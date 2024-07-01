@@ -27,7 +27,7 @@ import PasswordReset from './components/PasswordReset';
 import ProductPage from "./components/Shop/ProductPage";
 import ShopLayout from "./components/Shop/ShopLayout";
 import { ProductProvider } from './components/Shop/ProductContext'; // Import ProductProvider
-
+import PromoModal from './components/PromoModal';
 const DelayedContact = withDelayedNavigation(Contact, 2000);
 
 const App = () => {
@@ -39,6 +39,7 @@ const App = () => {
         <ProductProvider>
           <NavBar />
           <PrivacyPolicyModal />
+          <PromoModal />
           <Switch>
             <Route path="/reset-password">
               <PasswordReset />

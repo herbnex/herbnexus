@@ -16,6 +16,7 @@ import hlh from '../../assets/hlh.png';
 import promoImage1 from '../../assets/a.png'; // Replace with actual image path
 import promoImage2 from '../../assets/b.png'; // Replace with actual image path
 import SectionTitle from "../SectionTitle/SectionTitle";
+import { NavLink } from 'react-router-dom';
 
 const ShopPromo = () => {
   const categories = [
@@ -98,7 +99,10 @@ const ShopPromo = () => {
             <div key={index} className="text-center category-slide">
               <img src={category.icon} alt={category.title} className="category-icon mb-3" />
               <h5>{category.title}</h5>
+              <NavLink to="/shop" className="mx-auto">
+
               <Button variant="outline-secondary" className="mt-2">Browse Products</Button>
+           </NavLink >
             </div>
           ))}
         </Slider>

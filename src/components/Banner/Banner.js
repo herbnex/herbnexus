@@ -25,7 +25,7 @@ const Banner = () => {
                 <div className="btn-box">
                   <NavLink to="/doctors">
                     <Button variant="outline" className="rounded-pill btn-main my-5 p-2 px-3">
-                      Chat Live &nbsp;
+                      Connect &nbsp;
                       <i className="bi bi-chat-dots"></i>
                     </Button>
                   </NavLink>

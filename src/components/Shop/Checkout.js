@@ -4,7 +4,6 @@ import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { Container, Row, Col, Form, Button, Alert, Image, Spinner } from 'react-bootstrap';
 import { useProduct } from './ProductContext';
-import useAuth from '../../../src/hooks/useAuth';
 import './Checkout.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
@@ -63,34 +62,28 @@ const CheckoutForm = ({ clientSecret }) => {
 
 const Checkout = () => {
   const { cart, removeFromCart, updateCartQuantity } = useProduct();
-  const { user } = useAuth();
   const [clientSecret, setClientSecret] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchClientSecret = async () => {
-      if (user && user.uid) {
-        try {
-          console.log('Cart data being sent:', cart); // Log cart data
-          const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
-            userId: user.uid,
-            cart
-          });
-          console.log('Response data:', response.data); // Log response data
-          setClientSecret(response.data.clientSecret);
-        } catch (error) {
-          console.error("Error fetching client secret:", error);
-          setErrorMessage('An error occurred while initializing the payment process. Please try again.');
-        } finally {
-          setLoading(false);
-        }
-      } else {
+      try {
+        console.log('Cart data being sent:', cart); // Log cart data
+        const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
+          cart
+        });
+        console.log('Response data:', response.data); // Log response data
+        setClientSecret(response.data.clientSecret);
+      } catch (error) {
+        console.error("Error fetching client secret:", error);
+        setErrorMessage('An error occurred while initializing the payment process. Please try again.');
+      } finally {
         setLoading(false);
       }
     };
     fetchClientSecret();
-  }, [user, cart]);
+  }, [cart]);
 
   if (loading) {
     return (
