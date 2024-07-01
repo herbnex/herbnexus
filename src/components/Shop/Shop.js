@@ -84,7 +84,10 @@ const Shop = ({ searchTerm }) => {
             handleAddToCart={handleAddToCart}
             handleShowProductDetail={handleShowProductDetail} 
           /> */}
-          <AllCategoriesPage />
+          <AllCategoriesPage 
+            handleAddToCart={handleAddToCart}
+            handleShowProductDetail={handleShowProductDetail}
+          />
         </>
       )}
 
