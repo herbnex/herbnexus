@@ -15,7 +15,7 @@ const PromoModal = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShow(true);
-    }, 7000); // Show modal after 7 seconds
+    }, 2500); // Show modal after 7 seconds
 
     return () => clearTimeout(timer); // Cleanup timer
   }, []);
@@ -66,7 +66,7 @@ const PromoModal = () => {
       <Modal.Header closeButton>
       <NavLink to="/shop" >
 
-        <Modal.Title className='tit'>Herbal Shop</Modal.Title>
+        <Modal.Title >Explore our Herbal Shop</Modal.Title>
         </NavLink>
       </Modal.Header>
       <Modal.Body>

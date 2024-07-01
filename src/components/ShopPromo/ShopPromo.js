@@ -97,8 +97,11 @@ const ShopPromo = () => {
         <Slider {...settings}>
           {categories.map((category, index) => (
             <div key={index} className="text-center category-slide">
+                            <NavLink to="/shop" className="mx-auto">
+
               <img src={category.icon} alt={category.title} className="category-icon mb-3" />
               <h5>{category.title}</h5>
+              </NavLink>
               <NavLink to="/shop" className="mx-auto">
 
               <Button variant="outline-secondary" className="mt-2">Browse Products</Button>

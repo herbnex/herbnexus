@@ -73,6 +73,10 @@
   .slick-dots li.slick-active button:before {
     color: #00224f; /* Herb Nexus theme color */
   }
+  .modal-title{
+    text-align: center;
+    
+  }
  
   
   @media (max-width: 767px) {

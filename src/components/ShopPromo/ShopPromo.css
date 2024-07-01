@@ -77,9 +77,14 @@
   }
   
   .category-icon {
+    
     width: 80px;
     height: 80px;
     margin-bottom: 1rem;
+  }
+  .slick-slide img{
+    
+   display:inline-block !important;
   }
   
   .category-icon:hover {
