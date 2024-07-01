@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { Container, Row, Col, Image, Button, Form, ListGroup, Tabs, Tab } from 'react-bootstrap';
 import { useProduct } from './ProductContext';
@@ -11,14 +11,33 @@ const ProductPage = () => {
   const history = useHistory();
   const { allProducts, addToCart } = useProduct();
   
+  const [currentMainImage, setCurrentMainImage] = useState('');
+  const [currentAdditionalImages, setCurrentAdditionalImages] = useState([]);
+
   // Find the product by name
   const product = allProducts.find(
     (p) => p.name.toLowerCase().replace(/ /g, '-') === name
   );
 
+  useEffect(() => {
+    if (product) {
+      setCurrentMainImage(product.image);
+      setCurrentAdditionalImages(product.additionalImages || []);
+    }
+  }, [product]);
+
   if (!product) return <div>Product not found.</div>;
 
-  const { image, additionalImages = [], name: productName, price, rating, reviews = [], demandText, saleEndDate, description } = product;
+  const { name: productName, price, rating, reviews = [], demandText, saleEndDate, description } = product;
+
+  const handleImageClick = (clickedImage) => {
+    const newMainImage = clickedImage;
+    const newAdditionalImages = currentAdditionalImages.map((img) =>
+      img === clickedImage ? currentMainImage : img
+    );
+    setCurrentMainImage(newMainImage);
+    setCurrentAdditionalImages(newAdditionalImages);
+  };
 
   const handleAddToCart = () => {
     addToCart(product);
@@ -28,11 +47,11 @@ const ProductPage = () => {
     <Container className="product-page-container">
       <Row>
         <Col md={6}>
-          <Image src={image} fluid className="main-image" />
+          <Image src={currentMainImage} fluid className="main-image" onClick={() => handleImageClick(currentMainImage)} />
           <Row className="mt-3 additional-images">
-            {additionalImages.map((img, idx) => (
+            {currentAdditionalImages.map((img, idx) => (
               <Col key={idx} xs={4}>
-                <Image src={img} thumbnail />
+                <Image src={img} thumbnail onClick={() => handleImageClick(img)} />
               </Col>
             ))}
           </Row>
