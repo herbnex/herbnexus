@@ -11,10 +11,10 @@ const ProductCard = ({ product, handleAddToCart, handleShowProductDetail }) => (
     <Card.Body>
       <Card.Title>{product.name}</Card.Title>
       <Card.Text>
-        <span className="text-muted text-decoration-line-through">
+        <span className="fw-bolder">
           ${product.price}
         </span>{' '}
-        ${product.discountPrice}
+      {/* ${product.discountPrice} */}
       </Card.Text>
       <Card.Text>
         Rating: {product.rating} ({product.reviews.length} reviews)
