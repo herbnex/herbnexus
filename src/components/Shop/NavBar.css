@@ -94,7 +94,7 @@
 }
 
 .cart-counter {
-  background-color: #453f85;
+  background-color: #39cabb;
   color: white;
   border-radius: 50%;
   padding: 0.25rem 0.5rem;
@@ -169,7 +169,7 @@
   }
 
   .navbar-search button {
-   
+   display: none;
     padding: 0.25rem; /* Reduce padding on smaller screens */
   }
 
