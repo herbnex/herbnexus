@@ -12,11 +12,12 @@ import hlh from '../../assets/hlh.png';
 import './CategoryList.css';
 
 const categories = [
-  { name: 'Lung Health', image: lh },
+  
   { name: 'Digestive Health', image: dh },
   { name: 'Hormone Health', image: hh },
   { name: 'Neurological Health', image: nh },
   { name: 'Immune Health', image: ih },
+  { name: 'Hollistc Health', image: hlh },
 ];
 
 const CategoryList = () => {
