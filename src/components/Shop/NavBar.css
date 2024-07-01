@@ -10,7 +10,7 @@
   position: sticky; /* Make the navbar sticky */
   top: 0; /* Position it at the top */
   width: 100%; /* Make sure it spans the full width */
-  z-index: 1000; /* Ensure it is above other content */
+  z-index: 900; /* Ensure it is above other content */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.013); /* Add some shadow for better visibility */
 }
 

@@ -9,6 +9,7 @@ import NavBar from './NavBar';
 import BreadcrumbNav from './BreadcrumbNav';
 import Checkout from './Checkout'; // Import the Checkout component
 import { useProduct } from './ProductContext';
+import PrivateRoute from '../PrivateRoute/PrivateRoute'; // Import PrivateRoute component
 
 const ShopLayout = () => {
   let { path } = useRouteMatch();
@@ -81,10 +82,9 @@ const ShopLayout = () => {
             />
           )} 
         />
-        <Route 
-          path={`${path}/checkout`} 
-          component={Checkout} // Add the Checkout route
-        />
+        <PrivateRoute path={`${path}/checkout`} requireSubscription={false}>
+          <Checkout />
+        </PrivateRoute>
       </Switch>
     </>
   );
