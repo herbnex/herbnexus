@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Container, Alert } from 'react-bootstrap';
 import './Shop.css';
 import EditorsPicks from './EditorsPicks';
+import AllCategoriesPage from './AllCategoriesPage';
 import CartModal from './CartModal';
 import CategoryList from './CategoryList';
 import SearchResultsModal from './SearchResultsModal';
@@ -78,7 +79,12 @@ const Shop = ({ searchTerm }) => {
             onAddToCart={handleAddToCart}
             onShowProductDetail={handleShowProductDetail}
           />
-          <EditorsPicks />
+          {/* <EditorsPicks 
+            products={allProducts.slice(9, 15)} 
+            handleAddToCart={handleAddToCart}
+            handleShowProductDetail={handleShowProductDetail} 
+          /> */}
+          <AllCategoriesPage />
         </>
       )}
 
