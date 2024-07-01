@@ -15,7 +15,7 @@ const PromoModal = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShow(true);
-    }, 1000); // Show modal after 7 seconds
+    }, 7000); // Show modal after 7 seconds
 
     return () => clearTimeout(timer); // Cleanup timer
   }, []);

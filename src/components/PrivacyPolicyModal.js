@@ -13,7 +13,7 @@ const PrivacyPolicyModal = () => {
       const timer = setTimeout(() => {
         setShow(true);
         localStorage.setItem('privacyShown', 'true'); // Store the flag in local storage
-      }, 3000); // Show the modal after 3 seconds
+      }, 1000); // Show the modal after 3 seconds
 
       return () => clearTimeout(timer); // Cleanup the timer on component unmount
     }
