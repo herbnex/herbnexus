@@ -16,7 +16,7 @@ const NavBar = () => {
 
 	return (
 		<div>
-			<Navbar bg="white" expand="lg" className="py-3">
+			<Navbar bg="white" expand="lg" className="py-3 navcont">
 				<Container>
 					{/* LOGO */}
 					<NavLink

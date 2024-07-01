@@ -103,7 +103,9 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	
 }
+
 
 .navbar-nav {
 	display: flex;
