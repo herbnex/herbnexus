@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useStripe, useElements, PaymentElement, Elements, PaymentRequestButtonElement } from '@stripe/react-stripe-js';
+import { useStripe, useElements, PaymentElement, Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { Container, Form, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
 import Loading from '../../components/Loading/Loading'; // Adjust the path to your Loading component
 import './subscription.css';
 
@@ -49,6 +49,7 @@ const SubscriptionForm = ({ clientSecret }) => {
         }, 3000); // 3-second delay before redirection
       }
     } catch (err) {
+     // console.error('Error confirming payment:', err);
       setErrorMessage('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -82,7 +83,6 @@ const Subscription = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
-  const [paymentRequest, setPaymentRequest] = useState(null);
 
   useEffect(() => {
     const fetchClientSecret = async () => {
@@ -94,30 +94,11 @@ const Subscription = () => {
           );
           if (response.data.clientSecret && response.data.clientSecret.includes('_secret_')) {
             setClientSecret(response.data.clientSecret);
-
-            // Initialize Payment Request
-            const stripe = await stripePromise;
-            const pr = stripe.paymentRequest({
-              country: 'US',
-              currency: 'usd',
-              total: {
-                label: 'Total', // Ensure this label is not empty
-                amount: 10000, // $100 in cents
-              },
-              requestPayerName: true,
-              requestPayerEmail: true,
-            });
-
-            // Check the availability of the Payment Request API first.
-            pr.canMakePayment().then((result) => {
-              if (result) {
-                setPaymentRequest(pr);
-              }
-            });
           } else {
             setErrorMessage('Invalid client secret format received.');
           }
         } catch (error) {
+         // console.error("Error fetching client secret:", error);
           setErrorMessage('An error occurred while initializing the payment process. Please try again.');
         }
       }
@@ -180,9 +161,6 @@ const Subscription = () => {
             <Elements stripe={stripePromise} options={{ clientSecret }}>
               <SubscriptionForm clientSecret={clientSecret} />
             </Elements>
-          )}
-          {paymentRequest && (
-            <PaymentRequestButtonElement options={{ paymentRequest }} />
           )}
         </Col>
       </Row>
