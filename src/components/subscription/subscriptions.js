@@ -83,6 +83,8 @@ const Subscription = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
+  const [paymentRequest, setPaymentRequest] = useState(null);
+
 
   useEffect(() => {
     const fetchClientSecret = async () => {
@@ -94,6 +96,25 @@ const Subscription = () => {
           );
           if (response.data.clientSecret && response.data.clientSecret.includes('_secret_')) {
             setClientSecret(response.data.clientSecret);
+
+            const stripe = await stripePromise;
+            const pr = stripe.paymentRequest({
+              country: 'CA',
+              currency: 'cad',
+              total: {
+                label: 'Total',
+                amount: 10000, // $100 in cents
+              },
+              requestPayerName: true,
+              requestPayerEmail: true,
+            });
+
+            // Check the availability of the Payment Request API first.
+            pr.canMakePayment().then((result) => {
+              if (result) {
+                setPaymentRequest(pr);
+              }
+            });
           } else {
             setErrorMessage('Invalid client secret format received.');
           }
