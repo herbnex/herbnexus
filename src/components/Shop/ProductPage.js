@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
+
 import { useParams, useHistory } from 'react-router-dom';
 import { Container, Row, Col, Image, Button, Form, ListGroup, Tabs, Tab } from 'react-bootstrap';
 import { useProduct } from './ProductContext';
@@ -72,16 +74,27 @@ const ProductPage = () => {
           <p className="mt-1 sale-end-date">Sale ends on {saleEndDate}</p>
           <div className="policy-icons mt-4">
             <div className="policy-icon">
+            <NavLink to="/shop/security-policy" >
+
               <FaShieldAlt size={24} />
               <span>Security policy</span>
+              </NavLink>
+
             </div>
             <div className="policy-icon">
+            <NavLink to="/shop/delivery-policy" >
+
               <FaTruck size={24} />
               <span>Delivery policy</span>
+              </NavLink>
             </div>
             <div className="policy-icon">
+            <NavLink to="/shop/return-policy" >
+
               <FaUndo size={24} />
               <span>Return policy</span>
+              </NavLink>
+
             </div>
           </div>
          

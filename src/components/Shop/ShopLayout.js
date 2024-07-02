@@ -9,6 +9,9 @@ import NavBar from './NavBar';
 import BreadcrumbNav from './BreadcrumbNav';
 import Checkout from './Checkout'; // Import the Checkout component
 import { useProduct } from './ProductContext';
+import TermsOfService from '../pages/TermsOfService/TermsOfService';
+import DeliveryPolicy from '../Shop/DeliveryPolicy';
+import ReturnPolicy from '../Shop/ReturnPolicy';
 import PrivateRoute from '../PrivateRoute/PrivateRoute'; // Import PrivateRoute component
 
 const ShopLayout = () => {
@@ -85,6 +88,15 @@ const ShopLayout = () => {
         />
         <Route path={`${path}/checkout`} >
           <Checkout />
+        </Route>
+        <Route path={`${path}/security-policy`} >
+          <TermsOfService />
+        </Route>
+        <Route path={`${path}/delivery-policy`} >
+          <DeliveryPolicy />
+        </Route>
+        <Route path={`${path}/return-policy`}>
+          <ReturnPolicy />
         </Route>
       </Switch>
     </>

@@ -74,6 +74,16 @@ const Footer = () => {
                     Terms of Service
                   </NavLink>
                 </li>
+                <li className="mb-2">
+                  <NavLink className="text-muted" to="/shop/delivery-policy">
+                    Shipping Policy
+                  </NavLink>
+                </li>
+                <li className="mb-2">
+                  <NavLink className="text-muted" to="/shop/return-policy">
+                    Return Policy
+                  </NavLink>
+                </li>
               </ul>
             </div>
           </Col>
