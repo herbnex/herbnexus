@@ -1,4 +1,6 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
+
 import { Row, Col, Card } from 'react-bootstrap';
 import dh from '../../assets/dh.png'; 
 import hb from '../../assets/hb.png'; 
@@ -27,12 +29,16 @@ const CategoryList = () => {
         {categories.map((category, index) => (
           <Col key={index} xs={4} sm={4} md={2} className="category-item">
             <Card className="text-center category-card">
+            <NavLink to="/shop/category/" >
+
               <Card.Img variant="top" src={category.image} className="category-image" />
               <Card.Body>
                 <div className="card-title-container">
                   <Card.Title className="card-title">{category.name}</Card.Title>
                 </div>
+               
               </Card.Body>
+              </NavLink>
             </Card>
           </Col>
         ))}
