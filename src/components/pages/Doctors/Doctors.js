@@ -45,7 +45,7 @@ const Doctors = () => {
   });
 
   return (
-    <div>
+    <div className="ourh">
       <SectionTitle>
         <h1>Our Herbalists</h1>
       </SectionTitle>
