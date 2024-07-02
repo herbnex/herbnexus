@@ -91,7 +91,7 @@ const ProductPage = () => {
         </Tab>
         <Tab eventKey="ingredients" title="Ingredients">
           <div className="mt-3 ingr">
-            <Image src="https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20220815154310-vox45htp-sf.png?v=1716655113" fluid />
+            <Image src={currentAdditionalImages[4]} fluid />
           </div>
         </Tab>
         <Tab eventKey="reviews" title="Product reviews">
