@@ -11,7 +11,7 @@ const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 const CheckoutForm = ({ clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
-  const { cart, removeFromCart, updateCartQuantity } = useProduct();
+  const { cart } = useProduct();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [redirecting, setRedirecting] = useState(false);
@@ -68,6 +68,12 @@ const Checkout = () => {
 
   useEffect(() => {
     const fetchClientSecret = async () => {
+      if (cart.length === 0) {
+        setClientSecret("");
+        setLoading(false);
+        return;
+      }
+
       try {
         console.log('Cart data being sent:', cart); // Log cart data
         const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
