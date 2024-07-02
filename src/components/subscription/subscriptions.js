@@ -133,15 +133,15 @@ const Subscription = () => {
         <Col md={6} className="subscription-faq">
           <h2>Why Subscribe?</h2>
           <ul>
-            <li>Access to accredited herbal practitioners 24/7</li>
+            <li>Access to two (2) video chat Herbal Consultations per month with accredited herbal practitioners 24/7</li>
             <li>Personalized herbal recommendations</li>
-            <li>Exclusive content and discounts</li>
+            <li>Exclusive discounts on Herbal Products</li>
           </ul>
           <h2>Common Questions</h2>
           <h5>
             <FontAwesomeIcon icon={faInfoCircle} /> What does the subscription include?
           </h5>
-          <p>Your subscription includes 24/7 access to accredited herbal practitioners, personalized recommendations, and more.</p>
+          <p>Your subscription includes two (2) video chat Herbal Consultations per month with accredited herbal practitioners, personalized herbal protocol, recommendations, and more.</p>
           <h5>
             <FontAwesomeIcon icon={faInfoCircle} /> How do I cancel my subscription?
           </h5>
@@ -153,8 +153,8 @@ const Subscription = () => {
         </Col>
         <Col md={6}>
           <div className="subscription-header">
-            <h2>Subscribe to Herb Nexus</h2>
-            <p>Get 24/7 access to accredited herbal practitioners for only $50/month.</p>
+            <h2>Subscribe for $100 CAD Monthly</h2>
+            <p>Two (2) video chat Herbal Consultations per month for only $100/month.</p>
           </div>
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           {clientSecret && (
