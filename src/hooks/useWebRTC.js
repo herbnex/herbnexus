@@ -18,20 +18,16 @@ export const useWebRTC = (localStreamRef, remoteStreamRef, setLoading, setError,
     if (!pc) return;
 
     pc.addEventListener("icegatheringstatechange", () => {
-      
-    });
+          });
 
     pc.addEventListener("connectionstatechange", () => {
-      
-    });
+          });
 
     pc.addEventListener("signalingstatechange", () => {
-      
-    });
+          });
 
     pc.addEventListener("iceconnectionstatechange", () => {
-      
-    });
+          });
 
     pc.addEventListener("track", (event) => {
       event.streams[0].getTracks().forEach((track) => {
@@ -99,7 +95,7 @@ export const useWebRTC = (localStreamRef, remoteStreamRef, setLoading, setError,
         });
       });
     } catch (error) {
-      console.error("Error creating room:", error);
+     // console.error("Error creating room:", error);
       setError("Error creating room");
     } finally {
       setLoading(false);
@@ -142,7 +138,7 @@ export const useWebRTC = (localStreamRef, remoteStreamRef, setLoading, setError,
         });
       }
     } catch (error) {
-      console.error("Error joining room:", error);
+     // console.error("Error joining room:", error);
       setError("Error joining room");
     } finally {
       setLoading(false);

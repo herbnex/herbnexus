@@ -49,7 +49,7 @@ const HerbalChat = () => {
       });
       setChatSessions(sessions);
     } catch (error) {
-      console.error('Error loading chat sessions: ', error);
+     // console.error('Error loading chat sessions: ', error);
     }
   };
 
@@ -62,7 +62,7 @@ const HerbalChat = () => {
         setCurrentChatId(chatId);
       }
     } catch (error) {
-      console.error('Error loading chat history: ', error);
+      //console.error('Error loading chat history: ', error);
     }
   };
 
@@ -74,7 +74,7 @@ const HerbalChat = () => {
         timestamp: Timestamp.now(),
       }, { merge: true });
     } catch (error) {
-      console.error('Error saving chat history: ', error);
+      //console.error('Error saving chat history: ', error);
     }
   };
 
@@ -87,7 +87,7 @@ const HerbalChat = () => {
         setCurrentChatId(null);
       }
     } catch (error) {
-      console.error('Error deleting chat session: ', error);
+      //console.error('Error deleting chat session: ', error);
     }
   };
 
@@ -126,7 +126,7 @@ const HerbalChat = () => {
       }
     } catch (error) {
       setMessages([...newMessages, { user: 'Bot', text: 'Error: Could not get response' }]);
-      console.error('Error sending message: ', error);
+      //console.error('Error sending message: ', error);
     } finally {
       setIsLoading(false);
       setInput('');
@@ -154,7 +154,7 @@ const HerbalChat = () => {
       ]);
       setCurrentChatId(docRef.id);
     } catch (error) {
-      console.error('Error starting new chat session: ', error);
+     // console.error('Error starting new chat session: ', error);
     }
   };
 

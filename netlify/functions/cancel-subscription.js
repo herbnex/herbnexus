@@ -35,7 +35,7 @@ exports.handler = async (event) => {
 
     return { statusCode: 200, body: "Subscription canceled successfully" };
   } catch (error) {
-    console.error("Error cancelling subscription:", error);
+    //console.error("Error cancelling subscription:", error);
     return { statusCode: 500, body: "Internal Server Error" };
   }
 };

@@ -21,7 +21,7 @@ const Appointments = () => {
         const appointmentsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setAppointments(appointmentsData);
       } catch (error) {
-        console.error('Error fetching appointments: ', error);
+        //console.error('Error fetching appointments: ', error);
       } finally {
         setLoading(false);
       }

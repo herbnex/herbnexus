@@ -86,7 +86,7 @@ const ProductPage = () => {
       setNewReview({ comment: '', rating: 0 });
       setError('');
     } catch (error) {
-      console.error("Error adding review:", error);
+      //console.error("Error adding review:", error);
       setError('Error adding review. Please try again.');
     }
   };

@@ -18,18 +18,14 @@ const Doctor = () => {
       try {
         const doctorRef = doc(db, "doctors", doctorId.toString());
         const doctorSnapshot = await getDoc(doctorRef);
-        
-
-        if (doctorSnapshot.exists()) {
+                if (doctorSnapshot.exists()) {
           const doctorData = doctorSnapshot.data();
-          
-          setIsOnline(doctorData.isOnline || false);
+                    setIsOnline(doctorData.isOnline || false);
           setDoctor(doctorData);
         } else {
-          
-        }
+                  }
       } catch (error) {
-        console.error("Error fetching doctor data:", error);
+        //console.error("Error fetching doctor data:", error);
       }
     };
     fetchDoctorData();

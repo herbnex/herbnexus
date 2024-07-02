@@ -42,7 +42,7 @@ const CheckoutForm = ({ clientSecret }) => {
         window.location.replace('/confirmation'); // Update with your actual URL
       }
     } catch (err) {
-      console.error('Error confirming payment:', err);
+     // console.error('Error confirming payment:', err);
       setErrorMessage('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -75,14 +75,14 @@ const Checkout = () => {
       }
 
       try {
-        
+       // console.log('Cart data being sent:', cart); // Log cart data
         const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
           cart
         });
-        
+       // console.log('Response data:', response.data); // Log response data
         setClientSecret(response.data.clientSecret);
       } catch (error) {
-        console.error("Error fetching client secret:", error);
+       // console.error("Error fetching client secret:", error);
         setErrorMessage('An error occurred while initializing the payment process. Please try again.');
       } finally {
         setLoading(false);

@@ -16,7 +16,7 @@ exports.getDownloadUrl = functions.https.onRequest((req, res) => {
       });
       res.status(200).json({ url });
     } catch (error) {
-      console.error("Error generating signed URL:", error);
+      //console.error("Error generating signed URL:", error);
       res.status(500).send("Error generating signed URL");
     }
   });

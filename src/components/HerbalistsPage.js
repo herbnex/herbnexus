@@ -38,7 +38,7 @@ const HerbalistsPage = () => {
       setSubmitted(true);
       setError('');
     } catch (error) {
-      console.error("Error adding document: ", error);
+     // console.error("Error adding document: ", error);
       setError('Error submitting application. Please try again.');
     }
   };

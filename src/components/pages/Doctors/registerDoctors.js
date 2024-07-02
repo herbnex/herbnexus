@@ -8,8 +8,7 @@ async function registerDoctor(doctor) {
 
     if (existingUser) {
       // Update existing doctor's data
-      
-      await db.collection('doctors').doc(doctor.id.toString()).set({
+            await db.collection('doctors').doc(doctor.id.toString()).set({
         uid: existingUser.uid,
         id: doctor.id,
         name: doctor.name,
@@ -21,8 +20,7 @@ async function registerDoctor(doctor) {
         rating: doctor.rating,
         isOnline: doctor.isOnline || false
       });
-      
-    } else {
+          } else {
       // Create a user in Firebase Authentication
       const userRecord = await auth.createUser({
         email: `${doctor.id}@example.com`,
@@ -44,10 +42,9 @@ async function registerDoctor(doctor) {
         isOnline: doctor.isOnline || false
       });
 
-      
-    }
+          }
   } catch (error) {
-    console.error('Error registering doctor:', doctor.name, error);
+   // console.error('Error registering doctor:', doctor.name, error);
   }
 }
 

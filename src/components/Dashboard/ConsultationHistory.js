@@ -13,7 +13,7 @@ const ConsultationHistory = () => {
 
   useEffect(() => {
     if (!user) {
-      console.error("User is not authenticated!");
+      //console.error("User is not authenticated!");
       return;
     }
 

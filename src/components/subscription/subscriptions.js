@@ -49,7 +49,7 @@ const SubscriptionForm = ({ clientSecret }) => {
         }, 3000); // 3-second delay before redirection
       }
     } catch (err) {
-      console.error('Error confirming payment:', err);
+     // console.error('Error confirming payment:', err);
       setErrorMessage('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -98,7 +98,7 @@ const Subscription = () => {
             setErrorMessage('Invalid client secret format received.');
           }
         } catch (error) {
-          console.error("Error fetching client secret:", error);
+         // console.error("Error fetching client secret:", error);
           setErrorMessage('An error occurred while initializing the payment process. Please try again.');
         }
       }

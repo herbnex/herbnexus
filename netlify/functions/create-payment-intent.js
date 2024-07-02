@@ -4,9 +4,7 @@ const { db } = require("../../src/Firebase/setupFirebaseAdmin");
 
 exports.handler = async (event) => {
   const { userId } = JSON.parse(event.body);
-  
-
-  try {
+    try {
     // Check if customer already exists in the database
     const userRef = db.collection("users").doc(userId);
     const userDoc = await userRef.get();
@@ -14,16 +12,13 @@ exports.handler = async (event) => {
 
     if (userDoc.exists && userDoc.data().stripeCustomerId) {
       customerId = userDoc.data().stripeCustomerId;
-      
-    } else {
+          } else {
       // Create a new customer if it does not exist
       const customer = await stripe.customers.create({
         metadata: { userId },
       });
       customerId = customer.id;
-      
-
-      // Store the customerId in the database
+            // Store the customerId in the database
       await userRef.set({ stripeCustomerId: customerId }, { merge: true });
     }
 
@@ -39,9 +34,7 @@ exports.handler = async (event) => {
       }
     });
 
-    
-
-    // Store the subscriptionId and update subscription status in the database
+        // Store the subscriptionId and update subscription status in the database
     await userRef.set({
       subscriptionId: subscription.id,
       isSubscribed: true,
@@ -56,7 +49,7 @@ exports.handler = async (event) => {
       }),
     };
   } catch (error) {
-    console.error("Error creating subscription:", error);
+    //console.error("Error creating subscription:", error);
     return {
       statusCode: 400,
       body: JSON.stringify({ error: error.message }),

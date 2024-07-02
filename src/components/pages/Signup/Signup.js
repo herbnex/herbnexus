@@ -63,7 +63,7 @@ const Signup = () => {
       if (imageUpload) {
         try {
           imageUrl = await uploadImage(imageUpload);
-          
+         // console.log("Uploaded image URL:", imageUrl);  // Debug: Check if URL is valid
         } catch (uploadError) {
           throw new Error("Image upload failed. Please try again.");
         }
@@ -72,7 +72,7 @@ const Signup = () => {
       await completeSignup(imageUrl);
     } catch (error) {
       setError(error.message);
-      console.error("Error during signup:", error);
+      //console.error("Error during signup:", error);
     }
   };
 
@@ -138,7 +138,7 @@ const Signup = () => {
       history.replace(refferer.pathname || '/'); // Use only the pathname
     } catch (error) {
       setError(error.message);
-      console.error("Error during signup:", error);
+      //console.error("Error during signup:", error);
     }
   };
 

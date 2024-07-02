@@ -81,7 +81,7 @@ const AuthProvider = ({ children }) => {
       await signOut(auth);
       updateUser(null);
     } catch (error) {
-      console.error("Error logging out:", error);
+     // console.error("Error logging out:", error);
     }
   };
 
@@ -91,7 +91,7 @@ const AuthProvider = ({ children }) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       updateUser(userCredential.user);
     } catch (error) {
-      console.error("Error logging in with email and password:", error);
+     // console.error("Error logging in with email and password:", error);
       throw error;
     } finally {
       setIsLoading(false);

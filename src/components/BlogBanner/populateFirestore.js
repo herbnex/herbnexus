@@ -43,7 +43,6 @@ const populateFirestore = async () => {
   });
 
   await batch.commit();
-  
-};
+  };
 
 populateFirestore().catch(console.error);

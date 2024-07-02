@@ -16,7 +16,7 @@ const useDoctorList = () => {
         }));
         setDoctors(doctorsList);
       } catch (error) {
-        console.error("Error fetching doctors: ", error);
+       // console.error("Error fetching doctors: ", error);
       }
     };
 
