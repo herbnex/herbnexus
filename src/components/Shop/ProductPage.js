@@ -113,7 +113,7 @@ const ProductPage = () => {
         <Col md={6}>
           <h2 className="product-name">{productName}</h2>
           <p className="product-price fw-bolder">CA${price}</p>
-          <p className="product-rating">{rating} stars ({reviews.length} reviews)</p>
+          {/* <p className="product-rating">{rating} stars ({reviews.length} reviews)</p> */}
          
           <Form.Group className="mt-3">
             <Form.Label>Quantity</Form.Label>

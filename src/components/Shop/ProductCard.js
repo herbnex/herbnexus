@@ -11,14 +11,14 @@ const ProductCard = ({ product, handleAddToCart, handleShowProductDetail }) => (
     <Card.Body>
       <Card.Title>{product.name}</Card.Title>
       <Card.Text>
-        <span className="fw-bolder">
+        <span className="fw-normal">
           ${product.price}
         </span>{' '}
       {/* ${product.discountPrice} */}
       </Card.Text>
-      <Card.Text>
+      {/* <Card.Text>
         Rating: {product.rating} ({product.reviews.length} reviews)
-      </Card.Text>
+      </Card.Text> */}
       <Button variant="primary" onClick={() => handleAddToCart(product)}>
         Add to Cart
       </Button>

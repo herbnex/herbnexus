@@ -18,15 +18,15 @@ const PopularGifts = ({ products, onAddToCart, onShowProductDetail }) => {
               <Card.Body>
                 <Card.Title>{product.name}</Card.Title>
                 <Card.Text>
-                  <span className="fw-bolder">
+                  <span className="fw-normal">
                     ${product.price}
                   </span>{' '}
                   {/* ${product.discountPrice} */}
                 </Card.Text>
                 {/* Render reviews count correctly */}
-                <Card.Text>
+                {/* <Card.Text>
                   Rating: {product.rating} ({product.reviews.length} reviews)
-                </Card.Text>
+                </Card.Text> */}
                 <Button variant="primary" onClick={() => onAddToCart(product)}>
                   Add to Cart
                 </Button>
