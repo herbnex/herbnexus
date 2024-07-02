@@ -38,16 +38,16 @@ const NavBar = () => {
 									Home
 								</NavLink>
 								<NavLink activeClassName="active" className="nav-item" to="/doctors">
-									Doctors
+									View Practitioners
 								</NavLink>
-								<NavLink activeClassName="active" className="nav-item" to="/appointment">
+								{/* <NavLink activeClassName="active" className="nav-item" to="/appointment">
 									Appointment
+								</NavLink> */}
+								<NavLink activeClassName="active" className="nav-item" to="/subscribe">
+									Subscribe
 								</NavLink>
-								<NavLink activeClassName="active" className="nav-item" to="/contact">
-									Live Chat
-								</NavLink>
-								<NavLink activeClassName="active" className="nav-item" to="/about">
-									About us
+								<NavLink activeClassName="active" className="nav-item" to="/for-herbalists">
+									For Herbalists
 								</NavLink>
 								<NavLink activeClassName="active" className="nav-item" to="/faq">
 									FAQs

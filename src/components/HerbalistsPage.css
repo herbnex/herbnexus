@@ -1,0 +1,26 @@
+.requirements-list {
+    list-style: none;
+    padding: 0;
+    font-size: 1.2em;
+  }
+  
+  .requirements-list li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+  }
+  
+  .requirements-list li::before {
+    content: "✔️";
+    position: absolute;
+    left: 0;
+    color: #4caf50;
+  }
+  
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-size: 1em;
+  }
+ 

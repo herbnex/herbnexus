@@ -38,7 +38,8 @@ const PrivacyPolicyModal = () => {
       </Modal.Header>
       <Modal.Body>
         <p>If you think you may have a medical emergency, call your doctor or emergency room immediately.</p>
-        <p>The confidentiality of your data is important to us. We comply with the established data protection regulations.</p>
+        <p>We do not support third-party chat apps or require any installation on your computer. All interactions are conducted securely through our platform.</p>
+          <p>The confidentiality of your data is important to us. We comply with the established data protection regulations.</p>
         <p>For more information, please read the legal terms and conditions in detail.</p>
         <h5>Data Protection</h5>
         <p>Last update: 06/18/2024</p>

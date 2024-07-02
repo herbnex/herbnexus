@@ -22,19 +22,19 @@ const Faq = () => {
                   <Accordion.Item className="accordion-item" eventKey="0">
                     <Accordion.Header className="accordion-header">What is HERB NEXUS?</Accordion.Header>
                     <Accordion.Body>
-                      HERB NEXUS is a web app that connects users with accredited herbalists from around the world. We offer personalized herbal consultations and 24/7 live chat access with our experts, all for a monthly subscription fee of $50.
+                      HERB NEXUS is a platform that connects users with accredited herbalists from around the world. We offer personalized herbal consultations and 24/7 live chat access with our experts, all for a monthly subscription fee of $100.
                     </Accordion.Body>
                   </Accordion.Item>
                   <Accordion.Item eventKey="1">
                     <Accordion.Header>How does the 24/7 live chat work?</Accordion.Header>
                     <Accordion.Body>
-                      Our 24/7 live chat service allows you to connect with an accredited herbalist at any time, day or night. Simply log in to your account and start a chat with an available herbalist to get personalized advice and recommendations.
+                      Our 24/7 live chat service allows you to connect with an accredited herbalist at any time, day or night. Simply subscribe and connect live with an available herbalist to get personalized advice and recommendations.
                     </Accordion.Body>
                   </Accordion.Item>
                   <Accordion.Item eventKey="2">
                     <Accordion.Header>What does the subscription include?</Accordion.Header>
                     <Accordion.Body>
-                      The monthly subscription fee of $50 includes unlimited access to our 24/7 live chat service with accredited herbalists. You can get personalized advice, tailored herbal remedies, and ongoing support whenever you need it.
+                      The monthly subscription fee of $100 includes two video consultations 24/7 with accredited herbalists. You can get personalized advice, tailored herbal remedies, and ongoing support whenever you need it.
                     </Accordion.Body>
                   </Accordion.Item>
                   <Accordion.Item eventKey="3">
