@@ -4,6 +4,8 @@ import { Container, Row, Col, Image, Button, Form, ListGroup, Tabs, Tab, Alert }
 import { useProduct } from './ProductContext';
 import useAuth  from '../../../src/hooks/useAuth'; // Import useAuth hook
 import { FaShieldAlt, FaTruck, FaUndo, FaStar } from 'react-icons/fa';
+import { db } from '../../Firebase/firebase.config';
+import { collection, addDoc, query, onSnapshot } from 'firebase/firestore';
 import './ProductPage.css';
 
 const ProductPage = () => {
@@ -16,6 +18,7 @@ const ProductPage = () => {
   const [currentAdditionalImages, setCurrentAdditionalImages] = useState([]);
   const [newReview, setNewReview] = useState({ comment: '', rating: 0 });
   const [error, setError] = useState('');
+  const [reviews, setReviews] = useState([]);
 
   // Find the product by name
   const product = allProducts.find(
@@ -26,12 +29,26 @@ const ProductPage = () => {
     if (product) {
       setCurrentMainImage(product.image);
       setCurrentAdditionalImages(product.additionalImages || []);
+
+      // Fetch reviews from Firestore
+      const reviewsRef = collection(db, 'products', product.id.toString(), 'reviews');
+      const q = query(reviewsRef);
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const fetchedReviews = [];
+        querySnapshot.forEach((doc) => {
+          fetchedReviews.push({ id: doc.id, ...doc.data() });
+        });
+        setReviews(fetchedReviews);
+      });
+
+      return () => unsubscribe();
     }
   }, [product]);
 
   if (!product) return <div>Product not found.</div>;
 
-  const { name: productName, price, rating, reviews = [], demandText, saleEndDate, description } = product;
+  const { name: productName, price, rating, demandText, saleEndDate, description } = product;
 
   const handleImageClick = (clickedImage) => {
     const newMainImage = clickedImage;
@@ -46,17 +63,26 @@ const ProductPage = () => {
     addToCart(product);
   };
 
-  const handleReviewSubmit = (e) => {
+  const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (newReview.rating === 0 || newReview.comment === '') {
       setError('Please fill out all fields');
       return;
     }
 
-    // Add the new review to the product's reviews (this would usually involve a backend API call)
-    product.reviews.push({ user: user.name, date: new Date().toLocaleDateString(), ...newReview });
-    setNewReview({ comment: '', rating: 0 });
-    setError('');
+    try {
+      // Add the new review to Firestore
+      await addDoc(collection(db, 'products', product.id.toString(), 'reviews'), {
+        user: user.name,
+        date: new Date().toLocaleDateString(),
+        ...newReview
+      });
+      setNewReview({ comment: '', rating: 0 });
+      setError('');
+    } catch (error) {
+      console.error("Error adding review:", error);
+      setError('Error adding review. Please try again.');
+    }
   };
 
   const ingredientImage = currentAdditionalImages.length > 4 ? product.additionalImages[4] : product.additionalImages[2]; // Fallback image if index 4 doesn't exist
