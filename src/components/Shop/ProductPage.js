@@ -43,7 +43,7 @@ const ProductPage = () => {
     addToCart(product);
   };
 
-  const ingredientImage = currentAdditionalImages.length > 4 ? currentAdditionalImages[4] : currentAdditionalImages[2]; // Fallback image if index 4 doesn't exist
+  const ingredientImage = currentAdditionalImages.length > 4 ? product.additionalImages[4] : product.additionalImages[2]; // Fallback image if index 4 doesn't exist
 
   return (
     <Container className="product-page-container">
