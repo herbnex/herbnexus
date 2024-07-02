@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { Container, Row, Col, Image, Button, Form, ListGroup, Tabs, Tab } from 'react-bootstrap';
 import { useProduct } from './ProductContext';
@@ -42,6 +42,8 @@ const ProductPage = () => {
   const handleAddToCart = () => {
     addToCart(product);
   };
+
+  const ingredientImage = currentAdditionalImages.length > 4 ? currentAdditionalImages[4] : currentAdditionalImages[2]; // Fallback image if index 4 doesn't exist
 
   return (
     <Container className="product-page-container">
@@ -91,7 +93,7 @@ const ProductPage = () => {
         </Tab>
         <Tab eventKey="ingredients" title="Ingredients">
           <div className="mt-3 ingr">
-            <Image src={currentAdditionalImages[4]} fluid />
+            <Image src={ingredientImage} fluid />
           </div>
         </Tab>
         <Tab eventKey="reviews" title="Product reviews">
