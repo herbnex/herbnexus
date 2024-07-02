@@ -34,7 +34,8 @@ const NavBar = ({ cartCount, onToggleCategories, showCategories, onCategorySelec
   const handleProductClick = (product) => {
     setSearchResults([]); // Hide search results
     setSearchTerm(''); // Clear search term
-    history.push(`/shop/product/${product.id}`);
+    const p = product.name.toLowerCase().replace(/ /g, '-')
+    history.push(`/shop/product/${p}`);
   };
 
   const handleCheckout = () => {

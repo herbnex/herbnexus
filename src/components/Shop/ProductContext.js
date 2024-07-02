@@ -32,32 +32,32 @@ const ProductProvider = ({ children }) => {
       "quantity": 1,
       "description": "<p>Both vitamins D3 and K2 are essential to the body's function and overall health. Vitamin D3 aids in absorbing calcium and phosphorus, which are essential for bone formation and maintenance.</p><p><br></p><p>In addition to supporting the development of strong bones, Vitamin K2 may also benefit the cardiovascular system since it may promote healthy blood clotting.*</p><p><br></p><p><strong>Ingredients:\u00a0</strong>Calcium (as Calcium Carbonate), Vitamin D3 (Cholecalciferol), Vitamin K2 (mk-7)(as Menaquinone), BioPerine\u00ae (Black Pepper Fruit Extract), Cellulose (vegetable capsule).</p><p><strong>Manufacturer Country</strong>: USA</p><p><strong>Product Amount</strong>: 60 caps</p><p><strong>Gross Weight: </strong>0.25lb (113g)</p><p><strong>Suggested Use:</strong>\u00a0Take one (1) capsule twice a day as a dietary supplement. For best results, take 20-30 min before a meal or as directed by your healthcare professional.</p><p><strong>Caution:\u00a0</strong>Do not exceed recommended dose. Pregnant or nursing mothers, children under the age of 18, and individuals with a known medical condition should consult a physician before using this or any dietary supplement.</p><p><strong>Warning:</strong> Keep out of reach of children. Do not use if the safety seal is damaged or missing. Store in a cool, dry place.</p><p><br></p><p><strong>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</strong></p> <p>\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206094907-gluten-free-2x.png\" alt=\"Gluten-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206095432-lactose-free-2x.png\" alt=\"Lactose-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206095601-allergen-free-2x.png\" alt=\"Allergen-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206095715-hormone-free-2x.png\" alt=\"Hormone-free\" style=\"height: 6rem; width: auto;\"></p>"
     },
-    {
-      "id": 2,
-      "name": "Birch Chaga Microbiome Wellness Capsules",
-      "price": 38.9,
-   //   "discountPrice": 0,
-      "image": "https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1719817052948-generated-label-image-0.jpg?v=1719817095",
-      "category": "Natural Extracts",
-      "rating": 4.5,
-      "reviews": [
-        {
-          "user": "Jamie",
-          "date": "25 Jun, 2024",
-          "comment": "Great product!",
-          "rating": 5
-        }
-      ],
-      "additionalImages": [
-        "https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1719817052949-generated-label-image-1.jpg?v=1719817095",
-        "https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1719817052952-generated-label-image-2.jpg?v=1719817095",
-        "https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20240620134058-bls1ca30-sf_9f7d6678-2150-464d-ac97-683c920715c1.png?v=1719817095"
-      ],
-      "demandText": "294 people bought this in the last 24 hours.",
-      "saleEndDate": "06 July",
-      "quantity": 1,
-      "description": "<p>Birch Chaga Capsules are loaded with essential nutrients for optimized body functioning. The most notable of these nutrients are phytochemicals.*</p><p><br></p><p>Phytochemicals are plant-based molecules that stimulate the immunological and hormonal systems and play an essential part in maintaining a normal balance of our bodies.*</p><p><br></p><p>Birch Chaga Capsules support the maintenance of a healthy gut microbiome and the absorption and administration of nutrients, fatty acids, and minerals at the cellular level.*</p><p><br></p><p><strong>Ingredients: </strong>Birch Chaga, Wood extract containing humic substance (25% humic acid, 75% fulvic acid), Cellulose Capsule (plant-based).</p><p><strong>Manufacturer Country: </strong>Latvia</p><p><strong>Product Amount:</strong> 30 caps</p><p><strong>Gross Weight:</strong> 0.05lb (24g)</p><p><strong>Suggested Use: </strong>We recommend 1 capsule (0.5g) per day. A higher dose is unnecessary, as the body does not consume more than necessary.</p><p><strong>Warning:</strong> Keep out of reach of children. Do not use if the safety seal is damaged or missing. Store in a cool, dry place.</p><p><br></p><p><strong>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</strong></p> <p>\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206094907-gluten-free-2x.png\" alt=\"Gluten-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206124537-vegetarian.png\" alt=\"Vegetarian\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206095432-lactose-free-2x.png\" alt=\"Lactose-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206095601-allergen-free-2x.png\" alt=\"Allergen-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206095715-hormone-free-2x.png\" alt=\"Hormone-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206100059-antibiotic-free-2x.png\" alt=\"Antibiotic-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206100829-no-fillers-2x.png\" alt=\"No fillers\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206100927-non-gmo-2x.png\" alt=\"Non-GMO\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206124358-vegan.png\" alt=\"Vegan friendly\" style=\"height: 6rem; width: auto;\"></p>"
-    },
+  //   {
+  //     "id": 2,
+  //     "name": "Birch Chaga Microbiome Wellness Capsules",
+  //     "price": 38.9,
+  //  //   "discountPrice": 0,
+  //     "image": "https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1719817052948-generated-label-image-0.jpg?v=1719817095",
+  //     "category": "Natural Extracts",
+  //     "rating": 4.5,
+  //     "reviews": [
+  //       {
+  //         "user": "Jamie",
+  //         "date": "25 Jun, 2024",
+  //         "comment": "Great product!",
+  //         "rating": 5
+  //       }
+  //     ],
+  //     "additionalImages": [
+  //       "https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1719817052949-generated-label-image-1.jpg?v=1719817095",
+  //       "https://cdn.shopify.com/s/files/1/0701/5592/7811/files/1719817052952-generated-label-image-2.jpg?v=1719817095",
+  //       "https://cdn.shopify.com/s/files/1/0701/5592/7811/files/20240620134058-bls1ca30-sf_9f7d6678-2150-464d-ac97-683c920715c1.png?v=1719817095"
+  //     ],
+  //     "demandText": "294 people bought this in the last 24 hours.",
+  //     "saleEndDate": "06 July",
+  //     "quantity": 1,
+  //     "description": "<p>Birch Chaga Capsules are loaded with essential nutrients for optimized body functioning. The most notable of these nutrients are phytochemicals.*</p><p><br></p><p>Phytochemicals are plant-based molecules that stimulate the immunological and hormonal systems and play an essential part in maintaining a normal balance of our bodies.*</p><p><br></p><p>Birch Chaga Capsules support the maintenance of a healthy gut microbiome and the absorption and administration of nutrients, fatty acids, and minerals at the cellular level.*</p><p><br></p><p><strong>Ingredients: </strong>Birch Chaga, Wood extract containing humic substance (25% humic acid, 75% fulvic acid), Cellulose Capsule (plant-based).</p><p><strong>Manufacturer Country: </strong>Latvia</p><p><strong>Product Amount:</strong> 30 caps</p><p><strong>Gross Weight:</strong> 0.05lb (24g)</p><p><strong>Suggested Use: </strong>We recommend 1 capsule (0.5g) per day. A higher dose is unnecessary, as the body does not consume more than necessary.</p><p><strong>Warning:</strong> Keep out of reach of children. Do not use if the safety seal is damaged or missing. Store in a cool, dry place.</p><p><br></p><p><strong>*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.</strong></p> <p>\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206094907-gluten-free-2x.png\" alt=\"Gluten-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206124537-vegetarian.png\" alt=\"Vegetarian\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206095432-lactose-free-2x.png\" alt=\"Lactose-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206095601-allergen-free-2x.png\" alt=\"Allergen-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206095715-hormone-free-2x.png\" alt=\"Hormone-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206100059-antibiotic-free-2x.png\" alt=\"Antibiotic-free\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206100829-no-fillers-2x.png\" alt=\"No fillers\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206100927-non-gmo-2x.png\" alt=\"Non-GMO\" style=\"height: 6rem; width: auto;\">\n          <img src=\"https://supliful.s3.amazonaws.com/categories/images/20221206124358-vegan.png\" alt=\"Vegan friendly\" style=\"height: 6rem; width: auto;\"></p>"
+  //   },
     {
       "id": 3,
       "name": "Beetroot",
