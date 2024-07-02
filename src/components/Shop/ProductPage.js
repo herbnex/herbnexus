@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useParams, useHistory } from 'react-router-dom';
+import { NavLink, useParams, useHistory, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Image, Button, Form, ListGroup, Tabs, Tab, Alert } from 'react-bootstrap';
 import { useProduct } from './ProductContext';
-import useAuth  from '../../../src/hooks/useAuth'; // Import useAuth hook
+import useAuth from '../../../src/hooks/useAuth'; // Import useAuth hook
 import { FaShieldAlt, FaTruck, FaUndo, FaStar } from 'react-icons/fa';
 import { db } from '../../Firebase/firebase.config';
 import { collection, addDoc, query, onSnapshot } from 'firebase/firestore';
@@ -11,6 +11,7 @@ import './ProductPage.css';
 const ProductPage = () => {
   const { name } = useParams();
   const history = useHistory();
+  const location = useLocation();
   const { allProducts, addToCart } = useProduct();
   const { user } = useAuth(); // Get the logged-in user
 
@@ -65,6 +66,11 @@ const ProductPage = () => {
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
+    if (!user) {
+      history.push('/login', { from: location });
+      return;
+    }
+
     if (newReview.rating === 0 || newReview.comment === '') {
       setError('Please fill out all fields');
       return;
@@ -185,7 +191,9 @@ const ProductPage = () => {
                 <Button type="submit" className="mt-3">Submit Review</Button>
               </Form>
             ) : (
-              <Alert variant="info">Please log in to write a review</Alert>
+              <Alert variant="info">
+                Please <NavLink to={{ pathname: "/login", state: { from: location } }}>log in</NavLink> to write a review
+              </Alert>
             )}
             <h4 className="mt-4">Customer reviews</h4>
             {reviews.length > 0 ? (
