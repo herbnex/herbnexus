@@ -135,3 +135,27 @@
   }
 
 }
+.review-item {
+  border: none;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+
+
+.review-rating {
+  display: flex;
+}
+
+.review-meta {
+  text-align: right;
+}
+
+.review-meta strong {
+  display: block;
+}
+
+.review-meta .review-date {
+  font-size: 0.875rem;
+  color: #777;
+}

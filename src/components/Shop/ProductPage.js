@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-
-import { useParams, useHistory } from 'react-router-dom';
-import { Container, Row, Col, Image, Button, Form, ListGroup, Tabs, Tab } from 'react-bootstrap';
+import { NavLink, useParams, useHistory } from 'react-router-dom';
+import { Container, Row, Col, Image, Button, Form, ListGroup, Tabs, Tab, Alert } from 'react-bootstrap';
 import { useProduct } from './ProductContext';
-import { FaShieldAlt, FaTruck, FaUndo } from 'react-icons/fa';
-
+import useAuth  from '../../../src/hooks/useAuth'; // Import useAuth hook
+import { FaShieldAlt, FaTruck, FaUndo, FaStar } from 'react-icons/fa';
 import './ProductPage.css';
 
 const ProductPage = () => {
   const { name } = useParams();
   const history = useHistory();
   const { allProducts, addToCart } = useProduct();
-  
+  const { user } = useAuth(); // Get the logged-in user
+
   const [currentMainImage, setCurrentMainImage] = useState('');
   const [currentAdditionalImages, setCurrentAdditionalImages] = useState([]);
+  const [newReview, setNewReview] = useState({ comment: '', rating: 0 });
+  const [error, setError] = useState('');
 
   // Find the product by name
   const product = allProducts.find(
@@ -45,7 +46,30 @@ const ProductPage = () => {
     addToCart(product);
   };
 
+  const handleReviewSubmit = (e) => {
+    e.preventDefault();
+    if (newReview.rating === 0 || newReview.comment === '') {
+      setError('Please fill out all fields');
+      return;
+    }
+
+    // Add the new review to the product's reviews (this would usually involve a backend API call)
+    product.reviews.push({ user: user.name, date: new Date().toLocaleDateString(), ...newReview });
+    setNewReview({ comment: '', rating: 0 });
+    setError('');
+  };
+
   const ingredientImage = currentAdditionalImages.length > 4 ? product.additionalImages[4] : product.additionalImages[2]; // Fallback image if index 4 doesn't exist
+
+  const renderStars = (count) => {
+    const stars = [];
+    for (let i = 0; i < 5; i++) {
+      stars.push(
+        <FaStar key={i} color={i < count ? '#FFD700' : '#ccc'} />
+      );
+    }
+    return stars;
+  };
 
   return (
     <Container className="product-page-container">
@@ -74,30 +98,24 @@ const ProductPage = () => {
           <p className="mt-1 sale-end-date">Sale ends on {saleEndDate}</p>
           <div className="policy-icons mt-4">
             <div className="policy-icon">
-            <NavLink to="/shop/security-policy" >
-
-              <FaShieldAlt size={24} />
-              <span>Security policy</span>
-              </NavLink>
-
-            </div>
-            <div className="policy-icon">
-            <NavLink to="/shop/delivery-policy" >
-
-              <FaTruck size={24} />
-              <span>Delivery policy</span>
+              <NavLink to="/shop/security-policy">
+                <FaShieldAlt size={24} />
+                <span>Security policy</span>
               </NavLink>
             </div>
             <div className="policy-icon">
-            <NavLink to="/shop/return-policy" >
-
-              <FaUndo size={24} />
-              <span>Return policy</span>
+              <NavLink to="/shop/delivery-policy">
+                <FaTruck size={24} />
+                <span>Delivery policy</span>
               </NavLink>
-
+            </div>
+            <div className="policy-icon">
+              <NavLink to="/shop/return-policy">
+                <FaUndo size={24} />
+                <span>Return policy</span>
+              </NavLink>
             </div>
           </div>
-         
         </Col>
       </Row>
       <Tabs defaultActiveKey="description" id="product-details-tabs" className="mt-4 prodtabs">
@@ -110,15 +128,61 @@ const ProductPage = () => {
           </div>
         </Tab>
         <Tab eventKey="reviews" title="Product reviews">
-          <ListGroup className="mt-3">
-            {reviews.map((review, idx) => (
-              <ListGroup.Item key={idx}>
-                <strong>{review.user}</strong> ({review.date})
-                <p>{review.comment}</p>
-                <p>Rating: {review.rating}</p>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
+          <div className="mt-3">
+            {user ? (
+              <Form onSubmit={handleReviewSubmit}>
+                <Form.Group>
+                  <Form.Label>Rating</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={newReview.rating}
+                    onChange={(e) => setNewReview({ ...newReview, rating: parseInt(e.target.value) })}
+                  >
+                    <option value="0">Select Rating</option>
+                    <option value="1">1 Star</option>
+                    <option value="2">2 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="5">5 Stars</option>
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Comment</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={newReview.comment}
+                    onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                  />
+                </Form.Group>
+                {error && <Alert variant="danger">{error}</Alert>}
+                <Button type="submit" className="mt-3">Submit Review</Button>
+              </Form>
+            ) : (
+              <Alert variant="info">Please log in to write a review</Alert>
+            )}
+            <h4 className="mt-4">Customer reviews</h4>
+            {reviews.length > 0 ? (
+              <ListGroup>
+                {reviews.map((review, idx) => (
+                  <ListGroup.Item key={idx} className="review-item">
+                    <div className="review-header">
+                      <div className="review-rating">
+                        {renderStars(review.rating)}
+                      </div>
+                      <div className="review-meta">
+                        <strong>{review.user}</strong>
+                        <span className="review-date">{review.date}</span>
+                      </div>
+                    </div>
+                    <p>{review.comment}</p>
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            ) : (
+              <p>No reviews yet. Be the first to write one!</p>
+            )}
+          </div>
         </Tab>
       </Tabs>
     </Container>
