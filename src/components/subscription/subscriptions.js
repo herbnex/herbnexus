@@ -70,7 +70,7 @@ const SubscriptionForm = ({ clientSecret }) => {
             {redirecting ? "Redirecting..." : "Processing..."}
           </>
         ) : (
-          "Subscribe for $50/month"
+          "Subscribe for $100/month"
         )}
       </Button>
       {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
