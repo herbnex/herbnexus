@@ -63,7 +63,7 @@ const Signup = () => {
       if (imageUpload) {
         try {
           imageUrl = await uploadImage(imageUpload);
-          console.log("Uploaded image URL:", imageUrl);  // Debug: Check if URL is valid
+          
         } catch (uploadError) {
           throw new Error("Image upload failed. Please try again.");
         }

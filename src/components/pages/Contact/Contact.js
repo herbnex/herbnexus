@@ -115,7 +115,7 @@ const Contact = () => {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log("Fetched online doctors:", doctors);
+      
 
       const uniqueDoctors = doctors.filter(
         (doctor, index, self) =>
@@ -136,7 +136,7 @@ const Contact = () => {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log("Fetched active users:", users);
+      
 
       const uniqueUsers = users.filter(
         (user, index, self) =>
@@ -158,7 +158,7 @@ const Contact = () => {
         ? generateChatId(selectedParticipant.id, user.uid)
         : generateChatId(user.uid, selectedParticipant.id);
 
-      console.log("Generated Chat ID:", chatId);
+      
       const chatRef = databaseRef(database, `chats/${chatId}/messages`);
       const typingRef = databaseRef(database, `chats/${chatId}/typing`);
 
@@ -166,7 +166,7 @@ const Contact = () => {
         const data = snapshot.val();
         if (data) {
           const messages = Object.values(data);
-          console.log("Fetched messages:", messages);
+          
           setMsgList(messages);
           setTimeout(() => {
             if (msgBoxRef.current) {
@@ -667,13 +667,13 @@ const Contact = () => {
     if (!peerConnection.current) return;
 
     peerConnection.current.addEventListener("icegatheringstatechange", () => {
-      console.log(
+      
         `ICE gathering state changed: ${peerConnection.current.iceGatheringState}`
       );
     });
 
     peerConnection.current.addEventListener("connectionstatechange", () => {
-      console.log(
+      
         `Connection state change: ${peerConnection.current.connectionState}`
       );
       if (peerConnection.current.connectionState === "disconnected" || 
@@ -684,13 +684,13 @@ const Contact = () => {
     });
 
     peerConnection.current.addEventListener("signalingstatechange", () => {
-      console.log(
+      
         `Signaling state change: ${peerConnection.current.signalingState}`
       );
     });
 
     peerConnection.current.addEventListener("iceconnectionstatechange", () => {
-      console.log(
+      
         `ICE connection state change: ${peerConnection.current.iceConnectionState}`
       );
       if (peerConnection.current.iceConnectionState === "disconnected" || 
@@ -737,7 +737,7 @@ const Contact = () => {
       timestamp: new Date().toISOString(),
     };
 
-    console.log('Call data being sent:', callData); // Log call data for debugging
+    
     await addDoc(collection(db, "calls"), callData);
   };
 

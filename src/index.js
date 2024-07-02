@@ -11,7 +11,7 @@ import './global.css'; // Import global CSS
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-console.log("Stripe Public Key:", process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+
 
 const rootElement = document.getElementById('root');
 

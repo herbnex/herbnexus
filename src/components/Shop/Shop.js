@@ -21,7 +21,7 @@ const Shop = ({ searchTerm }) => {
   const history = useHistory();
 
   useEffect(() => {
-    console.log('Cart state in Shop component:', cart);
+    
   }, [cart]);
 
   const handleAddToCart = (product) => {

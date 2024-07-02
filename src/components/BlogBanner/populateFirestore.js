@@ -43,7 +43,7 @@ const populateFirestore = async () => {
   });
 
   await batch.commit();
-  console.log('Firestore has been populated with sample blog posts');
+  
 };
 
 populateFirestore().catch(console.error);

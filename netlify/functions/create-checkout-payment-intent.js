@@ -5,7 +5,7 @@ const { db } = require("../../src/Firebase/setupFirebaseAdmin");
 exports.handler = async (event) => {
   try {
     const { cart } = JSON.parse(event.body);
-    console.log("Received cart:", cart);
+    
 
     // Calculate the total amount for the cart
     const totalAmount = Math.round(cart.reduce((sum, item) => sum + item.price * item.quantity, 0) * 100); // Amount in cents
@@ -16,7 +16,7 @@ exports.handler = async (event) => {
       currency: 'cad',
     });
 
-    console.log("Payment intent created with ID:", paymentIntent.id);
+    
 
     return {
       statusCode: 200,

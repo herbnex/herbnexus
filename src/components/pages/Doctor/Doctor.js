@@ -18,15 +18,15 @@ const Doctor = () => {
       try {
         const doctorRef = doc(db, "doctors", doctorId.toString());
         const doctorSnapshot = await getDoc(doctorRef);
-        console.log("Doctor document snapshot:", doctorSnapshot);
+        
 
         if (doctorSnapshot.exists()) {
           const doctorData = doctorSnapshot.data();
-          console.log("Doctor data from Firestore:", doctorData);
+          
           setIsOnline(doctorData.isOnline || false);
           setDoctor(doctorData);
         } else {
-          console.log("Doctor document does not exist");
+          
         }
       } catch (error) {
         console.error("Error fetching doctor data:", error);

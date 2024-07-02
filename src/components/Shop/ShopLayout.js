@@ -23,7 +23,7 @@ const ShopLayout = () => {
   const [showCategories, setShowCategories] = useState(false);
 
   useEffect(() => {
-    console.log('Cart state in ShopLayout component:', cart);
+    
   }, [cart]);
 
   const handleSearchChange = (term) => {

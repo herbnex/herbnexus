@@ -18,19 +18,19 @@ export const useWebRTC = (localStreamRef, remoteStreamRef, setLoading, setError,
     if (!pc) return;
 
     pc.addEventListener("icegatheringstatechange", () => {
-      console.log(`ICE gathering state changed: ${pc.iceGatheringState}`);
+      
     });
 
     pc.addEventListener("connectionstatechange", () => {
-      console.log(`Connection state change: ${pc.connectionState}`);
+      
     });
 
     pc.addEventListener("signalingstatechange", () => {
-      console.log(`Signaling state change: ${pc.signalingState}`);
+      
     });
 
     pc.addEventListener("iceconnectionstatechange", () => {
-      console.log(`ICE connection state change: ${pc.iceConnectionState}`);
+      
     });
 
     pc.addEventListener("track", (event) => {

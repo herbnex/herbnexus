@@ -4,7 +4,7 @@ const { db } = require("../../src/Firebase/setupFirebaseAdmin");
 
 exports.handler = async (event) => {
   const { userId } = JSON.parse(event.body);
-  console.log("Received userId:", userId);
+  
 
   try {
     // Check if customer already exists in the database
@@ -14,14 +14,14 @@ exports.handler = async (event) => {
 
     if (userDoc.exists && userDoc.data().stripeCustomerId) {
       customerId = userDoc.data().stripeCustomerId;
-      console.log("Existing customer ID:", customerId);
+      
     } else {
       // Create a new customer if it does not exist
       const customer = await stripe.customers.create({
         metadata: { userId },
       });
       customerId = customer.id;
-      console.log("New customer created with ID:", customerId);
+      
 
       // Store the customerId in the database
       await userRef.set({ stripeCustomerId: customerId }, { merge: true });
@@ -39,7 +39,7 @@ exports.handler = async (event) => {
       }
     });
 
-    console.log("Subscription created with ID:", subscription.id);
+    
 
     // Store the subscriptionId and update subscription status in the database
     await userRef.set({

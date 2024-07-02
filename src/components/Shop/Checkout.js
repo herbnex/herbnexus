@@ -75,11 +75,11 @@ const Checkout = () => {
       }
 
       try {
-        console.log('Cart data being sent:', cart); // Log cart data
+        
         const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
           cart
         });
-        console.log('Response data:', response.data); // Log response data
+        
         setClientSecret(response.data.clientSecret);
       } catch (error) {
         console.error("Error fetching client secret:", error);
