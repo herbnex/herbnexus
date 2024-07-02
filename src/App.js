@@ -81,9 +81,9 @@ const App = () => {
             <Route path="/signup">
               <Signup />
             </Route>
-            <Route path="/subscribe">
+            <PrivateRoute path="/subscribe" requireSubscription={false}>
               <Subscription /> {/* Updated component name */}
-            </Route>
+              </PrivateRoute>
             <PrivateRoute path="/dashboard" requireSubscription={false}>
               <Dashboard />
             </PrivateRoute>
