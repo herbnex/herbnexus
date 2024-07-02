@@ -38,7 +38,6 @@ const HerbalistsPage = () => {
       setSubmitted(true);
       setError('');
     } catch (error) {
-     // console.error("Error adding document: ", error);
       setError('Error submitting application. Please try again.');
     }
   };
@@ -127,7 +126,7 @@ const HerbalistsPage = () => {
 
       <Row className="my-5 text-center">
         <Col>
-          <SectionTitle>Professional Application</SectionTitle>
+          <SectionTitle>Application</SectionTitle>
           {submitted ? (
             <StyledCard>
               <Card.Body>
@@ -138,7 +137,7 @@ const HerbalistsPage = () => {
               </Card.Body>
             </StyledCard>
           ) : (
-            <Form onSubmit={handleSubmit}>
+            <FormWrapper onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
                 <Form.Label>Name</Form.Label>
                 <Form.Control
@@ -207,7 +206,7 @@ const HerbalistsPage = () => {
               </Form.Group>
               {error && <Alert variant="danger">{error}</Alert>}
               <StyledButton variant="success" type="submit">Submit Application</StyledButton>
-            </Form>
+            </FormWrapper>
           )}
         </Col>
       </Row>
@@ -264,7 +263,7 @@ const HerbalistsPage = () => {
 
 const StyledContainer = styled(Container)`
   padding: 40px 20px;
-  background-color: #f9f9f9;
+  background-color: white;
 `;
 
 const Header = styled.div`
@@ -287,6 +286,7 @@ const StyledCard = styled(Card)`
   border: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: #f9f9f9;
+  border-radius: 10px;
 
   .card-title {
     text-align: center;
@@ -315,8 +315,25 @@ const Earnings = styled.h2`
 const StyledButton = styled(Button)`
   background-color: #39cabb;
   border: none;
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-size: 1.2em;
   &:hover {
     background-color: #453f85;
+  }
+`;
+
+const FormWrapper = styled(Form)`
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  .form-control {
+    border-radius: 10px;
+    padding: 10px;
   }
 `;
 
