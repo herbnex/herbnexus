@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Form, InputGroup, Container, Table, Modal, Dropdown } from 'react-bootstrap';
-import { FaExpand, FaCompress, FaBars, FaPlus, FaEllipsisV } from 'react-icons/fa';
+import { FaExpand, FaCompress, FaBars, FaEllipsisV } from 'react-icons/fa';
 import { FiFolderPlus } from "react-icons/fi";
-
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../Firebase/firebase.config';
 import axios from 'axios';
-import { collection, doc, getDocs, setDoc, query, where, getDoc, addDoc, deleteDoc, Timestamp } from 'firebase/firestore';
+import { collection, doc, getDocs, setDoc, query, getDoc, addDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import './HerbalChat.css';
 
 const auth = getAuth();
@@ -34,10 +33,33 @@ const HerbalChat = () => {
         loadChatSessions(user.uid);
       } else {
         setIsUserLoggedIn(false);
+        clearChatSessions();
       }
     });
     return unsubscribe;
   }, []);
+
+  const clearChatSessions = () => {
+    setChatSessions([]);
+    setMessages([
+      { user: 'Bot', text: 'Hello! I\'m your free AI Symptom Diagnosis Tool. Could you please describe your primary health concerns?' },
+      { user: 'Bot', text: 'Additionally, could you let me know which herbal medicine practice you are interested in? Options include Traditional Chinese Medicine, Ayurvedic Medicine, Naturopathy, African, or Arabic.' }
+    ]);
+    setCurrentChatId(null);
+  };
+
+  useEffect(() => {
+    const handleEnterPress = (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSendMessage();
+      }
+    };
+    window.addEventListener('keydown', handleEnterPress);
+    return () => {
+      window.removeEventListener('keydown', handleEnterPress);
+    };
+  }, [input, messages]);
 
   const loadChatSessions = async (userId) => {
     try {
@@ -48,8 +70,13 @@ const HerbalChat = () => {
         sessions.push({ id: doc.id, ...doc.data() });
       });
       setChatSessions(sessions);
+      if (sessions.length > 0) {
+        loadChatHistory(userId, sessions[0].id); // Load the first chat session by default
+      } else {
+        startNewChatSession();
+      }
     } catch (error) {
-     // console.error('Error loading chat sessions: ', error);
+      console.error('Error loading chat sessions: ', error);
     }
   };
 
@@ -62,7 +89,7 @@ const HerbalChat = () => {
         setCurrentChatId(chatId);
       }
     } catch (error) {
-      //console.error('Error loading chat history: ', error);
+      console.error('Error loading chat history: ', error);
     }
   };
 
@@ -74,20 +101,26 @@ const HerbalChat = () => {
         timestamp: Timestamp.now(),
       }, { merge: true });
     } catch (error) {
-      //console.error('Error saving chat history: ', error);
+      console.error('Error saving chat history: ', error);
     }
   };
 
   const deleteChatSession = async (userId, chatId) => {
     try {
       await deleteDoc(doc(db, 'users', userId, 'chats', chatId));
-      setChatSessions(chatSessions.filter(session => session.id !== chatId));
+      const updatedChatSessions = chatSessions.filter(session => session.id !== chatId);
+      setChatSessions(updatedChatSessions);
       if (currentChatId === chatId) {
         setMessages([]);
         setCurrentChatId(null);
       }
+      if (updatedChatSessions.length === 0) {
+        startNewChatSession();
+      } else {
+        loadChatHistory(userId, updatedChatSessions[0].id); // Load the first remaining chat session
+      }
     } catch (error) {
-      //console.error('Error deleting chat session: ', error);
+      console.error('Error deleting chat session: ', error);
     }
   };
 
@@ -126,7 +159,7 @@ const HerbalChat = () => {
       }
     } catch (error) {
       setMessages([...newMessages, { user: 'Bot', text: 'Error: Could not get response' }]);
-      //console.error('Error sending message: ', error);
+      console.error('Error sending message: ', error);
     } finally {
       setIsLoading(false);
       setInput('');
@@ -140,21 +173,28 @@ const HerbalChat = () => {
       return;
     }
 
+    if (currentChatId) {
+      await saveChatHistory(user.uid, currentChatId, messages);
+    }
+
+    const initialMessages = [
+      { user: 'Bot', text: 'Hello! I\'m your free AI Symptom Diagnosis Tool. Could you please describe your primary health concerns?' },
+      { user: 'Bot', text: 'Additionally, could you let me know which herbal medicine practice you are interested in? Options include Traditional Chinese Medicine, Ayurvedic Medicine, Naturopathy, African, or Arabic.' }
+    ];
+
     const newChat = {
-      messages: [],
+      messages: initialMessages,
       timestamp: Timestamp.now(),
     };
 
     try {
       const docRef = await addDoc(collection(db, 'users', user.uid, 'chats'), newChat);
-      setChatSessions([...chatSessions, { id: docRef.id, ...newChat }]);
-      setMessages([
-        { user: 'Bot', text: 'Hello! I\'m your free AI Symptom Diagnosis Tool. Could you please describe your primary health concerns?' },
-        { user: 'Bot', text: 'Additionally, could you let me know which herbal medicine practice you are interested in? Options include Traditional Chinese Medicine, Ayurvedic Medicine, Naturopathy, African, or Arabic.' }
-      ]);
+      const newSession = { id: docRef.id, ...newChat };
+      setChatSessions([...chatSessions, newSession]);
+      setMessages(initialMessages);
       setCurrentChatId(docRef.id);
     } catch (error) {
-     // console.error('Error starting new chat session: ', error);
+      console.error('Error starting new chat session: ', error);
     }
   };
 
