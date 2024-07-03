@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import styled from 'styled-components';
 import { db } from '../Firebase/firebase.config'; // Make sure this path is correct
@@ -17,6 +17,7 @@ const HerbalistsPage = () => {
   });
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const formRef = useRef(null);
 
   const handleConsultationsChange = (e) => {
     setConsultations(e.target.value);
@@ -40,6 +41,10 @@ const HerbalistsPage = () => {
     } catch (error) {
       setError('Error submitting application. Please try again.');
     }
+  };
+
+  const scrollToForm = () => {
+    formRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   const estimatedEarnings = (consultations / 2) * 70;
@@ -105,7 +110,7 @@ const HerbalistsPage = () => {
               <h3 className="mt-4">Estimated earnings</h3>
               <Earnings>${estimatedEarnings.toFixed(2)} per month</Earnings>
               <p>Earn $70 per every two consultations</p>
-              <StyledButton variant="success">Get started</StyledButton>
+              <StyledButton variant="success" onClick={scrollToForm}>Get started</StyledButton>
             </Card.Body>
           </StyledCard>
         </Col>
@@ -124,7 +129,7 @@ const HerbalistsPage = () => {
         </Col>
       </Row>
 
-      <Row className="my-5 text-center">
+      <Row className="my-5 text-center" ref={formRef}>
         <Col>
           <SectionTitle>Application</SectionTitle>
           {submitted ? (
