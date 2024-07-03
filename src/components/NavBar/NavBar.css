@@ -124,3 +124,7 @@
 	display: flex;
 	align-items: center;
 }
+.shopbut{
+	background-color: #FF9900;
+	border:none;
+}

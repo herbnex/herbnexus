@@ -58,7 +58,7 @@ const NavBar = () => {
 							<NavLink to="/shop">
 							<Button
 								variant="outline"
-								className="rounded-pill chats nav-small-text btn-main py-2 px-3 h-auto me-3"
+								className="rounded-pill shopbut chats nav-small-text btn-main py-2 px-3 h-auto me-3"
 								>
 								Shop&nbsp;
 								<i className="bi bi-cart"></i>
