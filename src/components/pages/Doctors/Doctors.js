@@ -5,6 +5,7 @@ import useDoctorList from "../../../hooks/useDoctorList";
 import Loading from "../../Loading/Loading";
 import SectionTitle from "../../SectionTitle/SectionTitle";
 import DoctorCard from "../../DoctorCard/DoctorCard";
+import ReactPaginate from "react-paginate";
 import { useHistory } from "react-router-dom";
 import "./Doctors.css"; // Import the CSS file
 
@@ -14,7 +15,9 @@ const Doctors = () => {
   const [filterSpeciality, setFilterSpeciality] = useState("");
   const [filterOnlineStatus, setFilterOnlineStatus] = useState("");
   const [doctors] = useDoctorList();
+  const [currentPage, setCurrentPage] = useState(0);
   const history = useHistory();
+  const doctorsPerPage = 6;
 
   const handleChatLive = (doctorId) => {
     history.push(`/contact?doctorId=${doctorId}`);
@@ -43,6 +46,16 @@ const Doctors = () => {
 
     return matchesSearchQuery && matchesSpeciality && matchesOnlineStatus;
   });
+
+  const pageCount = Math.ceil(filteredDoctors.length / doctorsPerPage);
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
+  const displayedDoctors = filteredDoctors.slice(
+    currentPage * doctorsPerPage,
+    (currentPage + 1) * doctorsPerPage
+  );
 
   return (
     <div className="ourh">
@@ -90,7 +103,7 @@ const Doctors = () => {
           </Col>
         </Row>
         <Row>
-          {filteredDoctors.map((doctor) => (
+          {displayedDoctors.map((doctor) => (
             <DoctorCard
               key={doctor.id}
               doctor={doctor}
@@ -98,6 +111,23 @@ const Doctors = () => {
               handleChatLive={handleChatLive}
             />
           ))}
+        </Row>
+        <Row>
+          <Col>
+            <ReactPaginate
+              previousLabel={"previous"}
+              nextLabel={"next"}
+              breakLabel={"..."}
+              breakClassName={"break-me"}
+              pageCount={pageCount}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={3}
+              onPageChange={handlePageClick}
+              containerClassName={"pagination"}
+              subContainerClassName={"pages pagination"}
+              activeClassName={"active"}
+            />
+          </Col>
         </Row>
       </Container>
     </div>
