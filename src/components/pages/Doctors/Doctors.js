@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Form } from "react-bootstrap";
 import useAuth from "../../../hooks/useAuth";
 import useDoctorList from "../../../hooks/useDoctorList";
@@ -20,6 +20,10 @@ const Doctors = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const history = useHistory();
   const doctorsPerPage = 6;
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [searchQuery, filterSpeciality, filterOnlineStatus]);
 
   const handleChatLive = (doctorId) => {
     history.push(`/contact?doctorId=${doctorId}`);
@@ -62,8 +66,8 @@ const Doctors = () => {
   return (
     <div className="ourh">
       <SectionTitle>
-        <NavLink to ="/subscribe">
-        <h1>Subscribe Now</h1>
+        <NavLink to="/subscribe">
+          <h1>Subscribe Now</h1>
         </NavLink>
         <h4>The World's Largest Network of Alternative Medicine Practitioners</h4>
       </SectionTitle>
@@ -131,6 +135,7 @@ const Doctors = () => {
               containerClassName={"pagination"}
               subContainerClassName={"pages pagination"}
               activeClassName={"active"}
+              forcePage={currentPage} // Add this line to force the current page to be reset
             />
           </Col>
         </Row>

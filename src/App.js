@@ -29,6 +29,7 @@ import ShopLayout from "./components/Shop/ShopLayout";
 import { ProductProvider } from './components/Shop/ProductContext'; // Import ProductProvider
 import PromoModal from './components/PromoModal';
 import HerbalistsPage from "./components/HerbalistsPage";
+import HerbalReference from "./components/HerbalReference";
 const DelayedContact = withDelayedNavigation(Contact, 2000);
 
 const App = () => {
@@ -96,6 +97,10 @@ const App = () => {
             <Route path="/for-herbalists">
               <HerbalistsPage />
             </Route>
+            <Route path="/reference">
+              <HerbalReference />
+            </Route>
+            
             <Route path="*">
               <NotFound />
             </Route>
