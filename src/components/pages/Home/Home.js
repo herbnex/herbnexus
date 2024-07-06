@@ -14,6 +14,7 @@ import ShopPromo from '../../ShopPromo/ShopPromo'; // Import the new component
 import BlogBanner from '../../BlogBanner/BlogBanner';
 import "./Home.css";
 import HerbNexusAdditionalBanner from '../../HerbNexusAdditionalBanner/HerbNexusAdditionalBanner';
+import Doctors from "../Doctors/Doctors";
 
 
 const Home = () => {
@@ -28,13 +29,14 @@ const Home = () => {
   return (
     <div>
       <Banner />
-      <SectionTitle>
+      {/* <SectionTitle>
         <NavLink to ="/subscribe">
         <h1>Subscribe Now</h1>
         </NavLink>
         <h4>The World's Largest Network of Alternative Medicine Practitioners</h4>
-      </SectionTitle>
-      <DoctorsCards home />
+      </SectionTitle> */}
+      <Doctors />
+      {/* <DoctorsCards home /> */}
       <Container className="chat text-center my-5">
         <NavLink to="/doctors" className="mx-auto">
           <Button variant="outline" className="rounded-pill btn-main mt-2 py-3">

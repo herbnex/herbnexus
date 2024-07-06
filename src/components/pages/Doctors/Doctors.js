@@ -7,6 +7,8 @@ import SectionTitle from "../../SectionTitle/SectionTitle";
 import DoctorCard from "../../DoctorCard/DoctorCard";
 import ReactPaginate from "react-paginate";
 import { useHistory } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+
 import "./Doctors.css"; // Import the CSS file
 
 const Doctors = () => {
@@ -60,7 +62,10 @@ const Doctors = () => {
   return (
     <div className="ourh">
       <SectionTitle>
-        <h1>Our Herbalists</h1>
+        <NavLink to ="/subscribe">
+        <h1>Subscribe Now</h1>
+        </NavLink>
+        <h4>The World's Largest Network of Alternative Medicine Practitioners</h4>
       </SectionTitle>
       <Container>
         <Row className="filter-row">
