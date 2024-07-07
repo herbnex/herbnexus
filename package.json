@@ -50,7 +50,7 @@
     "build": "GENERATE_SOURCEMAP=false react-scripts build && npm run obfuscate",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "obfuscate": "find build/static/js -type f -name 'main.*.js' -print0 | xargs -0 -I {} terser {} --compress --mangle --output {}"
+    "obfuscate": "node obfuscate.js"
   },
   "eslintConfig": {
     "extends": [
@@ -71,6 +71,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-router-dom": "^5.3.3"
+    "@types/react-router-dom": "^5.3.3",
+    "javascript-obfuscator": "^4.1.1"
   }
 }
