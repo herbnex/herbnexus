@@ -1,11 +1,21 @@
 import { onRequest as edgeRequestHandler } from 'netlify:edge';
-import { getFirestore, Timestamp, FieldValue } from 'firebase/firestore';
-import { db } from '../../src/Firebase/firebase.config';  // Adjust the path as needed
+const admin = require('firebase-admin');
+
+const serviceAccount = JSON.parse(process.env.REACT_APP_FIREBASE_PRIVATE_KEY);
+
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
+  });
+}
+
+const db = admin.firestore();
 
 export const onRequest = async (context) => {
   const ip = context.request.headers.get('x-forwarded-for') || context.request.headers.get('client-ip');
   const rateLimitDocRef = db.collection('rate_limits').doc(ip);
-  const now = Timestamp.now();
+  const now = admin.firestore.Timestamp.now();
 
   try {
     const doc = await rateLimitDocRef.get();
@@ -18,7 +28,7 @@ export const onRequest = async (context) => {
         return new Response('Too Many Requests', { status: 429 });
       } else if (now.toDate() - lastRequestTime < 60000) {
         await rateLimitDocRef.update({
-          count: FieldValue.increment(1),
+          count: admin.firestore.FieldValue.increment(1),
           lastRequest: now,
         });
       } else {
