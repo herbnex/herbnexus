@@ -1,5 +1,6 @@
 import { onRequest } from 'netlify:edge';
-import admin from 'firebase-admin';
+
+const admin = require('firebase-admin');
 
 const serviceAccount = JSON.parse(process.env.REACT_APP_FIREBASE_PRIVATE_KEY);
 
