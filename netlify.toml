@@ -1,12 +1,15 @@
 [build]
   publish = "build"
   functions = "netlify/functions"
+  edge_functions = "netlify/edge-functions"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-[[edge_functions]]
-  function = "rateLimiter"
-  path = "/*"
+[functions]
+  node_bundler = "esbuild"
+
+[[functions.external_node_modules]]
+  name = "firebase-admin"

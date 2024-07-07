@@ -1,43 +1,47 @@
 // netlify/edge-functions/rateLimiter.js
-import { db } from "../Firebase/firebase.config"; // Adjust the path to your Firebase config
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
-const RATE_LIMIT = 100; // Max requests per IP per minute
-const WINDOW_SIZE = 60 * 1000; // 1 minute in milliseconds
+import admin from 'firebase-admin';
+import { NetlifyEdgeResponse } from 'netlify-edge';
 
-export default async function handler(req, context) {
-  const ip = context.client.ip;
-
-  const docRef = doc(db, 'rateLimits', ip);
-  const docSnap = await getDoc(docRef);
-  
-  const now = Date.now();
-
-  if (!docSnap.exists()) {
-    await setDoc(docRef, {
-      count: 1,
-      firstRequest: now,
-    });
-    return context.next();
-  }
-
-  const data = docSnap.data();
-  const timePassed = now - data.firstRequest;
-
-  if (timePassed > WINDOW_SIZE) {
-    await setDoc(docRef, {
-      count: 1,
-      firstRequest: now,
-    });
-    return context.next();
-  }
-
-  if (data.count < RATE_LIMIT) {
-    await updateDoc(docRef, {
-      count: data.count + 1,
-    });
-    return context.next();
-  }
-
-  return new Response('Too Many Requests', { status: 429 });
+// Initialize Firebase Admin SDK
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+    }),
+    databaseURL: process.env.FIREBASE_DATABASE_URL
+  });
 }
+
+const db = admin.firestore();
+
+export default async (request, context) => {
+  // Your rate limiting logic using Firestore
+  const ip = request.headers.get('x-forwarded-for') || request.ip;
+  const docRef = db.collection('rate_limits').doc(ip);
+
+  // Logic to check and update rate limits
+  const doc = await docRef.get();
+  const now = admin.firestore.Timestamp.now();
+
+  if (doc.exists) {
+    const data = doc.data();
+    const lastRequestTime = data.lastRequest.toDate();
+    const requestCount = data.count;
+
+    // Your rate limiting logic
+    if (now.toDate() - lastRequestTime < 60000 && requestCount >= 100) {
+      return new NetlifyEdgeResponse('Too Many Requests', { status: 429 });
+    } else if (now.toDate() - lastRequestTime < 60000) {
+      await docRef.update({ count: admin.firestore.FieldValue.increment(1) });
+    } else {
+      await docRef.set({ count: 1, lastRequest: now });
+    }
+  } else {
+    await docRef.set({ count: 1, lastRequest: now });
+  }
+
+  return new NetlifyEdgeResponse('OK', { status: 200 });
+};
