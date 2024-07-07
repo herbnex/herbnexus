@@ -1,5 +1,5 @@
 import { onRequest as edgeRequestHandler } from 'netlify:edge';
-const admin = require('firebase-admin');
+import admin from 'firebase-admin';
 
 const serviceAccount = JSON.parse(process.env.REACT_APP_FIREBASE_PRIVATE_KEY);
 
@@ -50,4 +50,4 @@ export const onRequest = async (context) => {
   return new Response('OK', { status: 200 });
 };
 
-export { edgeRequestHandler as onRequest };
+export { onRequest };
