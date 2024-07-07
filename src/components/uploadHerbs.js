@@ -1,4 +1,5 @@
-const { db } = require('../Firebase/setupFirebaseAdmin');
+const { db } = require('../Firebase/setupFirebaseAdmin'); // Adjust the path as needed
+
 const herbs = [
   {
     id: "1",
@@ -6,7 +7,8 @@ const herbs = [
     category: "Digestive",
     description: "Chamomile is commonly used to help with sleep and digestive issues.",
     imageUrl: "https://example.com/images/chamomile.jpg",
-    isAvailable: true,
+    modality: "Western Herbal Medicine",
+    healthCondition: "Digestive Issues",
   },
   {
     id: "2",
@@ -14,7 +16,8 @@ const herbs = [
     category: "Digestive",
     description: "Peppermint is known for its ability to soothe digestive issues and freshen breath.",
     imageUrl: "https://example.com/images/peppermint.jpg",
-    isAvailable: true,
+    modality: "Arabic",
+    healthCondition: "Digestive Issues",
   },
   {
     id: "3",
@@ -22,7 +25,8 @@ const herbs = [
     category: "Immune Support",
     description: "Echinacea is often used to boost the immune system and fight infections.",
     imageUrl: "https://example.com/images/echinacea.jpg",
-    isAvailable: false,
+    modality: "Western Herbal Medicine",
+    healthCondition: "Infections",
   },
   {
     id: "4",
@@ -30,7 +34,8 @@ const herbs = [
     category: "Nervous System",
     description: "Ginseng is used to improve energy levels and mental clarity.",
     imageUrl: "https://example.com/images/ginseng.jpg",
-    isAvailable: true,
+    modality: "TCM",
+    healthCondition: "Fatigue",
   },
   {
     id: "5",
@@ -38,7 +43,8 @@ const herbs = [
     category: "Nervous System",
     description: "Lavender is popular for its calming effects and is often used to help with anxiety and insomnia.",
     imageUrl: "https://example.com/images/lavender.jpg",
-    isAvailable: true,
+    modality: "Western Herbal Medicine",
+    healthCondition: "Anxiety",
   },
   {
     id: "6",
@@ -46,7 +52,8 @@ const herbs = [
     category: "Cardiovascular",
     description: "Hawthorn is used to support cardiovascular health and improve circulation.",
     imageUrl: "https://example.com/images/hawthorn.jpg",
-    isAvailable: false,
+    modality: "Western Herbal Medicine",
+    healthCondition: "Cardiovascular Issues",
   },
   {
     id: "7",
@@ -54,7 +61,8 @@ const herbs = [
     category: "Digestive",
     description: "Ginger is widely used to help with nausea and digestion.",
     imageUrl: "https://example.com/images/ginger.jpg",
-    isAvailable: true,
+    modality: "Ayurvedic",
+    healthCondition: "Nausea",
   },
   {
     id: "8",
@@ -62,7 +70,8 @@ const herbs = [
     category: "Nervous System",
     description: "Valerian is used to help with sleep disorders and anxiety.",
     imageUrl: "https://example.com/images/valerian.jpg",
-    isAvailable: false,
+    modality: "Western Herbal Medicine",
+    healthCondition: "Sleep Disorders",
   },
   {
     id: "9",
@@ -70,7 +79,8 @@ const herbs = [
     category: "Nervous System",
     description: "St. John's Wort is commonly used to treat depression and mood disorders.",
     imageUrl: "https://example.com/images/st-johns-wort.jpg",
-    isAvailable: true,
+    modality: "Western Herbal Medicine",
+    healthCondition: "Depression",
   },
   {
     id: "10",
@@ -78,7 +88,8 @@ const herbs = [
     category: "Digestive",
     description: "Turmeric is known for its anti-inflammatory properties and is used to support digestive health.",
     imageUrl: "https://example.com/images/turmeric.jpg",
-    isAvailable: true,
+    modality: "Ayurvedic",
+    healthCondition: "Inflammation",
   },
 ];
 
@@ -90,8 +101,9 @@ async function registerHerb(herb) {
       category: herb.category,
       description: herb.description,
       imageUrl: herb.imageUrl,
-      isAvailable: herb.isAvailable
-    });
+      modality: herb.modality,
+      healthCondition: herb.healthCondition,
+    }, { merge: true }); // merge: true ensures existing documents are overwritten
     console.log(`Successfully registered herb: ${herb.name}`);
   } catch (error) {
     console.error('Error registering herb:', herb.name, error);

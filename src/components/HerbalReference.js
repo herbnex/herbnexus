@@ -11,13 +11,13 @@ const HerbalReference = () => {
   const [herbs, isLoading] = useHerbList(); // Custom hook to fetch herb list
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
-  const [filterAvailability, setFilterAvailability] = useState("");
+  const [filterModality, setFilterModality] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 6;
   
   useEffect(() => {
     setCurrentPage(0);
-  }, [searchQuery, filterCategory, filterAvailability]);
+  }, [searchQuery, filterCategory, filterModality]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -27,18 +27,17 @@ const HerbalReference = () => {
     const query = searchQuery.toLowerCase();
     const matchesSearchQuery = 
       herb.name.toLowerCase().includes(query) ||
-      herb.category.toLowerCase().includes(query) ||
+      herb.healthCondition.toLowerCase().includes(query) ||
       herb.description.toLowerCase().includes(query);
 
     const matchesCategory = filterCategory ? herb.category === filterCategory : true;
-    const matchesAvailability =
-      filterAvailability === "available"
-        ? herb.isAvailable
-        : filterAvailability === "unavailable"
-        ? !herb.isAvailable
-        : true;
+    const matchesModality = filterModality ? herb.modality === filterModality : true;
 
-    return matchesSearchQuery && matchesCategory && matchesAvailability;
+    const isMatch = matchesSearchQuery && matchesCategory && matchesModality;
+
+    // Logging for debugging
+    
+    return isMatch;
   });
 
   const pageCount = Math.ceil(filteredHerbs.length / itemsPerPage);
@@ -61,7 +60,7 @@ const HerbalReference = () => {
           <Col xs={12} md={4}>
             <Form.Control
               type="text"
-              placeholder="Search herbs..."
+              placeholder="Search by herb or health condition..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="form-control"
@@ -86,13 +85,16 @@ const HerbalReference = () => {
           <Col xs={12} md={4}>
             <Form.Control
               as="select"
-              value={filterAvailability}
-              onChange={(e) => setFilterAvailability(e.target.value)}
+              value={filterModality}
+              onChange={(e) => setFilterModality(e.target.value)}
               className="form-control"
             >
-              <option value="">All Availability</option>
-              <option value="available">Available</option>
-              <option value="unavailable">Unavailable</option>
+              <option value="">All Modalities</option>
+              <option value="TCM">TCM</option>
+              <option value="Arabic">Arabic</option>
+              <option value="Western Herbal Medicine">Western Herbal Medicine</option>
+              <option value="Ayurvedic">Ayurvedic</option>
+              {/* Add more modalities as needed */}
             </Form.Control>
           </Col>
         </Row>
