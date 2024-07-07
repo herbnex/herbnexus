@@ -211,11 +211,25 @@ const HerbalChat = () => {
     }
   };
 
+  const handleVerifyCaptcha = async (token) => {
+    try {
+      const response = await axios.post('/.netlify/functions/verifyCaptcha', { token });
+      if (response.data.success) {
+        setCaptchaSolved(true);
+        setShowCaptcha(false);
+      } else {
+        console.error('CAPTCHA verification failed: ', response.data.error);
+      }
+    } catch (error) {
+      console.error('Error verifying CAPTCHA: ', error);
+    }
+  };
+
   useEffect(() => {
     if (chatMessagesRef.current) {
       chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
     }
-  }, [messages, isLoading]);
+  }, [messages, isLoading, showCaptcha]);
 
   const renderMessageContent = (text) => {
     const prescriptionMatch = text.match(/Prescription:\n([\s\S]+?)\n\nDuration:\n(.+)\n\nHow to use:\n([\s\S]+)/);
@@ -253,96 +267,15 @@ const HerbalChat = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
-  const handleCaptchaChange = async () => {
-    if (!executeRecaptcha) {
-      console.log("Execute recaptcha not yet available");
-      return;
-    }
-
-    const token = await executeRecaptcha('send_message');
-    try {
-      const response = await axios.post('/.netlify/functions/verifyCaptcha', { token });
-      if (response.data.success) {
-        setCaptchaSolved(true);
-        setShowCaptcha(false);
-      } else {
-        console.error('CAPTCHA verification failed: ', response.data.error);
-      }
-    } catch (error) {
-      console.error('Error verifying CAPTCHA: ', error);
-    }
-  };
-
   return (
-    <Container className="herbal-chat-container">
-      <div className="chat-window">
-        {!showModal && (
-          <>
-            <div className="chat-header">
-              <FiFolderPlus className="icon new-chat-icon" onClick={startNewChatSession} />
-              <FaExpand className="icon fullscreen-icon" onClick={toggleModal} />
-            </div>
-            <div className="chat-messages" ref={chatMessagesRef}>
-              {messages.map((msg, index) => (
-                <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
-                  <strong>{msg.user === 'You' ? 'You' : 'Bot'}: </strong>
-                  {renderMessageContent(msg.text)}
-                </div>
-              ))}
-              {isLoading && <div className="loading">Bot is typing...</div>}
-              {showCaptcha && (
-                <div className="chat-message bot-message">
-                  <strong>Bot: </strong>
-                  <Button onClick={handleCaptchaChange}>Verify Captcha</Button>
-                </div>
-              )}
-              <div ref={messagesEndRef}></div>
-            </div>
-            <InputGroup className="mb-3 input-group">
-              <Form.Control
-                as="textarea"
-                rows={1}
-                placeholder="Type your message..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                disabled={showCaptcha}
-              />
-              <Button onClick={handleSendMessage} disabled={showCaptcha}>Send</Button>
-            </InputGroup>
-          </>
-        )}
-      </div>
-
-      {showModal && (
-        <div className="fullscreen-modal">
-          <div className="fullscreen-modal-content">
-            <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
-              <div className="sidebar-toggle" onClick={toggleSidebar}>
-                <FaBars />
-              </div>
-              {!sidebarCollapsed && (
-                <>
-                  <h4>Chat Sessions</h4>
-                  {chatSessions.map((session) => (
-                    <div key={session.id} className="chat-session-container">
-                      <div className="chat-session" onClick={() => loadChatHistory(auth.currentUser.uid, session.id)}>
-                        Chat started at {session.timestamp.toDate().toLocaleString()}
-                      </div>
-                      <Dropdown>
-                        <Dropdown.Toggle as={FaEllipsisV} className="dropdown-toggle" />
-                        <Dropdown.Menu className="dropdown-menu">
-                          <Dropdown.Item onClick={() => deleteChatSession(auth.currentUser.uid, session.id)}>Delete</Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-            <div className={`chat-area ${sidebarCollapsed ? 'collapsed' : ''}`}>
+    <GoogleReCaptchaProvider reCaptchaKey="6LeVGgoqAAAAAEQisgqS0Bc1Sqe_4m6Xy_7BecKY">
+      <Container className="herbal-chat-container">
+        <div className="chat-window">
+          {!showModal && (
+            <>
               <div className="chat-header">
                 <FiFolderPlus className="icon new-chat-icon" onClick={startNewChatSession} />
-                <FaCompress className="icon fullscreen-icon" onClick={toggleModal} />
+                <FaExpand className="icon fullscreen-icon" onClick={toggleModal} />
               </div>
               <div className="chat-messages" ref={chatMessagesRef}>
                 {messages.map((msg, index) => (
@@ -352,43 +285,120 @@ const HerbalChat = () => {
                   </div>
                 ))}
                 {isLoading && <div className="loading">Bot is typing...</div>}
-                {showCaptcha && (
-                  <div className="chat-message bot-message">
-                    <strong>Bot: </strong>
-                    <Button onClick={handleCaptchaChange}>Verify Captcha</Button>
-                  </div>
-                )}
                 <div ref={messagesEndRef}></div>
               </div>
               <InputGroup className="mb-3 input-group">
-                <Form.Control
-                  as="textarea"
-                  rows={1}
-                  placeholder="Type your message..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  disabled={showCaptcha}
-                />
-                <Button onClick={handleSendMessage} disabled={showCaptcha}>Send</Button>
+                {showCaptcha ? (
+                  <Button onClick={async () => {
+                    if (!executeRecaptcha) {
+                      console.log("Execute recaptcha not yet available");
+                      return;
+                    }
+                    const token = await executeRecaptcha('send_message');
+                    handleVerifyCaptcha(token);
+                  }}>Verify Captcha</Button>
+                ) : (
+                  <>
+                    <Form.Control
+                      as="textarea"
+                      rows={1}
+                      placeholder="Type your message..."
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      disabled={showCaptcha}
+                    />
+                    <Button onClick={handleSendMessage} disabled={showCaptcha}>Send</Button>
+                  </>
+                )}
               </InputGroup>
+            </>
+          )}
+        </div>
+
+        {showModal && (
+          <div className="fullscreen-modal">
+            <div className="fullscreen-modal-content">
+              <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+                <div className="sidebar-toggle" onClick={toggleSidebar}>
+                  <FaBars />
+                </div>
+                {!sidebarCollapsed && (
+                  <>
+                    <h4>Chat Sessions</h4>
+                    {chatSessions.map((session) => (
+                      <div key={session.id} className="chat-session-container">
+                        <div className="chat-session" onClick={() => loadChatHistory(auth.currentUser.uid, session.id)}>
+                          Chat started at {session.timestamp.toDate().toLocaleString()}
+                        </div>
+                        <Dropdown>
+                          <Dropdown.Toggle as={FaEllipsisV} className="dropdown-toggle" />
+                          <Dropdown.Menu className="dropdown-menu">
+                            <Dropdown.Item onClick={() => deleteChatSession(auth.currentUser.uid, session.id)}>Delete</Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+              <div className={`chat-area ${sidebarCollapsed ? 'collapsed' : ''}`}>
+                <div className="chat-header">
+                  <FiFolderPlus className="icon new-chat-icon" onClick={startNewChatSession} />
+                  <FaCompress className="icon fullscreen-icon" onClick={toggleModal} />
+                </div>
+                <div className="chat-messages" ref={chatMessagesRef}>
+                  {messages.map((msg, index) => (
+                    <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
+                      <strong>{msg.user === 'You' ? 'You' : 'Bot'}: </strong>
+                      {renderMessageContent(msg.text)}
+                    </div>
+                  ))}
+                  {isLoading && <div className="loading">Bot is typing...</div>}
+                  <div ref={messagesEndRef}></div>
+                </div>
+                <InputGroup className="mb-3 input-group">
+                  {showCaptcha ? (
+                    <Button onClick={async () => {
+                      if (!executeRecaptcha) {
+                        console.log("Execute recaptcha not yet available");
+                        return;
+                      }
+                      const token = await executeRecaptcha('send_message');
+                      handleVerifyCaptcha(token);
+                    }}>Verify Captcha</Button>
+                  ) : (
+                    <>
+                      <Form.Control
+                        as="textarea"
+                        rows={1}
+                        placeholder="Type your message..."
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        disabled={showCaptcha}
+                      />
+                      <Button onClick={handleSendMessage} disabled={showCaptcha}>Send</Button>
+                    </>
+                  )}
+                </InputGroup>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Login Prompt Modal */}
-      <Modal show={showLoginPrompt} onHide={() => setShowLoginPrompt(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Login Required</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Please log in to save and view your chat history.</p>
-          <Button variant="primary" onClick={() => window.location.href = '/login'}>
-            Log In
-          </Button>
-        </Modal.Body>
-      </Modal>
-    </Container>
+        {/* Login Prompt Modal */}
+        <Modal show={showLoginPrompt} onHide={() => setShowLoginPrompt(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Login Required</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Please log in to save and view your chat history.</p>
+            <Button variant="primary" onClick={() => window.location.href = '/login'}>
+              Log In
+            </Button>
+          </Modal.Body>
+        </Modal>
+      </Container>
+    </GoogleReCaptchaProvider>
   );
 };
 
