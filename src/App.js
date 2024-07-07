@@ -30,6 +30,8 @@ import { ProductProvider } from './components/Shop/ProductContext'; // Import Pr
 import PromoModal from './components/PromoModal';
 import HerbalistsPage from "./components/HerbalistsPage";
 import HerbalReference from "./components/HerbalReference";
+import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3'; // Import GoogleReCaptchaProvider
+
 const DelayedContact = withDelayedNavigation(Contact, 2000);
 
 const App = () => {
@@ -39,73 +41,74 @@ const App = () => {
     <div className="App">
       <AuthProvider>
         <ProductProvider>
-          <NavBar />
-          <PrivacyPolicyModal />
-          <PromoModal />
-          <Switch>
-            <Route path="/reset-password">
-              <PasswordReset />
-            </Route>
-            <Route exact path="/">
-              <Home />
-            </Route>
-            <Route path="/home">
-              <Home />
-            </Route>
-            <Route path="/shop">
-              <ShopLayout />
-            </Route>
-            <Route path="/product/:id">
-              <ProductPage />
-            </Route>
-            <Route path="/doctors">
-              <Doctors />
-            </Route>
-            <PrivateRoute path="/doctor/:doctorId">
-              <Doctor />
-            </PrivateRoute>
-            <PrivateRoute path="/appointment">
-              <Appointment />
-            </PrivateRoute>
-            <Route path="/about">
-              <About />
-            </Route>
-            <PrivateRoute path="/contact">
-              <DelayedContact />
-            </PrivateRoute>
-            <Route path="/faq">
-              <Faq />
-            </Route>
-            <Route path="/login">
-              <Login />
-            </Route>
-            <Route path="/signup">
-              <Signup />
-            </Route>
-            <PrivateRoute path="/subscribe" requireSubscription={false}>
-              <Subscription /> {/* Updated component name */}
+          <GoogleReCaptchaProvider reCaptchaKey="6LeVGgoqAAAAAEQisgqS0Bc1Sqe_4m6Xy_7BecKY">
+            <NavBar />
+            <PrivacyPolicyModal />
+            <PromoModal />
+            <Switch>
+              <Route path="/reset-password">
+                <PasswordReset />
+              </Route>
+              <Route exact path="/">
+                <Home />
+              </Route>
+              <Route path="/home">
+                <Home />
+              </Route>
+              <Route path="/shop">
+                <ShopLayout />
+              </Route>
+              <Route path="/product/:id">
+                <ProductPage />
+              </Route>
+              <Route path="/doctors">
+                <Doctors />
+              </Route>
+              <PrivateRoute path="/doctor/:doctorId">
+                <Doctor />
               </PrivateRoute>
-            <PrivateRoute path="/dashboard" requireSubscription={false}>
-              <Dashboard />
-            </PrivateRoute>
-            <Route path="/privacy-policy">
-              <PrivacyPolicy />
-            </Route>
-            <Route path="/terms-of-service">
-              <TermsOfService />
-            </Route>
-            <Route path="/for-herbalists">
-              <HerbalistsPage />
-            </Route>
-            <Route path="/reference">
-              <HerbalReference />
-            </Route>
-            
-            <Route path="*">
-              <NotFound />
-            </Route>
-          </Switch>
-          <Footer />
+              <PrivateRoute path="/appointment">
+                <Appointment />
+              </PrivateRoute>
+              <Route path="/about">
+                <About />
+              </Route>
+              <PrivateRoute path="/contact">
+                <DelayedContact />
+              </PrivateRoute>
+              <Route path="/faq">
+                <Faq />
+              </Route>
+              <Route path="/login">
+                <Login />
+              </Route>
+              <Route path="/signup">
+                <Signup />
+              </Route>
+              <PrivateRoute path="/subscribe" requireSubscription={false}>
+                <Subscription />
+              </PrivateRoute>
+              <PrivateRoute path="/dashboard" requireSubscription={false}>
+                <Dashboard />
+              </PrivateRoute>
+              <Route path="/privacy-policy">
+                <PrivacyPolicy />
+              </Route>
+              <Route path="/terms-of-service">
+                <TermsOfService />
+              </Route>
+              <Route path="/for-herbalists">
+                <HerbalistsPage />
+              </Route>
+              <Route path="/reference">
+                <HerbalReference />
+              </Route>
+              <Route path="*">
+                <NotFound />
+              </Route>
+            </Switch>
+            <Footer />
+          </GoogleReCaptchaProvider>
         </ProductProvider>
       </AuthProvider>
     </div>

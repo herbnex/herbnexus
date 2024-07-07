@@ -6,6 +6,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../Firebase/firebase.config';
 import axios from 'axios';
 import { collection, doc, getDocs, setDoc, query, getDoc, addDoc, deleteDoc, Timestamp } from 'firebase/firestore';
+import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import './HerbalChat.css';
 
 const auth = getAuth();
@@ -23,8 +24,12 @@ const HerbalChat = () => {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [chatSessions, setChatSessions] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
+  const [showCaptcha, setShowCaptcha] = useState(true);
+  const [captchaSolved, setCaptchaSolved] = useState(false);
   const messagesEndRef = useRef(null);
   const chatMessagesRef = useRef(null);
+
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -125,7 +130,7 @@ const HerbalChat = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !captchaSolved) return;
     const newMessages = [...messages, { user: 'You', text: input }];
     setMessages(newMessages);
     setIsLoading(true);
@@ -156,6 +161,12 @@ const HerbalChat = () => {
       const user = auth.currentUser;
       if (user && currentChatId) {
         await saveChatHistory(user.uid, currentChatId, updatedMessages);
+      }
+
+      // Show CAPTCHA after every 7 messages
+      if (updatedMessages.filter(msg => msg.user === 'You').length % 7 === 0) {
+        setShowCaptcha(true);
+        setCaptchaSolved(false);
       }
     } catch (error) {
       setMessages([...newMessages, { user: 'Bot', text: 'Error: Could not get response' }]);
@@ -193,6 +204,8 @@ const HerbalChat = () => {
       setChatSessions([...chatSessions, newSession]);
       setMessages(initialMessages);
       setCurrentChatId(docRef.id);
+      setShowCaptcha(true);
+      setCaptchaSolved(false);
     } catch (error) {
       console.error('Error starting new chat session: ', error);
     }
@@ -240,8 +253,28 @@ const HerbalChat = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
+  const handleCaptchaChange = async () => {
+    if (!executeRecaptcha) {
+      console.log("Execute recaptcha not yet available");
+      return;
+    }
+
+    const token = await executeRecaptcha('send_message');
+    try {
+      const response = await axios.post('/.netlify/functions/verifyCaptcha', { token });
+      if (response.data.success) {
+        setCaptchaSolved(true);
+        setShowCaptcha(false);
+      } else {
+        console.error('CAPTCHA verification failed: ', response.data.error);
+      }
+    } catch (error) {
+      console.error('Error verifying CAPTCHA: ', error);
+    }
+  };
+
   return (
-    <>
+    <GoogleReCaptchaProvider reCaptchaKey="6LeVGgoqAAAAAEQisgqS0Bc1Sqe_4m6Xy_7BecKY">
       <Container className="herbal-chat-container">
         <div className="chat-window">
           {!showModal && (
@@ -261,14 +294,18 @@ const HerbalChat = () => {
                 <div ref={messagesEndRef}></div>
               </div>
               <InputGroup className="mb-3 input-group">
+                {showCaptcha && (
+                  <Button onClick={handleCaptchaChange}>Verify Captcha</Button>
+                )}
                 <Form.Control
                   as="textarea"
                   rows={1}
                   placeholder="Type your message..."
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  disabled={showCaptcha}
                 />
-                <Button onClick={handleSendMessage}>Send</Button>
+                <Button onClick={handleSendMessage} disabled={showCaptcha}>Send</Button>
               </InputGroup>
             </>
           )}
@@ -317,14 +354,18 @@ const HerbalChat = () => {
                 <div ref={messagesEndRef}></div>
               </div>
               <InputGroup className="mb-3 input-group">
+                {showCaptcha && (
+                  <Button onClick={handleCaptchaChange}>Verify Captcha</Button>
+                )}
                 <Form.Control
                   as="textarea"
                   rows={1}
                   placeholder="Type your message..."
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  disabled={showCaptcha}
                 />
-                <Button onClick={handleSendMessage}>Send</Button>
+                <Button onClick={handleSendMessage} disabled={showCaptcha}>Send</Button>
               </InputGroup>
             </div>
           </div>
@@ -343,7 +384,7 @@ const HerbalChat = () => {
           </Button>
         </Modal.Body>
       </Modal>
-    </>
+    </GoogleReCaptchaProvider>
   );
 };
 
