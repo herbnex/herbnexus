@@ -24,7 +24,7 @@ const HerbalChat = () => {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [chatSessions, setChatSessions] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
-  const [showCaptcha, setShowCaptcha] = useState(true);
+  const [showCaptcha, setShowCaptcha] = useState(false);
   const [captchaSolved, setCaptchaSolved] = useState(false);
   const messagesEndRef = useRef(null);
   const chatMessagesRef = useRef(null);
@@ -274,43 +274,44 @@ const HerbalChat = () => {
   };
 
   return (
-    <GoogleReCaptchaProvider reCaptchaKey="6LeVGgoqAAAAAEQisgqS0Bc1Sqe_4m6Xy_7BecKY">
-      <Container className="herbal-chat-container">
-        <div className="chat-window">
-          {!showModal && (
-            <>
-              <div className="chat-header">
-                <FiFolderPlus className="icon new-chat-icon" onClick={startNewChatSession} />
-                <FaExpand className="icon fullscreen-icon" onClick={toggleModal} />
-              </div>
-              <div className="chat-messages" ref={chatMessagesRef}>
-                {messages.map((msg, index) => (
-                  <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
-                    <strong>{msg.user === 'You' ? 'You' : 'Bot'}: </strong>
-                    {renderMessageContent(msg.text)}
-                  </div>
-                ))}
-                {isLoading && <div className="loading">Bot is typing...</div>}
-                <div ref={messagesEndRef}></div>
-              </div>
-              <InputGroup className="mb-3 input-group">
-                {showCaptcha && (
+    <Container className="herbal-chat-container">
+      <div className="chat-window">
+        {!showModal && (
+          <>
+            <div className="chat-header">
+              <FiFolderPlus className="icon new-chat-icon" onClick={startNewChatSession} />
+              <FaExpand className="icon fullscreen-icon" onClick={toggleModal} />
+            </div>
+            <div className="chat-messages" ref={chatMessagesRef}>
+              {messages.map((msg, index) => (
+                <div key={index} className={`chat-message ${msg.user === 'You' ? 'user-message' : 'bot-message'}`}>
+                  <strong>{msg.user === 'You' ? 'You' : 'Bot'}: </strong>
+                  {renderMessageContent(msg.text)}
+                </div>
+              ))}
+              {isLoading && <div className="loading">Bot is typing...</div>}
+              {showCaptcha && (
+                <div className="chat-message bot-message">
+                  <strong>Bot: </strong>
                   <Button onClick={handleCaptchaChange}>Verify Captcha</Button>
-                )}
-                <Form.Control
-                  as="textarea"
-                  rows={1}
-                  placeholder="Type your message..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  disabled={showCaptcha}
-                />
-                <Button onClick={handleSendMessage} disabled={showCaptcha}>Send</Button>
-              </InputGroup>
-            </>
-          )}
-        </div>
-      </Container>
+                </div>
+              )}
+              <div ref={messagesEndRef}></div>
+            </div>
+            <InputGroup className="mb-3 input-group">
+              <Form.Control
+                as="textarea"
+                rows={1}
+                placeholder="Type your message..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                disabled={showCaptcha}
+              />
+              <Button onClick={handleSendMessage} disabled={showCaptcha}>Send</Button>
+            </InputGroup>
+          </>
+        )}
+      </div>
 
       {showModal && (
         <div className="fullscreen-modal">
@@ -351,12 +352,15 @@ const HerbalChat = () => {
                   </div>
                 ))}
                 {isLoading && <div className="loading">Bot is typing...</div>}
+                {showCaptcha && (
+                  <div className="chat-message bot-message">
+                    <strong>Bot: </strong>
+                    <Button onClick={handleCaptchaChange}>Verify Captcha</Button>
+                  </div>
+                )}
                 <div ref={messagesEndRef}></div>
               </div>
               <InputGroup className="mb-3 input-group">
-                {showCaptcha && (
-                  <Button onClick={handleCaptchaChange}>Verify Captcha</Button>
-                )}
                 <Form.Control
                   as="textarea"
                   rows={1}
@@ -384,7 +388,7 @@ const HerbalChat = () => {
           </Button>
         </Modal.Body>
       </Modal>
-    </GoogleReCaptchaProvider>
+    </Container>
   );
 };
 
