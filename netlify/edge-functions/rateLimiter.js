@@ -12,7 +12,7 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-export default onRequest(async (request, context) => {
+export const onRequest = async (context) => {
   const ip = context.request.headers.get('x-forwarded-for') || context.request.headers.get('client-ip');
   const rateLimitDocRef = db.collection('rate_limits').doc(ip);
   const now = admin.firestore.Timestamp.now();
@@ -48,4 +48,4 @@ export default onRequest(async (request, context) => {
   }
 
   return new Response('OK', { status: 200 });
-});
+};
