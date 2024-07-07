@@ -1,5 +1,5 @@
 import { onRequest as edgeRequestHandler } from 'netlify:edge';
-import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
+import { getFirestore, Timestamp, FieldValue } from 'firebase/firestore';
 import { db } from '../../src/Firebase/firebase.config';  // Adjust the path as needed
 
 export const onRequest = async (context) => {
