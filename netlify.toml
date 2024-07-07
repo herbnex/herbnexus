@@ -3,11 +3,13 @@
   functions = "netlify/functions"
   edge_functions = "netlify/edge-functions"
 
+[functions]
+  node_bundler = "esbuild"
+
+[functions."*"]
+  external_node_modules = ["firebase-admin"]
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["firebase-admin"]
