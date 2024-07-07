@@ -10,6 +10,4 @@
 
 [functions]
   node_bundler = "esbuild"
-
-[[functions.external_node_modules]]
-  name = "firebase-admin"
+  external_node_modules = ["firebase-admin"]
