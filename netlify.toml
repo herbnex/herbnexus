@@ -1,10 +1,11 @@
 [build]
   publish = "build"
   functions = "netlify/functions"
+  edge_functions = "netlify/edge-functions"
 
 [[edge_functions]]
   function = "rateLimiter"
-  path = "netlify/edge-functions/rateLimiter.js"
+  path = "/rateLimiter"
 
 [[redirects]]
   from = "/*"
