@@ -23,24 +23,30 @@ exports.handler = async (event, context) => {
     let rateLimitData = rateLimitSnapshot.data();
 
     if (!rateLimitData) {
-      rateLimitData = { count: 0, lastRequest: currentTime };
+      rateLimitData = { count: 1, lastRequest: currentTime };
+      await rateLimitDoc.set(rateLimitData);
+      console.log(`Initial request from IP: ${ip}`);
+      return {
+        statusCode: 200,
+        body: 'OK'
+      };
     }
 
     console.log(`IP: ${ip}, Current Time: ${currentTime}, Rate Limit Data: ${JSON.stringify(rateLimitData)}`);
 
-    if (rateLimitData.count >= 5 && (currentTime - rateLimitData.lastRequest < 60)) {
-      console.log(`Rate limit exceeded for IP: ${ip}`);
-      return {
-        statusCode: 429,
-        body: 'Too Many Requests'
-      };
-    } else if (currentTime - rateLimitData.lastRequest < 60) {
+    if (currentTime - rateLimitData.lastRequest < 60) {
+      if (rateLimitData.count >= 5) {
+        console.log(`Rate limit exceeded for IP: ${ip}`);
+        return {
+          statusCode: 429,
+          body: 'Too Many Requests'
+        };
+      }
       rateLimitData.count += 1;
-      rateLimitData.lastRequest = currentTime;
     } else {
       rateLimitData.count = 1;
-      rateLimitData.lastRequest = currentTime;
     }
+    rateLimitData.lastRequest = currentTime;
 
     await rateLimitDoc.set(rateLimitData);
     console.log(`Updated Rate Limit Data: ${JSON.stringify(rateLimitData)}`);

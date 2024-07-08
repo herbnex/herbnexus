@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const url = 'https://herbnexus.io/.netlify/functions/rateLimiter'; // Replace with your Netlify function URL
-const numRequests = 150; // Number of requests to make
+const numRequests = 450; // Number of requests to make
 
 const makeRequest = async () => {
   try {
