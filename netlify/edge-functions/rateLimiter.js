@@ -11,11 +11,15 @@ export default async (request, context) => {
     const currentTime = getTimestamp();
     const rateLimitKey = `rate-limit-${ip}`;
   
-    // Check if the rate limit data is already in the cache
-    let rateLimitData = context.cache.get(rateLimitKey);
+    // Parse cookies
+    const cookies = request.headers.get('cookie') || '';
+    const cookieMap = Object.fromEntries(cookies.split('; ').map(c => c.split('=')));
+  
+    let rateLimitData = cookieMap[rateLimitKey] ? JSON.parse(decodeURIComponent(cookieMap[rateLimitKey])) : null;
+  
     if (!rateLimitData) {
       rateLimitData = { count: 1, lastRequest: currentTime, blockedUntil: 0 };
-      context.cache.set(rateLimitKey, rateLimitData, 60); // Set cache expiration to 60 seconds
+      context.headers.set('Set-Cookie', `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60`);
       console.log(`Initial request from IP: ${ip}`);
       return new Response('OK', { status: 200 });
     }
@@ -31,7 +35,7 @@ export default async (request, context) => {
       if (rateLimitData.count >= 5) {
         rateLimitData.blockedUntil = currentTime + 60;
         rateLimitData.count = 0; // Reset count after blocking
-        context.cache.set(rateLimitKey, rateLimitData, 60); // Update cache with blocking info
+        context.headers.set('Set-Cookie', `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60`);
         console.log(`Rate limit exceeded for IP: ${ip}, blocking for 60 seconds`);
         return new Response('Too Many Requests - Blocked for 60 seconds', { status: 429 });
       }
@@ -41,7 +45,7 @@ export default async (request, context) => {
     }
     rateLimitData.lastRequest = currentTime;
   
-    context.cache.set(rateLimitKey, rateLimitData, 60); // Update cache with the latest data
+    context.headers.set('Set-Cookie', `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60`);
     console.log(`Updated Rate Limit Data: ${JSON.stringify(rateLimitData)}`);
   
     return new Response('OK', { status: 200 });
