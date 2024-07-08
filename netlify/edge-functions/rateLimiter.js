@@ -1,15 +1,19 @@
 export default async (context) => {
     console.log('Edge Function Invoked');
+  
+    // Log the entire context object for debugging
     console.log('Context:', JSON.stringify(context));
   
-    const getTimestamp = () => Math.floor(Date.now() / 1000);
-  
     // Safely access the request and headers
-    const request = context.request || {};
-    const headers = request.headers || {};
+    const request = context?.request;
+    if (!request) {
+      console.log('Request not found in context');
+      return new Response('Internal Server Error', { status: 500 });
+    }
   
-    if (!headers.get) {
-      console.log('Headers get method not found in context.request.headers');
+    const headers = request.headers;
+    if (!headers) {
+      console.log('Headers not found in request');
       return new Response('Internal Server Error', { status: 500 });
     }
   
@@ -19,6 +23,7 @@ export default async (context) => {
       return new Response('Internal Server Error', { status: 500 });
     }
   
+    const getTimestamp = () => Math.floor(Date.now() / 1000);
     const currentTime = getTimestamp();
     const rateLimitKey = `rate-limit-${ip}`;
   
