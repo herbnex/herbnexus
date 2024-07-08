@@ -1,9 +1,11 @@
 [build]
   publish = "build"
-  functions = "netlify/functions"
+
+[[edge_functions]]
+  path = "/*"
+  function = "rateLimiter"
 
 [[redirects]]
   from = "/*"
-  to = "/.netlify/functions/rateLimiter"
+  to = "/index.html"
   status = 200
-  force = true
