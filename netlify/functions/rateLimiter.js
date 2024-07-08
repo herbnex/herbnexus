@@ -1,7 +1,7 @@
-const { db } = require("../../src/Firebase/setupFirebaseAdmin");
+const { db } = require('../../src/Firebase/setupFirebaseAdmin');
 
 exports.handler = async (event, context) => {
-  console.log('Edge Function Invoked');
+  console.log('Function Invoked');
 
   // Safely access the request and headers
   const request = event.headers;
