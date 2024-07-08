@@ -1,53 +1,28 @@
 import { onRequest as edgeRequestHandler } from 'netlify:edge';
-import admin from 'firebase-admin';
 
-const serviceAccount = JSON.parse(process.env.REACT_APP_FIREBASE_PRIVATE_KEY);
+// Function to get the current timestamp in seconds
+const getTimestamp = () => Math.floor(Date.now() / 1000);
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
-  });
-}
-
-const db = admin.firestore();
-
+// Function to check and update rate limit
 export const onRequest = async (context) => {
   const ip = context.request.headers.get('x-forwarded-for') || context.request.headers.get('client-ip');
-  const rateLimitDocRef = db.collection('rate_limits').doc(ip);
-  const now = admin.firestore.Timestamp.now();
+  const currentTime = getTimestamp();
+  const rateLimitKey = `rate-limit-${ip}`;
+  const rateLimitData = await context.storage.get(rateLimitKey) || { count: 0, lastRequest: currentTime };
 
-  try {
-    const doc = await rateLimitDocRef.get();
-    if (doc.exists) {
-      const data = doc.data();
-      const lastRequestTime = data.lastRequest.toDate();
-      const requestCount = data.count;
-
-      if (now.toDate() - lastRequestTime < 60000 && requestCount >= 100) {
-        return new Response('Too Many Requests', { status: 429 });
-      } else if (now.toDate() - lastRequestTime < 60000) {
-        await rateLimitDocRef.update({
-          count: admin.firestore.FieldValue.increment(1),
-          lastRequest: now,
-        });
-      } else {
-        await rateLimitDocRef.set({
-          count: 1,
-          lastRequest: now,
-        });
-      }
-    } else {
-      await rateLimitDocRef.set({
-        count: 1,
-        lastRequest: now,
-      });
-    }
-  } catch (error) {
-    return new Response('Internal Server Error', { status: 500 });
+  if (rateLimitData.count >= 100 && (currentTime - rateLimitData.lastRequest < 60)) {
+    return new Response('Too Many Requests', { status: 429 });
+  } else if (currentTime - rateLimitData.lastRequest < 60) {
+    rateLimitData.count += 1;
+    rateLimitData.lastRequest = currentTime;
+  } else {
+    rateLimitData.count = 1;
+    rateLimitData.lastRequest = currentTime;
   }
 
+  await context.storage.set(rateLimitKey, rateLimitData);
   return new Response('OK', { status: 200 });
 };
 
+// Export the edgeRequestHandler as onRequest
 export { onRequest };
