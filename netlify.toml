@@ -4,8 +4,8 @@
   edge_functions = "netlify/edge-functions"
 
 [[edge_functions]]
+  path = "/*"
   function = "rateLimiter"
-  path = "/rateLimiter"
 
 [[redirects]]
   from = "/*"
