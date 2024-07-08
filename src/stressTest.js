@@ -1,17 +1,20 @@
 const axios = require('axios');
 
-const url = 'https://your-site-url.com'; // Replace with your site URL
-const numRequests = 150; // Number of requests to make
+const url = 'https://herbnexus.io'; // Replace with the correct site URL
+const numRequests = 750; // Number of requests to make
 
 const makeRequest = async () => {
   try {
-    const response = await axios.get(url);
-    console.log(response.status);
+    const response = await axios.get(url, {
+      httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),
+      timeout: 10000, // 10 seconds timeout
+    });
+    console.log(`Status: ${response.status}, Timestamp: ${new Date().toISOString()}`);
   } catch (error) {
     if (error.response) {
-      console.log(error.response.status);
+      console.log(`Error Status: ${error.response.status}, Timestamp: ${new Date().toISOString()}`);
     } else {
-      console.log('Error:', error.message);
+      console.log(`Error: ${error.message}, Timestamp: ${new Date().toISOString()}`);
     }
   }
 };
