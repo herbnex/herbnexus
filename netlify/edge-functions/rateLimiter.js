@@ -1,4 +1,3 @@
-// netlify/edge-functions/rateLimiter.js
 import { db } from '../../src/Firebase/setupFirebaseAdmin';
 
 export default async (event) => {
