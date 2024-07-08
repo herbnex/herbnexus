@@ -23,6 +23,3 @@ export const onRequest = async (context) => {
   await context.storage.set(rateLimitKey, rateLimitData);
   return new Response('OK', { status: 200 });
 };
-
-// Export the edgeRequestHandler as onRequest
-export { onRequest };
