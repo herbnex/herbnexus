@@ -23,7 +23,7 @@ exports.handler = async (event, context) => {
     let rateLimitData = rateLimitSnapshot.data();
 
     if (!rateLimitData) {
-      rateLimitData = { count: 1, lastRequest: currentTime };
+      rateLimitData = { count: 1, lastRequest: currentTime, blockedUntil: 0 };
       await rateLimitDoc.set(rateLimitData);
       console.log(`Initial request from IP: ${ip}`);
       return {
@@ -34,12 +34,23 @@ exports.handler = async (event, context) => {
 
     console.log(`IP: ${ip}, Current Time: ${currentTime}, Rate Limit Data: ${JSON.stringify(rateLimitData)}`);
 
+    if (rateLimitData.blockedUntil > currentTime) {
+      console.log(`IP ${ip} is currently blocked until ${rateLimitData.blockedUntil}`);
+      return {
+        statusCode: 429,
+        body: 'Too Many Requests - Try again later'
+      };
+    }
+
     if (currentTime - rateLimitData.lastRequest < 60) {
       if (rateLimitData.count >= 5) {
-        console.log(`Rate limit exceeded for IP: ${ip}`);
+        rateLimitData.blockedUntil = currentTime + 60;
+        rateLimitData.count = 0; // Reset count after blocking
+        await rateLimitDoc.set(rateLimitData);
+        console.log(`Rate limit exceeded for IP: ${ip}, blocking for 60 seconds`);
         return {
           statusCode: 429,
-          body: 'Too Many Requests'
+          body: 'Too Many Requests - Blocked for 60 seconds'
         };
       }
       rateLimitData.count += 1;
