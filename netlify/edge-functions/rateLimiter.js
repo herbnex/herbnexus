@@ -19,25 +19,38 @@ export default async (request, context) => {
   
     if (!rateLimitData) {
       rateLimitData = { count: 1, lastRequest: currentTime, blockedUntil: 0 };
-      context.headers.set('Set-Cookie', `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60`);
       console.log(`Initial request from IP: ${ip}`);
-      return new Response('OK', { status: 200 });
+      return new Response('OK', {
+        status: 200,
+        headers: {
+          'Set-Cookie': `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60; Path=/`
+        }
+      });
     }
   
     console.log(`IP: ${ip}, Current Time: ${currentTime}, Rate Limit Data: ${JSON.stringify(rateLimitData)}`);
   
     if (rateLimitData.blockedUntil > currentTime) {
       console.log(`IP ${ip} is currently blocked until ${rateLimitData.blockedUntil}`);
-      return new Response('Too Many Requests - Try again later', { status: 429 });
+      return new Response('Too Many Requests - Try again later', {
+        status: 429,
+        headers: {
+          'Set-Cookie': `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60; Path=/`
+        }
+      });
     }
   
     if (currentTime - rateLimitData.lastRequest < 60) {
       if (rateLimitData.count >= 5) {
         rateLimitData.blockedUntil = currentTime + 60;
         rateLimitData.count = 0; // Reset count after blocking
-        context.headers.set('Set-Cookie', `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60`);
         console.log(`Rate limit exceeded for IP: ${ip}, blocking for 60 seconds`);
-        return new Response('Too Many Requests - Blocked for 60 seconds', { status: 429 });
+        return new Response('Too Many Requests - Blocked for 60 seconds', {
+          status: 429,
+          headers: {
+            'Set-Cookie': `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60; Path=/`
+          }
+        });
       }
       rateLimitData.count += 1;
     } else {
@@ -45,9 +58,13 @@ export default async (request, context) => {
     }
     rateLimitData.lastRequest = currentTime;
   
-    context.headers.set('Set-Cookie', `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60`);
     console.log(`Updated Rate Limit Data: ${JSON.stringify(rateLimitData)}`);
   
-    return new Response('OK', { status: 200 });
+    return new Response('OK', {
+      status: 200,
+      headers: {
+        'Set-Cookie': `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60; Path=/`
+      }
+    });
   };
   
