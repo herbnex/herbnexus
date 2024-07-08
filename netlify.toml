@@ -1,7 +1,7 @@
 [build]
   publish = "build"
   functions = "netlify/functions"
-  edge_functions = "netlify/edge-functions"
+  edge_functions = "dist"
 
 [[edge_functions]]
   path = "/*"
