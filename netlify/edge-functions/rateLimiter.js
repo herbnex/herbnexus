@@ -1,6 +1,22 @@
 export default async (context) => {
+    // Log the context object for debugging
+    console.log('Context:', JSON.stringify(context));
+  
     const getTimestamp = () => Math.floor(Date.now() / 1000);
-    const ip = context.request.headers.get('x-forwarded-for') || context.request.headers.get('client-ip');
+  
+    // Safely access the headers
+    const headers = context.request?.headers;
+    if (!headers) {
+      console.log('Headers not found in context.request');
+      return new Response('Internal Server Error', { status: 500 });
+    }
+  
+    const ip = headers.get('x-forwarded-for') || headers.get('client-ip');
+    if (!ip) {
+      console.log('IP address not found in headers');
+      return new Response('Internal Server Error', { status: 500 });
+    }
+  
     const currentTime = getTimestamp();
     const rateLimitKey = `rate-limit-${ip}`;
   
