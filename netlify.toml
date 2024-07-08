@@ -2,10 +2,8 @@
   publish = "build"
   functions = "netlify/functions"
 
-
-
-
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/.netlify/functions/rateLimiter"
   status = 200
+  force = true
