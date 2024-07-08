@@ -20,12 +20,9 @@ export default async (request, context) => {
     if (!rateLimitData) {
       rateLimitData = { count: 1, lastRequest: currentTime, blockedUntil: 0 };
       console.log(`Initial request from IP: ${ip}`);
-      return new Response('OK', {
-        status: 200,
-        headers: {
-          'Set-Cookie': `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60; Path=/`
-        }
-      });
+      const response = await fetch(request);
+      response.headers.set('Set-Cookie', `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60; Path=/`);
+      return response;
     }
   
     console.log(`IP: ${ip}, Current Time: ${currentTime}, Rate Limit Data: ${JSON.stringify(rateLimitData)}`);
@@ -60,11 +57,8 @@ export default async (request, context) => {
   
     console.log(`Updated Rate Limit Data: ${JSON.stringify(rateLimitData)}`);
   
-    return new Response('OK', {
-      status: 200,
-      headers: {
-        'Set-Cookie': `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60; Path=/`
-      }
-    });
+    const response = await fetch(request);
+    response.headers.set('Set-Cookie', `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60; Path=/`);
+    return response;
   };
   
