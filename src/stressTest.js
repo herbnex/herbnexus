@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const url = 'https://herbnexus.io/rateLimiter'; // Replace with the correct site URL
+const url = 'https://herbnexus.io/.netlify/functions/rateLimiter'; // Replace with your Netlify function URL
 const numRequests = 150; // Number of requests to make
 
 const makeRequest = async () => {
