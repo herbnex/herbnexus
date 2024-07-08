@@ -22,7 +22,7 @@ export default async (event) => {
       rateLimitData = { count: 1, lastRequest: currentTime, blockedUntil: 0 };
       await rateLimitDoc.set(rateLimitData);
       console.log(`Initial request from IP: ${ip}`);
-      return event.next();
+      return new Response('OK', { status: 200 });
     }
 
     console.log(`IP: ${ip}, Current Time: ${currentTime}, Rate Limit Data: ${JSON.stringify(rateLimitData)}`);
@@ -49,7 +49,7 @@ export default async (event) => {
     await rateLimitDoc.set(rateLimitData);
     console.log(`Updated Rate Limit Data: ${JSON.stringify(rateLimitData)}`);
 
-    return event.next();
+    return new Response('OK', { status: 200 });
   } catch (error) {
     console.error('Error accessing Firestore:', error);
     return new Response('Internal Server Error', { status: 500 });
