@@ -28,7 +28,7 @@ exports.handler = async (event, context) => {
 
     console.log(`IP: ${ip}, Current Time: ${currentTime}, Rate Limit Data: ${JSON.stringify(rateLimitData)}`);
 
-    if (rateLimitData.count >= 100 && (currentTime - rateLimitData.lastRequest < 60)) {
+    if (rateLimitData.count >= 5 && (currentTime - rateLimitData.lastRequest < 60)) {
       console.log(`Rate limit exceeded for IP: ${ip}`);
       return {
         statusCode: 429,
