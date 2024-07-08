@@ -1,13 +1,15 @@
 export default async (context) => {
-    // Log the context object for debugging
+    console.log('Edge Function Invoked');
     console.log('Context:', JSON.stringify(context));
   
     const getTimestamp = () => Math.floor(Date.now() / 1000);
   
-    // Safely access the headers
-    const headers = context.request?.headers;
-    if (!headers) {
-      console.log('Headers not found in context.request');
+    // Safely access the request and headers
+    const request = context.request || {};
+    const headers = request.headers || {};
+  
+    if (!headers.get) {
+      console.log('Headers get method not found in context.request.headers');
       return new Response('Internal Server Error', { status: 500 });
     }
   

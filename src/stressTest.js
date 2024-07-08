@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const url = 'https://herbnexus.io/rateLimiter'; // Replace with the correct site URL
-const numRequests = 850; // Number of requests to make
+const numRequests = 150; // Number of requests to make
 
 const makeRequest = async () => {
   try {
