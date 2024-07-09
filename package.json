@@ -16,6 +16,7 @@
     "@minchat/react-chat-ui": "^0.16.2",
     "@mui/icons-material": "^5.15.19",
     "@mui/material": "^5.15.20",
+    "@netlify/blobs": "^8.0.0",
     "@stripe/react-stripe-js": "^2.7.1",
     "@stripe/stripe-js": "^3.4.1",
     "@testing-library/jest-dom": "^5.11.4",
