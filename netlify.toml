@@ -2,6 +2,7 @@
   publish = "build"
   functions = "netlify/functions"
 
-[[edge_functions]]
-  path = "/*"
-  function = "rateLimiter"
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
