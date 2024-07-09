@@ -69,7 +69,7 @@ export const config = {
   path: "/*",
   rateLimit: {
     windowLimit: 100, // Max 3 requests
-    window: 86400, // Per 86400 seconds (1 day)
+    window: 60, // Per 86400 seconds (1 day)
     aggregateBy: ["ip"], // Aggregate by IP address
     action: "block", // Block requests exceeding the limit
   },
