@@ -21,6 +21,7 @@ export default async (request) => {
   // Current time
   const currentTime = new Date().getTime();
 
+  let rateLimitExceeded = false;
   let responseMessage = '';
 
   // If a rate limiting key is found
@@ -42,14 +43,19 @@ export default async (request) => {
         await visits.set(identifier, JSON.stringify({ count_updates: count_updates + 1, last_update: currentTime }));
         responseMessage = `Reload ${rateLimitConfig.maxUpdates - count_updates} more time(s) to exceed the rate limit.`;
       } else {
-        // If the limits equal or exceeds, return with a rate limit exceeded message
-        return new Response('Rate limit exceeded.', { status: 429 });
+        // If the limits equal or exceeds, set rate limit exceeded flag
+        rateLimitExceeded = true;
+        responseMessage = 'Rate limit exceeded.';
       }
     }
   } else {
     // If a key is not found, set the key with a single update and continue
     await visits.set(identifier, JSON.stringify({ count_updates: 1, last_update: currentTime }));
     responseMessage = 'Reload 4 more times to exceed the rate limit.';
+  }
+
+  if (rateLimitExceeded) {
+    return new Response(responseMessage, { status: 429 });
   }
 
   // Fetch the original request
