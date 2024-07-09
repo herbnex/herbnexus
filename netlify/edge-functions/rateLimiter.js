@@ -1,6 +1,6 @@
 import { getStore } from '@netlify/blobs';
 
-const rateLimitConfig = { maxUpdates: 3, timeSpan: 86400 };
+const rateLimitConfig = { maxUpdates: 100, timeSpan: 60 };
 
 export default async (request, context) => {
   console.log('Rate Limiter Invoked');
