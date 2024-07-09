@@ -23,11 +23,9 @@ export default async (request) => {
     if (!rateLimitData) {
       rateLimitData = { count: 1, lastRequest: currentTime, blockedUntil: 0 };
       console.log(`Initial request from IP: ${ip}`);
-      const response = await fetch(request);
-      const body = await response.text();
-      const newHeaders = new Headers(response.headers);
-      newHeaders.set('Set-Cookie', `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60; Path=/`);
-      return new Response(body, { status: response.status, headers: newHeaders });
+      const response = new Response('OK', { status: 200 });
+      response.headers.set('Set-Cookie', `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60; Path=/`);
+      return response;
     }
   
     console.log(`IP: ${ip}, Current Time: ${currentTime}, Rate Limit Data: ${JSON.stringify(rateLimitData)}`);
@@ -62,11 +60,9 @@ export default async (request) => {
   
     console.log(`Updated Rate Limit Data: ${JSON.stringify(rateLimitData)}`);
   
-    const response = await fetch(request);
-    const body = await response.text();
-    const newHeaders = new Headers(response.headers);
-    newHeaders.set('Set-Cookie', `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60; Path=/`);
-    return new Response(body, { status: response.status, headers: newHeaders });
+    const response = new Response('OK', { status: 200 });
+    response.headers.set('Set-Cookie', `${rateLimitKey}=${encodeURIComponent(JSON.stringify(rateLimitData))}; Max-Age=60; Path=/`);
+    return response;
   };
   
   // Configure the rate limiting
