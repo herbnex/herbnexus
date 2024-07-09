@@ -1,15 +1,28 @@
 export default async (request) => {
     console.log('Rate Limiter Invoked');
   
-    // Log the IP for debugging
-    const ip = request.headers.get('x-forwarded-for') || request.headers.get('client-ip');
-    console.log(`IP: ${ip}`);
+    // Log the request URL for debugging
+    console.log(`Request URL: ${request.url}`);
   
     // Fetch the original request
-    const originalResponse = await fetch(request);
+    let originalResponse;
+    try {
+      // Clone the request to ensure it can be reused
+      const requestClone = request.clone();
+      
+      originalResponse = await fetch(requestClone);
+      console.log('Original request fetched successfully');
+    } catch (error) {
+      console.log('Error fetching original request:', error);
+      return new Response('Error fetching original request', { status: 500 });
+    }
   
     // Return the original response
-    return originalResponse;
+    return new Response(originalResponse.body, {
+      status: originalResponse.status,
+      statusText: originalResponse.statusText,
+      headers: originalResponse.headers
+    });
   };
   
   export const config = {
