@@ -1,14 +1,31 @@
+
 [build]
   publish = "build"
   functions = "netlify/functions"
 
-
-[[edge_functions]]
-  path = "/*"
-  function = "rateLimiter"
-
 [[redirects]]
-  from = "/*"
+  from = "/"
   to = "/index.html"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/api/*"
+  to = "/api/:splat"
+  status = 200
+  force = true
+  [redirects.rate_limit]
+    window_limit = 5
+    window = 60
+    aggregate_by = ["ip", "domain"]
+    action = "block"
+
+[[redirects]]
+  from = "/*"
+  to = "/:splat"
+  status = 200
+  [redirects.rate_limit]
+    window_limit = 5
+    window = 60
+    aggregate_by = ["ip", "domain"]
+    action = "block"
