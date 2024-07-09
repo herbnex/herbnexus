@@ -68,7 +68,7 @@ export default async (request, context) => {
 export const config = {
   path: "/*",
   rateLimit: {
-    windowLimit: 3, // Max 3 requests
+    windowLimit: 100, // Max 3 requests
     window: 86400, // Per 86400 seconds (1 day)
     aggregateBy: ["ip"], // Aggregate by IP address
     action: "block", // Block requests exceeding the limit
