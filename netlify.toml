@@ -2,14 +2,8 @@
   publish = "build"
   functions = "netlify/functions"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  force = true
-  [redirects.rate_limit]
-    window_limit = 5  # 5 requests
-    window = 60       # per 60 seconds (1 minute)
-    aggregate_by = ["ip"]  # Aggregate by IP address
-    action = "block"  # Block requests exceeding the limit
+[[edge_functions]]
+  path = "/*"
+  function = "rateLimiter"
+
 

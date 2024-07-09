@@ -2,7 +2,7 @@ import { getStore } from '@netlify/blobs';
 
 const rateLimitConfig = { maxUpdates: 5, timeSpan: 60 }; // 5 requests per 60 seconds (1 minute)
 
-export default async (request) => {
+export default async (request, context) => {
   console.log('Rate Limiter Invoked');
 
   // Retrieve the IP address
@@ -58,16 +58,8 @@ export default async (request) => {
     return new Response(responseMessage, { status: 429 });
   }
 
-  // Fetch the original request
-  const originalResponse = await fetch(request);
-
-  // Clone the original response to modify headers
-  const newResponse = new Response(originalResponse.body, originalResponse);
-
-  // Add custom header for rate limit info
-  newResponse.headers.set('X-RateLimit-Info', responseMessage);
-
-  return newResponse;
+  // Return the original request to the main site content
+  return await fetch(request);
 };
 
 // Configure the rate limiting
