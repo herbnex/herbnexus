@@ -1,11 +1,11 @@
 import { getStore } from '@netlify/blobs';
 
-const rateLimitConfig = { maxUpdates: 100, timeSpan: 60 };
+const rateLimitConfig = { maxUpdates: 5, timeSpan: 60 }; // 5 requests per 60 seconds (1 minute)
 
-export default async (request, context) => {
+export default async (request) => {
   console.log('Rate Limiter Invoked');
 
-  // Create a unique identifier based on user's IP
+  // Retrieve the IP address
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('client-ip');
   if (!ip) {
     console.log('IP address not found in headers');
@@ -29,12 +29,12 @@ export default async (request, context) => {
     const { count_updates, last_update } = JSON.parse(t);
 
     // Calculate time difference in seconds
-    const timeDifference = Math.floor((currentTime - new Date(last_update).getTime()) / 1000);
+    const timeDifference = Math.floor((currentTime - last_update) / 1000);
 
     // If time window has passed, reset count
     if (timeDifference >= rateLimitConfig.timeSpan) {
       await visits.set(identifier, JSON.stringify({ count_updates: 1, last_update: currentTime }));
-      responseMessage = 'Reload 2 more times to exceed the rate limit.';
+      responseMessage = 'Reload 4 more times to exceed the rate limit.';
     } else {
       // Check if the request count is below the limit
       if (count_updates < rateLimitConfig.maxUpdates) {
@@ -49,7 +49,7 @@ export default async (request, context) => {
   } else {
     // If a key is not found, set the key with a single update and continue
     await visits.set(identifier, JSON.stringify({ count_updates: 1, last_update: currentTime }));
-    responseMessage = 'Reload 2 more times to exceed the rate limit.';
+    responseMessage = 'Reload 4 more times to exceed the rate limit.';
   }
 
   // Fetch the original request
@@ -68,8 +68,8 @@ export default async (request, context) => {
 export const config = {
   path: "/*",
   rateLimit: {
-    windowLimit: 100, // Max 3 requests
-    window: 60, // Per 86400 seconds (1 day)
+    windowLimit: 5, // Max 5 requests
+    window: 60, // Per 60 seconds (1 minute)
     aggregateBy: ["ip"], // Aggregate by IP address
     action: "block", // Block requests exceeding the limit
   },
