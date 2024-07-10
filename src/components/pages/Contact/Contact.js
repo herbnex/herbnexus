@@ -220,6 +220,8 @@ const Contact = () => {
       const newMessage = {
         user: user.displayName || "Anonymous",
         userId: user.uid,
+        userEmail: user.email,  // Add user email
+        doctorEmail: selectedParticipant.email,
         text: message,
         timestamp: new Date().toISOString(),
       };
@@ -236,6 +238,25 @@ const Contact = () => {
       resetTextarea();
 
       await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
+
+      // Send email notification
+    const response = await fetch('/.netlify/functions/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userEmail: newMessage.userEmail,
+        doctorEmail: newMessage.doctorEmail,
+        subject: 'New Message Notification',
+        message: `You have received a new message from ${newMessage.userName}: ${newMessage.text}`,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error response from email function:', errorData);
+    }
 
       setTimeout(() => {
         if (msgBoxRef.current) {
