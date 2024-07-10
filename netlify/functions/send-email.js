@@ -12,7 +12,7 @@ exports.handler = async (event, context) => {
     Messages: [
       {
         From: {
-          Email: 'noreply@herbnexus.com',
+          Email: 'noreply@herbnexus.io',
           Name: 'Herb Nexus',
         },
         To: [
