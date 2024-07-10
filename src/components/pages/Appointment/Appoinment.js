@@ -27,6 +27,7 @@ const Appointment = () => {
       userId: user.uid,
       userName: form.name.value,
       userEmail: form.email.value,
+      doctorEmail: doctors.find(doc => doc.id === form.doctor.value).email, 
       userPhone: form.phone.value,
       date: form.date.value,
       time: form.time.value,
@@ -40,6 +41,21 @@ const Appointment = () => {
       setTimeout(() => {
         history.push("/dashboard"); // Redirect to dashboard using useHistory
       }, 2000);
+      // Send email notification
+    await fetch('/.netlify/functions/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userEmail: appointmentDetails.userEmail,
+        doctorEmail: appointmentDetails.doctorEmail,
+        subject: 'Appointment Booking Confirmation',
+        message: `Your appointment with ${appointmentDetails.doctorName} has been booked for ${appointmentDetails.date} at ${appointmentDetails.time}.`,
+      }),
+    });
+
+
     } catch (err) {
       setError("Failed to book appointment: " + err.message);
     } finally {
