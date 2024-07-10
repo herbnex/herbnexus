@@ -249,7 +249,7 @@ const Contact = () => {
         userEmail: newMessage.userEmail,
         doctorEmail: newMessage.doctorEmail,
         subject: 'New Message Notification',
-        message: `You have received a new message from ${newMessage.userName}: ${newMessage.text}`,
+        message: `You have received a new message from ${newMessage.userEmail}: ${newMessage.text}`,
       }),
     });
 
