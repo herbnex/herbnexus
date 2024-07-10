@@ -60,6 +60,9 @@
   background-color: #39cabb;
   border-bottom-right-radius: 4px;
 }
+.msg-self p {
+  color: white;
+}
 
 .msg-other {
   align-self: flex-start;

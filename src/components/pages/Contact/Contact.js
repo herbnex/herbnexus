@@ -239,7 +239,10 @@ const Contact = () => {
 
       await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
 
-      // Send email notification
+      // Determine sender type
+    const senderType = isDoctor ? 'doctor' : 'user';
+
+    // Send email notification
     const response = await fetch('/.netlify/functions/send-email', {
       method: 'POST',
       headers: {
@@ -250,6 +253,7 @@ const Contact = () => {
         doctorEmail: newMessage.doctorEmail,
         subject: 'New Message Notification',
         message: `You have received a new message from ${newMessage.userEmail}: ${newMessage.text}`,
+        senderType: senderType,
       }),
     });
 
