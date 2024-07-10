@@ -20,7 +20,6 @@ import Dashboard from "./components/Dashboard/Dashboard";
 import PrivacyPolicy from "./components/pages/PrivacyPolicy/PrivacyPolicy";
 import TermsOfService from "./components/pages/TermsOfService/TermsOfService";
 import withDelayedNavigation from "../src/hooks/withDelayedNavigation"; // Adjust the path if necessary
-
 import useScrollHandler from './hooks/useScrollHandler';
 import PrivacyPolicyModal from './components/PrivacyPolicyModal'; // Import the modal component
 import PasswordReset from './components/PasswordReset';
@@ -41,7 +40,7 @@ const App = () => {
     <div className="App">
       <AuthProvider>
         <ProductProvider>
-          <GoogleReCaptchaProvider reCaptchaKey="6LeVGgoqAAAAAEQisgqS0Bc1Sqe_4m6Xy_7BecKY">
+          <GoogleReCaptchaProvider reCaptchaKey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}>
             <NavBar />
             <PrivacyPolicyModal />
             <PromoModal />
