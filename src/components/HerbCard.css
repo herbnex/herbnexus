@@ -55,6 +55,8 @@
   .text {
     font-size: 0.85rem;
     margin-bottom: 0.7rem;
+    max-height: 3rem;
+    overflow-y: auto;
   }
   
   .card-box .content-box .rating-box {
