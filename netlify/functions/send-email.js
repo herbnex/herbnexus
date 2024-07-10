@@ -1,4 +1,9 @@
-const axios = require('axios');
+const mailjet = require('node-mailjet');
+
+const client = mailjet.apiConnect(
+  process.env.MJ_APIKEY_PUBLIC,
+  process.env.MJ_APIKEY_PRIVATE
+);
 
 exports.handler = async (event, context) => {
   console.log('Event:', event);
@@ -7,13 +12,7 @@ exports.handler = async (event, context) => {
     const { userEmail, doctorEmail, subject, message } = JSON.parse(event.body);
     console.log('Parsed event body:', { userEmail, doctorEmail, subject, message });
 
-    const mailjetUrl = 'https://api.mailjet.com/v3.1/send';
-    const auth = {
-      username: process.env.MJ_APIKEY_PUBLIC,
-      password: process.env.MJ_APIKEY_PRIVATE
-    };
-
-    const emailData = {
+    const request = client.post('send', { version: 'v3.1' }).request({
       Messages: [
         {
           From: {
@@ -35,20 +34,14 @@ exports.handler = async (event, context) => {
           HTMLPart: `<p>${message}</p>`,
         },
       ],
-    };
-
-    const response = await axios.post(mailjetUrl, emailData, {
-      auth: auth,
-      headers: {
-        'Content-Type': 'application/json'
-      }
     });
 
-    console.log('Mailjet response:', response.data);
+    const result = await request;
+    console.log('Mailjet response:', result.body);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ result: response.data }),
+      body: JSON.stringify({ result: result.body }),
     };
   } catch (err) {
     console.error('Error sending email:', err.message);
