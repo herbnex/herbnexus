@@ -239,8 +239,13 @@ const Contact = () => {
 
       await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
 
-      // Determine sender type
+     // Determine sender type
     const senderType = isDoctor ? 'doctor' : 'user';
+
+    // Debugging logs
+    console.log('Sender Type:', senderType);
+    console.log('User Email:', newMessage.userEmail);
+    console.log('Doctor Email:', newMessage.doctorEmail);
 
     // Send email notification
     const response = await fetch('/.netlify/functions/send-email', {
@@ -256,12 +261,6 @@ const Contact = () => {
         senderType: senderType,
       }),
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Error response from email function:', errorData);
-    }
-
       setTimeout(() => {
         if (msgBoxRef.current) {
           msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
