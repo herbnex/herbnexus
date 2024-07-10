@@ -41,23 +41,16 @@ const Appointment = () => {
       setTimeout(() => {
         history.push("/dashboard"); // Redirect to dashboard using useHistory
       }, 2000);
-      // Send email notification
-    const response = await fetch('/.netlify/functions/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userEmail: appointmentDetails.userEmail,
-        doctorEmail: appointmentDetails.doctorEmail,
-        subject: 'Appointment Booking Confirmation',
-        message: `Your appointment with ${appointmentDetails.doctorName} has been booked for ${appointmentDetails.date} at ${appointmentDetails.time}.`,
-      }),
+       // Send email notification
+    const response = await axios.post('/.netlify/functions/send-email', {
+      userEmail: appointmentDetails.userEmail,
+      doctorEmail: appointmentDetails.doctorEmail,
+      subject: 'Appointment Booking Confirmation',
+      message: `Your appointment with ${appointmentDetails.doctorName} has been booked for ${appointmentDetails.date} at ${appointmentDetails.time}.`,
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Error response from email function:', errorData);
+    if (response.status !== 200) {
+      console.error('Error response from email function:', response.data);
     }
 
     } catch (err) {
