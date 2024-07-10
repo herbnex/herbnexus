@@ -221,7 +221,7 @@ const Contact = () => {
         user: user.displayName || "Anonymous",
         userId: user.uid,
         userEmail: user.email,  // Add user email
-        doctorEmail: selectedParticipant.email,
+        doctorEmail: user.email,
         text: message,
         timestamp: new Date().toISOString(),
       };

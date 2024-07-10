@@ -9,22 +9,8 @@ exports.handler = async (event, context) => {
   console.log('Event:', event);
 
   try {
-    const { userEmail, doctorEmail, subject, message, senderType } = JSON.parse(event.body);
-    console.log('Parsed event body:', { userEmail, doctorEmail, subject, message, senderType });
-
-    let recipientEmail, recipientName;
-    if (senderType === 'user') {
-      recipientEmail = doctorEmail;
-      recipientName = 'Doctor';
-    } else if (senderType === 'doctor') {
-      recipientEmail = userEmail;
-      recipientName = 'User';
-    } else {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Invalid sender type' }),
-      };
-    }
+    const { userEmail, doctorEmail, subject, message } = JSON.parse(event.body);
+    console.log('Parsed event body:', { userEmail, doctorEmail, subject, message });
 
     const request = client.post('send', { version: 'v3.1' }).request({
       Messages: [
@@ -35,8 +21,12 @@ exports.handler = async (event, context) => {
           },
           To: [
             {
-              Email: recipientEmail,
-              Name: recipientName,
+              Email: userEmail,
+              Name: 'User',
+            },
+            {
+              Email: doctorEmail,
+              Name: 'Doctor',
             },
           ],
           Subject: subject,
