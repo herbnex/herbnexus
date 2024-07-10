@@ -42,7 +42,7 @@ const Appointment = () => {
         history.push("/dashboard"); // Redirect to dashboard using useHistory
       }, 2000);
       // Send email notification
-    await fetch('/.netlify/functions/send-email', {
+    const response = await fetch('/.netlify/functions/send-email', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -55,6 +55,10 @@ const Appointment = () => {
       }),
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error response from email function:', errorData);
+    }
 
     } catch (err) {
       setError("Failed to book appointment: " + err.message);
