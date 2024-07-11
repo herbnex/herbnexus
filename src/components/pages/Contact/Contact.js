@@ -244,10 +244,10 @@ const Contact = () => {
 
      // Determine sender type
 
-    // Debugging logs
-    console.log('Sender Type:', senderType);
-    console.log('User Email:', newMessage.userEmail);
-    console.log('Doctor Email:', newMessage.doctorEmail);
+    // Format the message based on sender type
+    const formattedMessage = senderType === 'doctor' 
+      ? `You have received a new message from ${newMessage.doctorEmail}: ${newMessage.text}` 
+      : `You have received a new message from ${newMessage.userEmail}: ${newMessage.text}`;
 
     // Send email notification
     const response = await fetch('/.netlify/functions/send-email', {
@@ -259,10 +259,15 @@ const Contact = () => {
         userEmail: newMessage.userEmail,
         doctorEmail: newMessage.doctorEmail,
         subject: 'New Message Notification',
-        message: `You have received a new message from ${newMessage.userEmail}: ${newMessage.text}`,
+        message: formattedMessage,
         senderType: senderType,
       }),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error response from email function:', errorData);
+    }
       setTimeout(() => {
         if (msgBoxRef.current) {
           msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
