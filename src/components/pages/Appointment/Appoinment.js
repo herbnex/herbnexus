@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Col, Container, FloatingLabel, Form, Row, Button, Alert, Spinner } from "react-bootstrap";
-import { NavLink, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import useDoctorList from "../../../hooks/useDoctorList";
 import useAuth from "../../../hooks/useAuth";
 import { db } from "../../../Firebase/firebase.config";
@@ -60,7 +60,7 @@ const Appointment = () => {
       form.reset();
       setSuccess("Appointment booked successfully!");
 
-      // Format the message based on sender type
+      // Format the messages for both user and doctor
       const userMessage = `Your appointment with ${appointmentDetails.doctorName} has been booked for ${appointmentDetails.date} at ${appointmentDetails.time}.`;
       const doctorMessage = `An appointment with ${appointmentDetails.userName} has been booked for ${appointmentDetails.date} at ${appointmentDetails.time}.`;
 

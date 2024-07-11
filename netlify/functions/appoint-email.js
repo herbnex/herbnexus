@@ -12,7 +12,8 @@ exports.handler = async (event, context) => {
     const { userEmail, doctorEmail, subject, userMessage, doctorMessage } = JSON.parse(event.body);
     console.log('Parsed event body:', { userEmail, doctorEmail, subject, userMessage, doctorMessage });
 
-    const request = client.post('send', { version: 'v3.1' }).request({
+    // Send email to the user
+    const userRequest = client.post('send', { version: 'v3.1' }).request({
       Messages: [
         {
           From: {
@@ -29,6 +30,12 @@ exports.handler = async (event, context) => {
           TextPart: userMessage,
           HTMLPart: `<p>${userMessage}</p>`,
         },
+      ],
+    });
+
+    // Send email to the doctor
+    const doctorRequest = client.post('send', { version: 'v3.1' }).request({
+      Messages: [
         {
           From: {
             Email: 'noreply@herbnexus.io',
@@ -47,12 +54,12 @@ exports.handler = async (event, context) => {
       ],
     });
 
-    const result = await request;
-    console.log('Mailjet response:', result.body);
+    const [userResult, doctorResult] = await Promise.all([userRequest, doctorRequest]);
+    console.log('Mailjet response:', userResult.body, doctorResult.body);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ result: result.body }),
+      body: JSON.stringify({ result: { user: userResult.body, doctor: doctorResult.body } }),
     };
   } catch (err) {
     console.error('Error sending email:', err.message);
