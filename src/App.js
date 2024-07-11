@@ -73,7 +73,7 @@ const App = () => {
                 <About />
               </Route>
               <PrivateRoute path="/contact">
-                <DelayedContact />
+                <Contact />
               </PrivateRoute>
               <Route path="/faq">
                 <Faq />
