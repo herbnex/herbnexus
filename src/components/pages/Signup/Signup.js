@@ -71,7 +71,7 @@ const Signup = () => {
 
       await completeSignup(imageUrl);
     } catch (error) {
-      setError(error.message);
+      setError('Error during signup');
       //console.error("Error during signup:", error);
     }
   };
@@ -87,14 +87,14 @@ const Signup = () => {
           // Progress tracking logic can go here
         },
         (error) => {
-          reject(new Error(`Upload failed: ${error.message}`));
+          reject(new Error(`Upload failed:`));
         },
         async () => {
           try {
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
             resolve(downloadURL);
           } catch (urlError) {
-            reject(new Error(`URL retrieval failed: ${urlError.message}`));
+            reject(new Error(`URL retrieval failed`));
           }
         }
       );
@@ -137,7 +137,7 @@ const Signup = () => {
       setImageUpload(null);
       history.replace(refferer.pathname || '/'); // Use only the pathname
     } catch (error) {
-      setError(error.message);
+      setError('Error, please try again');
       //console.error("Error during signup:", error);
     }
   };

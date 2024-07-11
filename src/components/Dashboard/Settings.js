@@ -66,7 +66,7 @@ const Settings = () => {
       setSuccess('Profile updated successfully.');
       await updateUser({ ...user, ...updatedProfileData });
     } catch (err) {
-      setError('Failed to update profile: ' + err.message);
+      setError('Please Logout and Login again');
     } finally {
       setLoading(false);
     }
@@ -85,7 +85,7 @@ const Settings = () => {
       setNewPassword('');
       setSuccess('Password updated successfully.');
     } catch (err) {
-      setError('Failed to update password: ' + err.message);
+      setError('Please Logout and Login again and ensure passwoord is atleast 6 characters');
     } finally {
       setLoading(false);
     }
@@ -108,7 +108,7 @@ const Settings = () => {
       setSuccess('Email updated successfully.');
       await updateUser({ ...user, email: newEmail });
     } catch (err) {
-      setError('Failed to update email: ' + err.message);
+      setError('Failed to update email: The email may already exist or you may have to logout and login again');
     } finally {
       setLoading(false);
     }
