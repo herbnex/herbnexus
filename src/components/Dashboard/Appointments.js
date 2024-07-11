@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Table, Spinner, Button, Modal, Form, FloatingLabel } from 'react-bootstrap';
 import { db } from '../../Firebase/firebase.config';
-import { collection, query, where, getDocs, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, getDoc } from 'firebase/firestore';
 import useAuth from '../../hooks/useAuth';
 import './Appointments.css';
 
@@ -9,17 +9,37 @@ const Appointments = () => {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isDoctor, setIsDoctor] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
 
   useEffect(() => {
+    const checkIfDoctor = async () => {
+      try {
+        const userDocRef = doc(db, "doctors", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        setIsDoctor(userDocSnap.exists());
+      } catch (error) {
+        console.error("Error checking doctor status:", error);
+      }
+    };
+
+    checkIfDoctor();
+  }, [user]);
+
+  useEffect(() => {
     const fetchAppointments = async () => {
       setLoading(true);
       try {
         const appointmentsRef = collection(db, 'appointments');
-        const q = query(appointmentsRef, where('userId', '==', user.uid));
+        let q;
+        if (isDoctor) {
+          q = query(appointmentsRef, where('doctorId', '==', user.uid));
+        } else {
+          q = query(appointmentsRef, where('userId', '==', user.uid));
+        }
         const querySnapshot = await getDocs(q);
         const appointmentsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setAppointments(appointmentsData);
@@ -31,7 +51,7 @@ const Appointments = () => {
     };
 
     fetchAppointments();
-  }, [user.uid]);
+  }, [user.uid, isDoctor]);
 
   const handleDelete = async (id) => {
     try {
