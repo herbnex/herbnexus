@@ -217,11 +217,14 @@ const Contact = () => {
     }
 
     try {
+      const senderType = isDoctor ? 'doctor' : 'user';
+      const userEmail = isDoctor ? selectedParticipant.email : user.email;
+      const doctorEmail = isDoctor ? user.email : selectedParticipant.email;
       const newMessage = {
         user: user.displayName || "Anonymous",
         userId: user.uid,
-        userEmail: user.email,  // Add user email
-        doctorEmail: user.email,
+        userEmail: userEmail,  // Add user email
+        doctorEmail: doctorEmail,
         text: message,
         timestamp: new Date().toISOString(),
       };
@@ -240,7 +243,6 @@ const Contact = () => {
       await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
 
      // Determine sender type
-    const senderType = isDoctor ? 'doctor' : 'user';
 
     // Debugging logs
     console.log('Sender Type:', senderType);
