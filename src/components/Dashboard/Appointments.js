@@ -130,9 +130,15 @@ const Appointments = () => {
                 <tr>
                   <th>Date</th>
                   <th>Time</th>
-                  <th>Herbalist</th>
-                  <th>Email</th>
-                  <th>Phone</th>
+                  {isDoctor ? (
+                    <>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                    </>
+                  ) : (
+                    <th>Herbalist</th>
+                  )}
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -141,9 +147,15 @@ const Appointments = () => {
                   <tr key={appointment.id}>
                     <td>{appointment.date}</td>
                     <td>{appointment.time}</td>
-                    <td>{appointment.doctorName}</td>
-                    <td>{appointment.userEmail}</td>
-                    <td>{appointment.userPhone}</td>
+                    {isDoctor ? (
+                      <>
+                        <td>{appointment.userName}</td>
+                        <td>{appointment.userEmail}</td>
+                        <td>{appointment.userPhone}</td>
+                      </>
+                    ) : (
+                      <td>{appointment.doctorName}</td>
+                    )}
                     <td>
                       <Button variant="danger" onClick={() => handleDelete(appointment.id)}>Delete</Button>{' '}
                       <Button variant="warning" onClick={() => handleReschedule(appointment)}>Reschedule</Button>
