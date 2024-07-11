@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Col, Container, FloatingLabel, Form, Row, Button, Alert, Spinner } from "react-bootstrap";
 import { NavLink, useHistory } from "react-router-dom";
 import useDoctorList from "../../../hooks/useDoctorList";
 import useAuth from "../../../hooks/useAuth";
 import { db } from "../../../Firebase/firebase.config";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc } from "firebase/firestore";
 
 import "./Appointment.css";
 
@@ -14,7 +14,27 @@ const Appointment = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
+  const [isDoctor, setIsDoctor] = useState(false);
   const history = useHistory(); // Using useHistory instead of useNavigate
+
+  useEffect(() => {
+    const checkIfDoctor = async () => {
+      try {
+        const userDocRef = doc(db, "doctors", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          setIsDoctor(true);
+        } else {
+          setIsDoctor(false);
+        }
+      } catch (error) {
+        console.error("Error checking doctor status:", error);
+      }
+    };
+
+    checkIfDoctor();
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,28 +58,39 @@ const Appointment = () => {
       await addDoc(collection(db, "appointments"), appointmentDetails);
 
       form.reset();
+      setSuccess("Appointment booked successfully!");
+
+      // Determine sender type
+      const senderType = isDoctor ? 'doctor' : 'user';
+
+      // Format the message based on sender type
+      const message = senderType === 'doctor' 
+        ? `Your appointment with ${appointmentDetails.doctorName} has been booked for ${appointmentDetails.date} at ${appointmentDetails.time} by Doctor.`
+        : `Your appointment with ${appointmentDetails.doctorName} has been booked for ${appointmentDetails.date} at ${appointmentDetails.time} by User.`;
+
+      // Send email notification
+      const response = await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userEmail: appointmentDetails.userEmail,
+          doctorEmail: appointmentDetails.doctorEmail,
+          subject: 'Appointment Booking Confirmation',
+          message: message,
+          senderType: senderType,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error response from email function:', errorData);
+      }
+
       setTimeout(() => {
         history.push("/dashboard"); // Redirect to dashboard using useHistory
       }, 2000);
-      // Send email notification
-    const response = await fetch('/.netlify/functions/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userEmail: appointmentDetails.userEmail,
-        doctorEmail: appointmentDetails.doctorEmail,
-        subject: 'Appointment Booking Confirmation',
-        message: `Your appointment with ${appointmentDetails.doctorName} has been booked for ${appointmentDetails.date} at ${appointmentDetails.time}.`,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Error response from email function:', errorData);
-    }
-
     } catch (err) {
       setError("Failed to book appointment: " + err.message);
     } finally {
@@ -80,7 +111,7 @@ const Appointment = () => {
       </Container>
       <Container className="appointment-panel">
         <Row>
-          <Col >
+          <Col>
             <h1 className="title text-center">Book an Appointment</h1>
             <p>
               Welcome to HERB NEXUS! Connect with our accredited herbalists for personalized herbal consultations.
@@ -152,8 +183,6 @@ const Appointment = () => {
               </Form>
             </div>
           </Col>
-
-          
         </Row>
       </Container>
     </div>
