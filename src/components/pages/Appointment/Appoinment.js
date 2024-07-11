@@ -60,16 +60,12 @@ const Appointment = () => {
       form.reset();
       setSuccess("Appointment booked successfully!");
 
-      // Determine sender type
-      const senderType = isDoctor ? 'doctor' : 'user';
-
       // Format the message based on sender type
-      const message = senderType === 'doctor' 
-        ? `Your appointment with ${appointmentDetails.doctorName} has been booked for ${appointmentDetails.date} at ${appointmentDetails.time} by Doctor.`
-        : `Your appointment with ${appointmentDetails.doctorName} has been booked for ${appointmentDetails.date} at ${appointmentDetails.time} by User.`;
+      const userMessage = `Your appointment with ${appointmentDetails.doctorName} has been booked for ${appointmentDetails.date} at ${appointmentDetails.time}.`;
+      const doctorMessage = `An appointment with ${appointmentDetails.userName} has been booked for ${appointmentDetails.date} at ${appointmentDetails.time}.`;
 
-      // Send email notification
-      const response = await fetch('/.netlify/functions/send-email', {
+      // Send email notifications
+      const response = await fetch('/.netlify/functions/appoint-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,8 +74,8 @@ const Appointment = () => {
           userEmail: appointmentDetails.userEmail,
           doctorEmail: appointmentDetails.doctorEmail,
           subject: 'Appointment Booking Confirmation',
-          message: message,
-          senderType: senderType,
+          userMessage: userMessage,
+          doctorMessage: doctorMessage,
         }),
       });
 
