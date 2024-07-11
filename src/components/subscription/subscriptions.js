@@ -116,14 +116,14 @@ const Subscription = () => {
     return () => clearTimeout(timer);
   }, [user]);
 
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const redirectStatus = queryParams.get('redirect_status');
+  // useEffect(() => {
+  //   const queryParams = new URLSearchParams(window.location.search);
+  //   const redirectStatus = queryParams.get('redirect_status');
 
-    if (redirectStatus === 'succeeded') {
-      updateUser({ ...user, isSubscribed: true });
-    }
-  }, [user, updateUser]);
+  //   if (redirectStatus === 'succeeded') {
+  //     updateUser({ ...user, isSubscribed: true });
+  //   }
+  // }, [user, updateUser]);
 
   if (pageLoading) {
     return <Loading />;
