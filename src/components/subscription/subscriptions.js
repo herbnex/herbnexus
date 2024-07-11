@@ -41,8 +41,6 @@ const SubscriptionForm = ({ clientSecret }) => {
       if (error) {
         setErrorMessage(error.message);
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Optimistically update user state
-        updateUser({ ...user, isSubscribed: true });
         setRedirecting(true);
         setTimeout(() => {
           window.location.replace('https://herbnexus.io/contact'); // Update with your actual URL
@@ -78,7 +76,7 @@ const SubscriptionForm = ({ clientSecret }) => {
 };
 
 const Subscription = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [errorMessage, setErrorMessage] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
@@ -103,14 +101,24 @@ const Subscription = () => {
     };
     fetchClientSecret();
 
-    // Set a timeout to simulate loading for 2 seconds
     const timer = setTimeout(() => {
       setPageLoading(false);
     }, 2000);
 
-    // Cleanup timeout on unmount
     return () => clearTimeout(timer);
   }, [user]);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const redirectStatus = queryParams.get('redirect_status');
+
+    if (redirectStatus === 'succeeded') {
+      // Delay the update to ensure proper state management
+      setTimeout(() => {
+        updateUser({ ...user, isSubscribed: true });
+      }, 500);
+    }
+  }, [user, updateUser]);
 
   if (pageLoading) {
     return <Loading />;
