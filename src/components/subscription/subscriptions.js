@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Container, Form, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import Loading from '../../components/Loading/Loading'; // Adjust the path to your Loading component
 import './subscription.css';
 
@@ -49,7 +49,6 @@ const SubscriptionForm = ({ clientSecret }) => {
         }, 3000); // 3-second delay before redirection
       }
     } catch (err) {
-     // console.error('Error confirming payment:', err);
       setErrorMessage('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -79,7 +78,7 @@ const SubscriptionForm = ({ clientSecret }) => {
 };
 
 const Subscription = () => {
-  const { user, updateUser } = useAuth();
+  const { user } = useAuth();
   const [errorMessage, setErrorMessage] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
@@ -98,7 +97,6 @@ const Subscription = () => {
             setErrorMessage('Invalid client secret format received.');
           }
         } catch (error) {
-         // console.error("Error fetching client secret:", error);
           setErrorMessage('An error occurred while initializing the payment process. Please try again.');
         }
       }
@@ -113,15 +111,6 @@ const Subscription = () => {
     // Cleanup timeout on unmount
     return () => clearTimeout(timer);
   }, [user]);
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const redirectStatus = queryParams.get('redirect_status');
-
-    if (redirectStatus === 'succeeded') {
-      updateUser({ ...user, isSubscribed: true });
-    }
-  }, [user, updateUser]);
 
   if (pageLoading) {
     return <Loading />;
