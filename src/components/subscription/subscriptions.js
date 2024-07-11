@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Container, Form, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
 import Loading from '../../components/Loading/Loading'; // Adjust the path to your Loading component
 import './subscription.css';
 
@@ -41,12 +41,15 @@ const SubscriptionForm = ({ clientSecret }) => {
       if (error) {
         setErrorMessage(error.message);
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Optimistically update user state
+        updateUser({ ...user, isSubscribed: true });
         setRedirecting(true);
         setTimeout(() => {
           window.location.replace('https://herbnexus.io/contact'); // Update with your actual URL
         }, 3000); // 3-second delay before redirection
       }
     } catch (err) {
+     // console.error('Error confirming payment:', err);
       setErrorMessage('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -95,16 +98,19 @@ const Subscription = () => {
             setErrorMessage('Invalid client secret format received.');
           }
         } catch (error) {
+         // console.error("Error fetching client secret:", error);
           setErrorMessage('An error occurred while initializing the payment process. Please try again.');
         }
       }
     };
     fetchClientSecret();
 
+    // Set a timeout to simulate loading for 2 seconds
     const timer = setTimeout(() => {
       setPageLoading(false);
     }, 2000);
 
+    // Cleanup timeout on unmount
     return () => clearTimeout(timer);
   }, [user]);
 
@@ -113,10 +119,7 @@ const Subscription = () => {
     const redirectStatus = queryParams.get('redirect_status');
 
     if (redirectStatus === 'succeeded') {
-      // Delay the update to ensure proper state management
-      setTimeout(() => {
-        updateUser({ ...user, isSubscribed: true });
-      }, 500);
+      updateUser({ ...user, isSubscribed: true });
     }
   }, [user, updateUser]);
 
