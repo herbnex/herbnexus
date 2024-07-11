@@ -1,6 +1,7 @@
+// AuthProvider.js
 import React, { useState, useEffect, createContext, useCallback, useRef } from 'react';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../Firebase/firebase.config';
 
 export const AuthContext = createContext();
@@ -30,6 +31,14 @@ const AuthProvider = ({ children }) => {
           setUser({ ...firebaseUser, ...userData });
           setIsSubscribed(userData.isSubscribed || false);
           setIsDoctor(false);
+
+          // Set up a real-time listener for subscription status
+          onSnapshot(userRef, (doc) => {
+            const data = doc.data();
+            if (data && isMounted.current) {
+              setIsSubscribed(data.isSubscribed || false);
+            }
+          });
         }
       } else if (doctorDoc.exists()) {
         const doctorData = doctorDoc.data();
@@ -37,6 +46,14 @@ const AuthProvider = ({ children }) => {
           setUser({ ...firebaseUser, ...doctorData });
           setIsSubscribed(doctorData.isSubscribed || false);
           setIsDoctor(true);
+
+          // Set up a real-time listener for subscription status
+          onSnapshot(doctorRef, (doc) => {
+            const data = doc.data();
+            if (data && isMounted.current) {
+              setIsSubscribed(data.isSubscribed || false);
+            }
+          });
         }
       } else {
         if (isMounted.current) {
@@ -64,7 +81,7 @@ const AuthProvider = ({ children }) => {
       await signOut(auth);
       updateUser(null);
     } catch (error) {
-      console.error("Error logging out:", error);
+     // console.error("Error logging out:", error);
     }
   };
 
@@ -74,7 +91,7 @@ const AuthProvider = ({ children }) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       updateUser(userCredential.user);
     } catch (error) {
-      console.error("Error logging in with email and password:", error);
+     // console.error("Error logging in with email and password:", error);
       throw error;
     } finally {
       setIsLoading(false);

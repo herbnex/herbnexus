@@ -33,21 +33,23 @@ const SubscriptionForm = ({ clientSecret }) => {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          // Don't include return_url here
+          return_url: 'https://herbnexus.io/contact',
+
         },
         redirect: 'if_required'
       });
 
       if (error) {
         setErrorMessage(error.message);
-      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Optimistically update user state
-        updateUser({ ...user, isSubscribed: true });
-        setRedirecting(true);
-        setTimeout(() => {
-          window.location.replace('https://herbnexus.io/contact'); // Update with your actual URL
-        }, 3000); // 3-second delay before redirection
-      }
+      } 
+      // else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      //   // Optimistically update user state
+      //   updateUser({ ...user, isSubscribed: true });
+      //   setRedirecting(true);
+      //   setTimeout(() => {
+      //     window.location.replace('https://herbnexus.io/contact'); // Update with your actual URL
+      //   }, 3000); // 3-second delay before redirection
+      // }
     } catch (err) {
      // console.error('Error confirming payment:', err);
       setErrorMessage('An error occurred. Please try again.');
