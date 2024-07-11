@@ -15,10 +15,10 @@ exports.handler = async (event, context) => {
     let recipientEmail, recipientName;
     if (senderType === 'user') {
       recipientEmail = doctorEmail;
-      recipientName = 'Doctor';
+      recipientName = doctorEmail;
     } else if (senderType === 'doctor') {
       recipientEmail = userEmail;
-      recipientName = 'User';
+      recipientName = userEmail;
     } else {
       return {
         statusCode: 400,
