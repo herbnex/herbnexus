@@ -5,19 +5,59 @@ import axios from 'axios';
 import { Container, Form, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import Loading from '../../components/Loading/Loading'; // Adjust the path to your Loading component
 import './subscription.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const SubscriptionForm = ({ clientSecret }) => {
+const Subscription = () => {
   const stripe = useStripe();
   const elements = useElements();
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [redirecting, setRedirecting] = useState(false);
+  const [clientSecret, setClientSecret] = useState("");
+  const [pageLoading, setPageLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchClientSecret = async () => {
+      if (user) {
+        try {
+          const response = await axios.post(
+            "/.netlify/functions/create-payment-intent",
+            { userId: user.uid }
+          );
+          if (response.data.clientSecret && response.data.clientSecret.includes('_secret_')) {
+            setClientSecret(response.data.clientSecret);
+          } else {
+            setErrorMessage('Invalid client secret format received.');
+          }
+        } catch (error) {
+          setErrorMessage('An error occurred while initializing the payment process. Please try again.');
+        }
+      }
+    };
+    fetchClientSecret();
+
+    // Set a timeout to simulate loading for 2 seconds
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 2000);
+
+    // Cleanup timeout on unmount
+    return () => clearTimeout(timer);
+  }, [user]);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const redirectStatus = queryParams.get('redirect_status');
+
+    if (redirectStatus === 'succeeded') {
+      updateUser({ ...user, isSubscribed: true });
+    }
+  }, [user, updateUser]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -49,79 +89,11 @@ const SubscriptionForm = ({ clientSecret }) => {
         }, 3000); // 3-second delay before redirection
       }
     } catch (err) {
-     // console.error('Error confirming payment:', err);
       setErrorMessage('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-
-  return (
-    <Form onSubmit={handleSubmit} className="subscription-form">
-      {clientSecret && <PaymentElement />}
-      <Button
-        type="submit"
-        disabled={!stripe || loading || redirecting}
-        className="subscribe-button mt-3"
-      >
-        {loading || redirecting ? (
-          <>
-            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-            {redirecting ? "Redirecting..." : "Processing..."}
-          </>
-        ) : (
-          "Subscribe for $100/month"
-        )}
-      </Button>
-      {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-    </Form>
-  );
-};
-
-const Subscription = () => {
-  const { user, updateUser } = useAuth();
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [clientSecret, setClientSecret] = useState("");
-  const [pageLoading, setPageLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchClientSecret = async () => {
-      if (user) {
-        try {
-          const response = await axios.post(
-            "/.netlify/functions/create-payment-intent",
-            { userId: user.uid }
-          );
-          if (response.data.clientSecret && response.data.clientSecret.includes('_secret_')) {
-            setClientSecret(response.data.clientSecret);
-          } else {
-            setErrorMessage('Invalid client secret format received.');
-          }
-        } catch (error) {
-         // console.error("Error fetching client secret:", error);
-          setErrorMessage('An error occurred while initializing the payment process. Please try again.');
-        }
-      }
-    };
-    fetchClientSecret();
-
-    // Set a timeout to simulate loading for 2 seconds
-    const timer = setTimeout(() => {
-      setPageLoading(false);
-    }, 2000);
-
-    // Cleanup timeout on unmount
-    return () => clearTimeout(timer);
-  }, [user]);
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const redirectStatus = queryParams.get('redirect_status');
-
-    if (redirectStatus === 'succeeded') {
-      updateUser({ ...user, isSubscribed: true });
-    }
-  }, [user, updateUser]);
 
   if (pageLoading) {
     return <Loading />;
@@ -159,7 +131,24 @@ const Subscription = () => {
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           {clientSecret && (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <SubscriptionForm clientSecret={clientSecret} />
+              <Form onSubmit={handleSubmit} className="subscription-form">
+                {clientSecret && <PaymentElement />}
+                <Button
+                  type="submit"
+                  disabled={!stripe || loading || redirecting}
+                  className="subscribe-button mt-3"
+                >
+                  {loading || redirecting ? (
+                    <>
+                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                      {redirecting ? "Redirecting..." : "Processing..."}
+                    </>
+                  ) : (
+                    "Subscribe for $100/month"
+                  )}
+                </Button>
+                {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+              </Form>
             </Elements>
           )}
         </Col>
