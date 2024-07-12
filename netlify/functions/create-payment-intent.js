@@ -34,8 +34,6 @@ exports.handler = async (event) => {
       }
     });
 
-    // Do not update isSubscribed here
-
     return {
       statusCode: 200,
       body: JSON.stringify({

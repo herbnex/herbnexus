@@ -34,28 +34,44 @@ const SubscriptionForm = ({ clientSecret }) => {
         elements,
         confirmParams: {
           return_url: 'https://herbnexus.io/contact',
-
         },
-        redirect: 'if_required'
+        redirect: 'if_required',
       });
 
       if (error) {
         setErrorMessage(error.message);
-      } 
-      else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Optimistically update user state
-        updateUser({ ...user, isSubscribed: true });
+        setLoading(false);
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Handle successful payment
         setRedirecting(true);
-        setTimeout(() => {
-          window.location.replace('https://herbnexus.io/contact'); // Update with your actual URL
-        }, 3000); // 3-second delay before redirection
       }
     } catch (err) {
       setErrorMessage('An error occurred. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const redirectStatus = queryParams.get('redirect_status');
+    const paymentIntentId = queryParams.get('payment_intent');
+
+    if (redirectStatus === 'succeeded' && paymentIntentId) {
+      const verifyPaymentIntent = async () => {
+        try {
+          const response = await axios.post('/.netlify/functions/verify-payment-intent', { paymentIntentId, userId: user.uid });
+          if (response.data.success) {
+            updateUser({ ...user, isSubscribed: true });
+            window.location.href = 'https://herbnexus.io/contact';
+          }
+        } catch (error) {
+          console.error('Error verifying payment intent:', error);
+        }
+      };
+
+      verifyPaymentIntent();
+    }
+  }, [user, updateUser]);
 
   return (
     <Form onSubmit={handleSubmit} className="subscription-form">
@@ -111,27 +127,6 @@ const Subscription = () => {
 
     return () => clearTimeout(timer);
   }, [user]);
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const redirectStatus = queryParams.get('redirect_status');
-    const paymentIntentId = queryParams.get('payment_intent');
-
-    if (redirectStatus === 'succeeded' && paymentIntentId) {
-      const verifyPaymentIntent = async () => {
-        try {
-          const response = await axios.post('/.netlify/functions/verify-payment-intent', { paymentIntentId, userId: user.uid });
-          if (response.data.success) {
-            updateUser({ ...user, isSubscribed: true });
-          }
-        } catch (error) {
-          console.error('Error verifying payment intent:', error);
-        }
-      };
-
-      verifyPaymentIntent();
-    }
-  }, [user, updateUser]);
 
   if (pageLoading) {
     return <Loading />;
