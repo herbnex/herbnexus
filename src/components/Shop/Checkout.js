@@ -42,7 +42,6 @@ const CheckoutForm = ({ clientSecret }) => {
         window.location.replace('/confirmation'); // Update with your actual URL
       }
     } catch (err) {
-     // console.error('Error confirming payment:', err);
       setErrorMessage('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -65,6 +64,15 @@ const Checkout = () => {
   const [clientSecret, setClientSecret] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [shippingAddress, setShippingAddress] = useState({
+    recipient: '',
+    addressLine: '',
+    city: '',
+    region: '',
+    postalCode: '',
+    country: '',
+    phone: '',
+  });
 
   useEffect(() => {
     const fetchClientSecret = async () => {
@@ -75,21 +83,27 @@ const Checkout = () => {
       }
 
       try {
-       // console.log('Cart data being sent:', cart); // Log cart data
         const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
-          cart
+          cart,
+          shippingAddress
         });
-       // console.log('Response data:', response.data); // Log response data
         setClientSecret(response.data.clientSecret);
       } catch (error) {
-       // console.error("Error fetching client secret:", error);
         setErrorMessage('An error occurred while initializing the payment process. Please try again.');
       } finally {
         setLoading(false);
       }
     };
     fetchClientSecret();
-  }, [cart]);
+  }, [cart, shippingAddress]);
+
+  const handleShippingAddressChange = (e) => {
+    const { name, value } = e.target;
+    setShippingAddress((prevAddress) => ({
+      ...prevAddress,
+      [name]: value,
+    }));
+  };
 
   if (loading) {
     return (
@@ -134,6 +148,79 @@ const Checkout = () => {
           <h4>Total: ${cart.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2)}</h4>
         </Col>
         <Col md={5}>
+          <h2>Shipping Address</h2>
+          <Form>
+            <Form.Group>
+              <Form.Label>Recipient</Form.Label>
+              <Form.Control
+                type="text"
+                name="recipient"
+                value={shippingAddress.recipient}
+                onChange={handleShippingAddressChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Address Line</Form.Label>
+              <Form.Control
+                type="text"
+                name="addressLine"
+                value={shippingAddress.addressLine}
+                onChange={handleShippingAddressChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>City</Form.Label>
+              <Form.Control
+                type="text"
+                name="city"
+                value={shippingAddress.city}
+                onChange={handleShippingAddressChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Region</Form.Label>
+              <Form.Control
+                type="text"
+                name="region"
+                value={shippingAddress.region}
+                onChange={handleShippingAddressChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Postal Code</Form.Label>
+              <Form.Control
+                type="text"
+                name="postalCode"
+                value={shippingAddress.postalCode}
+                onChange={handleShippingAddressChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Country</Form.Label>
+              <Form.Control
+                type="text"
+                name="country"
+                value={shippingAddress.country}
+                onChange={handleShippingAddressChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Phone</Form.Label>
+              <Form.Control
+                type="text"
+                name="phone"
+                value={shippingAddress.phone}
+                onChange={handleShippingAddressChange}
+                required
+              />
+            </Form.Group>
+          </Form>
           <h2>Payment</h2>
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           {clientSecret && (
