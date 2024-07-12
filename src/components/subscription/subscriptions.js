@@ -42,14 +42,14 @@ const SubscriptionForm = ({ clientSecret }) => {
       if (error) {
         setErrorMessage(error.message);
       } 
-      // else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      //   // Optimistically update user state
-      //   updateUser({ ...user, isSubscribed: true });
-      //   setRedirecting(true);
-      //   setTimeout(() => {
-      //     window.location.replace('https://herbnexus.io/contact'); // Update with your actual URL
-      //   }, 3000); // 3-second delay before redirection
-      // }
+      else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Optimistically update user state
+        updateUser({ ...user, isSubscribed: true });
+        setRedirecting(true);
+        setTimeout(() => {
+          window.location.replace('https://herbnexus.io/contact'); // Update with your actual URL
+        }, 3000); // 3-second delay before redirection
+      }
     } catch (err) {
       setErrorMessage('An error occurred. Please try again.');
     } finally {
