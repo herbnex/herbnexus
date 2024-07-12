@@ -8,7 +8,7 @@ import './Checkout.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const CheckoutForm = ({ clientSecret, paymentRequest }) => {
+const CheckoutForm = ({ clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { cart } = useProduct();
@@ -51,15 +51,6 @@ const CheckoutForm = ({ clientSecret, paymentRequest }) => {
   return (
     <Form onSubmit={handleSubmit}>
       {clientSecret && <PaymentElement />}
-      {paymentRequest && (
-        <Button
-          variant="dark"
-          onClick={() => paymentRequest.show()}
-          className="mt-3"
-        >
-          Pay with Payment Request
-        </Button>
-      )}
       <Button type="submit" disabled={!stripe || loading || redirecting} className="mt-3">
         {loading || redirecting ? "Processing..." : "Pay Now"}
       </Button>
@@ -82,8 +73,6 @@ const Checkout = () => {
     country: '',
     phone: '',
   });
-  const stripe = useStripe();
-  const [paymentRequest, setPaymentRequest] = useState(null);
 
   useEffect(() => {
     const fetchClientSecret = async () => {
@@ -107,70 +96,6 @@ const Checkout = () => {
     };
     fetchClientSecret();
   }, [cart, shippingAddress]);
-
-  useEffect(() => {
-    if (stripe) {
-      const pr = stripe.paymentRequest({
-        country: 'US',
-        currency: 'usd',
-        total: {
-          label: 'Total',
-          amount: cart.reduce((acc, item) => acc + item.price * item.quantity, 0) * 100,
-        },
-        requestPayerName: true,
-        requestPayerEmail: true,
-        requestPayerPhone: true,
-        requestShipping: true,
-        shippingOptions: [
-          {
-            id: 'free-shipping',
-            label: 'Free shipping',
-            detail: 'Delivers in 5 to 7 days',
-            amount: 0,
-          },
-        ],
-      });
-
-      pr.canMakePayment().then((result) => {
-        if (result) {
-          setPaymentRequest(pr);
-        }
-      });
-
-      pr.on('paymentmethod', async (event) => {
-        const {error, paymentIntent} = await stripe.confirmCardPayment(
-          clientSecret,
-          {
-            payment_method: event.paymentMethod.id,
-            shipping: {
-              name: shippingAddress.recipient,
-              address: {
-                line1: shippingAddress.addressLine,
-                city: shippingAddress.city,
-                state: shippingAddress.region,
-                postal_code: shippingAddress.postalCode,
-                country: shippingAddress.country,
-              },
-              phone: shippingAddress.phone,
-            },
-          },
-          {handleActions: false}
-        );
-
-        if (error) {
-          event.complete('fail');
-          setErrorMessage(error.message);
-        } else {
-          event.complete('success');
-          if (paymentIntent.status === 'requires_action') {
-            stripe.confirmCardPayment(clientSecret);
-          } else {
-            window.location.replace('/confirmation'); // Update with your actual URL
-          }
-        }
-      });
-    }
-  }, [stripe, cart, clientSecret, shippingAddress]);
 
   const handleShippingAddressChange = (e) => {
     const { name, value } = e.target;
@@ -300,7 +225,7 @@ const Checkout = () => {
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           {clientSecret && (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <CheckoutForm clientSecret={clientSecret} paymentRequest={paymentRequest} />
+              <CheckoutForm clientSecret={clientSecret} />
             </Elements>
           )}
         </Col>
