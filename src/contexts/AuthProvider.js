@@ -1,7 +1,8 @@
+// AuthProvider.js
 import React, { useState, useEffect, createContext, useCallback, useRef } from 'react';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../Firebase/firebase.config'; // Adjust the path as necessary
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { auth, db } from '../Firebase/firebase.config';
 
 export const AuthContext = createContext();
 
@@ -9,34 +10,69 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isDoctor, setIsDoctor] = useState(false);
   const isMounted = useRef(true);
 
-  const updateUser = useCallback(async (user) => {
+  const updateUser = useCallback(async (firebaseUser) => {
     if (!isMounted.current) return; // Prevent state updates if component is unmounted
 
-    if (user) {
-      const userRef = doc(db, 'users', user.uid);
+    if (firebaseUser) {
+      setIsLoading(true); // Set loading to true when fetching user data
+
+      const userRef = doc(db, 'users', firebaseUser.uid);
+      const doctorRef = doc(db, 'doctors', firebaseUser.uid);
+
       const userDoc = await getDoc(userRef);
+      const doctorDoc = await getDoc(doctorRef);
+
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        if (isMounted.current) { // Check if still mounted before setting state
-          setUser({ ...user, ...userData });
+        if (isMounted.current) {
+          setUser({ ...firebaseUser, ...userData });
           setIsSubscribed(userData.isSubscribed || false);
+          setIsDoctor(false);
+
+          // Set up a real-time listener for subscription status
+          onSnapshot(userRef, (doc) => {
+            const data = doc.data();
+            if (data && isMounted.current) {
+              setIsSubscribed(data.isSubscribed || false);
+            }
+          });
+        }
+      } else if (doctorDoc.exists()) {
+        const doctorData = doctorDoc.data();
+        if (isMounted.current) {
+          setUser({ ...firebaseUser, ...doctorData });
+          setIsSubscribed(doctorData.isSubscribed || false);
+          setIsDoctor(true);
+
+          // Set up a real-time listener for subscription status
+          onSnapshot(doctorRef, (doc) => {
+            const data = doc.data();
+            if (data && isMounted.current) {
+              setIsSubscribed(data.isSubscribed || false);
+            }
+          });
         }
       } else {
         if (isMounted.current) {
-          setUser(user);
+          setUser(firebaseUser);
           setIsSubscribed(false);
+          setIsDoctor(false);
         }
+      }
+
+      if (isMounted.current) {
+        setIsLoading(false); // Set loading to false after fetching user data
       }
     } else {
       if (isMounted.current) {
         setUser(null);
         setIsSubscribed(false);
+        setIsDoctor(false);
+        setIsLoading(false); // Set loading to false when user is null
       }
-    }
-    if (isMounted.current) {
-      setIsLoading(false);
     }
   }, []);
 
@@ -45,7 +81,7 @@ const AuthProvider = ({ children }) => {
       await signOut(auth);
       updateUser(null);
     } catch (error) {
-      console.error("Error logging out:", error);
+     // console.error("Error logging out:", error);
     }
   };
 
@@ -55,7 +91,8 @@ const AuthProvider = ({ children }) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       updateUser(userCredential.user);
     } catch (error) {
-      console.error("Error logging in with email and password:", error);
+     // console.error("Error logging in with email and password:", error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -63,8 +100,8 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     isMounted.current = true;
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      updateUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      updateUser(firebaseUser);
     });
 
     return () => {
@@ -74,7 +111,7 @@ const AuthProvider = ({ children }) => {
   }, [updateUser]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isSubscribed, updateUser, logOut, logInWithEmailandPassword }}>
+    <AuthContext.Provider value={{ user, isLoading, isSubscribed, isDoctor, updateUser, logOut, logInWithEmailandPassword }}>
       {children}
     </AuthContext.Provider>
   );
