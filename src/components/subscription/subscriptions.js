@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Container, Form, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import useAuth from '../../../src/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faEnvelope, faAddressCard } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import Loading from '../../components/Loading/Loading'; // Adjust the path to your Loading component
 import './subscription.css';
 
@@ -33,23 +33,24 @@ const SubscriptionForm = ({ clientSecret }) => {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          // Don't include return_url here
+          return_url: 'https://herbnexus.io/contact',
+
         },
         redirect: 'if_required'
       });
 
       if (error) {
         setErrorMessage(error.message);
-      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Optimistically update user state
-        updateUser({ ...user, isSubscribed: true });
-        setRedirecting(true);
-        setTimeout(() => {
-          window.location.replace('https://herbnexus.io/contact'); // Update with your actual URL
-        }, 3000); // 3-second delay before redirection
-      }
+      } 
+      // else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      //   // Optimistically update user state
+      //   updateUser({ ...user, isSubscribed: true });
+      //   setRedirecting(true);
+      //   setTimeout(() => {
+      //     window.location.replace('https://herbnexus.io/contact'); // Update with your actual URL
+      //   }, 3000); // 3-second delay before redirection
+      // }
     } catch (err) {
-     // console.error('Error confirming payment:', err);
       setErrorMessage('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -98,28 +99,37 @@ const Subscription = () => {
             setErrorMessage('Invalid client secret format received.');
           }
         } catch (error) {
-         // console.error("Error fetching client secret:", error);
           setErrorMessage('An error occurred while initializing the payment process. Please try again.');
         }
       }
     };
     fetchClientSecret();
 
-    // Set a timeout to simulate loading for 2 seconds
     const timer = setTimeout(() => {
       setPageLoading(false);
     }, 2000);
 
-    // Cleanup timeout on unmount
     return () => clearTimeout(timer);
   }, [user]);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const redirectStatus = queryParams.get('redirect_status');
+    const paymentIntentId = queryParams.get('payment_intent');
 
-    if (redirectStatus === 'succeeded') {
-      updateUser({ ...user, isSubscribed: true });
+    if (redirectStatus === 'succeeded' && paymentIntentId) {
+      const verifyPaymentIntent = async () => {
+        try {
+          const response = await axios.post('/.netlify/functions/verify-payment-intent', { paymentIntentId, userId: user.uid });
+          if (response.data.success) {
+            updateUser({ ...user, isSubscribed: true });
+          }
+        } catch (error) {
+          console.error('Error verifying payment intent:', error);
+        }
+      };
+
+      verifyPaymentIntent();
     }
   }, [user, updateUser]);
 
