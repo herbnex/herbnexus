@@ -40,13 +40,16 @@ const SubscriptionForm = ({ clientSecret }) => {
 
       if (error) {
         setErrorMessage(error.message);
-        setLoading(false);
+      } else if (paymentIntent && paymentIntent.status === 'requires_action') {
+        // Redirect to handle additional authentication
+        window.location.href = paymentIntent.next_action.redirect_to_url.url;
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Handle successful payment
         setRedirecting(true);
+        window.location.href = 'https://herbnexus.io/contact';
       }
     } catch (err) {
       setErrorMessage('An error occurred. Please try again.');
+    } finally {
       setLoading(false);
     }
   };

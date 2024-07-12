@@ -8,7 +8,6 @@ exports.handler = async (event) => {
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
     if (paymentIntent.status === 'succeeded') {
-      // Update isSubscribed status after successful payment
       const userRef = db.collection("users").doc(userId);
       await userRef.set({
         isSubscribed: true,
