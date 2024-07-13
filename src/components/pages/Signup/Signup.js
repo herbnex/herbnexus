@@ -58,7 +58,7 @@ const Signup = () => {
         throw new Error("Email already in use. Please use a different email.");
       }
 
-      let imageUrl = "https://i.ibb.co/0sfThCT/7.jpg"; // Default image
+      let imageUrl = "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"; // Default image
 
       if (imageUpload) {
         try {
