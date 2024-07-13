@@ -1,4 +1,3 @@
-// AuthProvider.js
 import React, { useState, useEffect, createContext, useCallback, useRef } from 'react';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
@@ -33,12 +32,15 @@ const AuthProvider = ({ children }) => {
           setIsDoctor(false);
 
           // Set up a real-time listener for subscription status
-          onSnapshot(userRef, (doc) => {
+          const unsubscribeUser = onSnapshot(userRef, (doc) => {
             const data = doc.data();
             if (data && isMounted.current) {
               setIsSubscribed(data.isSubscribed || false);
             }
           });
+
+          // Clean up the user snapshot listener
+          return () => unsubscribeUser();
         }
       } else if (doctorDoc.exists()) {
         const doctorData = doctorDoc.data();
@@ -48,12 +50,15 @@ const AuthProvider = ({ children }) => {
           setIsDoctor(true);
 
           // Set up a real-time listener for subscription status
-          onSnapshot(doctorRef, (doc) => {
+          const unsubscribeDoctor = onSnapshot(doctorRef, (doc) => {
             const data = doc.data();
             if (data && isMounted.current) {
               setIsSubscribed(data.isSubscribed || false);
             }
           });
+
+          // Clean up the doctor snapshot listener
+          return () => unsubscribeDoctor();
         }
       } else {
         if (isMounted.current) {
@@ -81,7 +86,7 @@ const AuthProvider = ({ children }) => {
       await signOut(auth);
       updateUser(null);
     } catch (error) {
-     // console.error("Error logging out:", error);
+      console.error("Error logging out:", error);
     }
   };
 
@@ -91,7 +96,7 @@ const AuthProvider = ({ children }) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       updateUser(userCredential.user);
     } catch (error) {
-     // console.error("Error logging in with email and password:", error);
+      console.error("Error logging in with email and password:", error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -100,13 +105,13 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     isMounted.current = true;
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       updateUser(firebaseUser);
     });
 
     return () => {
       isMounted.current = false; // Cleanup function to update the flag
-      unsubscribe();
+      unsubscribeAuth();
     };
   }, [updateUser]);
 
