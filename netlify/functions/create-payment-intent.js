@@ -4,7 +4,7 @@ const { db } = require("../../src/Firebase/setupFirebaseAdmin");
 
 exports.handler = async (event) => {
   const { userId, paymentIntentId } = JSON.parse(event.body);
-
+  
   try {
     const userRef = db.collection("users").doc(userId);
     const userDoc = await userRef.get();

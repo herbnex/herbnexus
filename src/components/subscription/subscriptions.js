@@ -11,11 +11,13 @@ import './subscription.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const SubscriptionForm = ({ clientSecret, user }) => {
+const SubscriptionForm = ({ clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
+  const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [redirecting, setRedirecting] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,13 +35,20 @@ const SubscriptionForm = ({ clientSecret, user }) => {
         confirmParams: {
           return_url: 'https://herbnexus.io/contact',
         },
+        redirect: 'if_required',
       });
 
       if (error) {
         setErrorMessage(error.message);
+      } else if (paymentIntent && paymentIntent.status === 'requires_action') {
+        // Redirect to handle additional authentication
+        window.location.href = paymentIntent.next_action.redirect_to_url.url;
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        setRedirecting(true);
         // Update user subscription status in the database
         await axios.post('/.netlify/functions/create-payment-intent', { paymentIntentId: paymentIntent.id, userId: user.uid });
+        updateUser({ ...user, isSubscribed: true });
+        window.location.href = 'https://herbnexus.io/contact';
       }
     } catch (err) {
       setErrorMessage('An error occurred. Please try again.');
@@ -48,18 +57,40 @@ const SubscriptionForm = ({ clientSecret, user }) => {
     }
   };
 
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const redirectStatus = queryParams.get('redirect_status');
+    const paymentIntentId = queryParams.get('payment_intent');
+
+    if (redirectStatus === 'succeeded' && paymentIntentId) {
+      const verifyPaymentIntent = async () => {
+        try {
+          const response = await axios.post('/.netlify/functions/create-payment-intent', { paymentIntentId, userId: user.uid });
+          if (response.data.success) {
+            updateUser({ ...user, isSubscribed: true });
+            window.location.href = 'https://herbnexus.io/contact';
+          }
+        } catch (error) {
+          console.error('Error verifying payment intent:', error);
+        }
+      };
+
+      verifyPaymentIntent();
+    }
+  }, [user, updateUser]);
+
   return (
     <Form onSubmit={handleSubmit} className="subscription-form">
       {clientSecret && <PaymentElement />}
       <Button
         type="submit"
-        disabled={!stripe || loading}
+        disabled={!stripe || loading || redirecting}
         className="subscribe-button mt-3"
       >
-        {loading ? (
+        {loading || redirecting ? (
           <>
             <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-            Processing...
+            {redirecting ? "Redirecting..." : "Processing..."}
           </>
         ) : (
           "Subscribe for $100/month"
@@ -71,7 +102,7 @@ const SubscriptionForm = ({ clientSecret, user }) => {
 };
 
 const Subscription = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [errorMessage, setErrorMessage] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
@@ -139,7 +170,7 @@ const Subscription = () => {
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           {clientSecret && (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <SubscriptionForm clientSecret={clientSecret} user={user} />
+              <SubscriptionForm clientSecret={clientSecret} />
             </Elements>
           )}
         </Col>
