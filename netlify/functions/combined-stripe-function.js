@@ -13,6 +13,7 @@ exports.handler = async (event) => {
       const paymentIntent = await stripe.paymentIntents.create({
         amount: totalAmount,
         currency: 'cad',
+        expand: ['latest_charge'],
       });
 
       return {
@@ -45,6 +46,7 @@ exports.handler = async (event) => {
           phone: shippingAddress.phone,
         },
         receipt_email: email,
+        expand: ['latest_charge'],
       });
 
       return {
@@ -62,7 +64,9 @@ exports.handler = async (event) => {
 
   if (action === 'fetch') {
     try {
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId, {
+        expand: ['latest_charge'],
+      });
 
       return {
         statusCode: 200,

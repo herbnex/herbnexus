@@ -240,6 +240,7 @@ const CheckoutForm = ({ clientSecret, email, updatePaymentIntent }) => {
           return_url: 'https://herbnexus.io/shop', // Update with your actual URL
           receipt_email: email,
         },
+        expand: ['latest_charge'],
         redirect: 'if_required'
       });
 
@@ -251,7 +252,20 @@ const CheckoutForm = ({ clientSecret, email, updatePaymentIntent }) => {
         await updatePaymentIntent(paymentIntent.id);
 
         setRedirecting(true);
-        window.open(paymentIntent.charges.data[0].receipt_url, '_blank');
+
+        // Log the paymentIntent to inspect its structure
+        console.log('PaymentIntent:', paymentIntent);
+
+        // Ensure that the receipt_url is present before trying to open it
+        const receiptUrl = paymentIntent.latest_charge.receipt_url;
+        if (receiptUrl) {
+          window.open(receiptUrl, '_blank');
+        } else {
+          console.error('Receipt URL not found in payment intent:', paymentIntent);
+          setErrorMessage('Receipt URL not found. Please check your email for the receipt.');
+        }
+
+        window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
       }
     } catch (err) {
       console.error('An error occurred during payment confirmation:', err);
