@@ -134,11 +134,14 @@ const Checkout = () => {
       if (receiptUrl) {
         // Open the receipt URL in a new tab immediately
         const newTab = window.open('', '_blank');
+        newTab.location.href = receiptUrl;
+        window.location.replace(`/shop`);
+
         
-        setTimeout(() => {
-          newTab.location.href = receiptUrl;
-          window.location.replace(`/shop`);
-        }, 5000);
+        // setTimeout(() => {
+        //   newTab.location.href = receiptUrl;
+        //   window.location.replace(`/shop`);
+        // }, 5000);
       } else {
         console.error('Receipt URL not found in payment intent:', updatedPaymentIntent.data);
         setErrorMessage('Receipt URL not found. Please check your email for the receipt.');
