@@ -8,21 +8,65 @@ import './Checkout.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const CheckoutForm = ({ clientSecret, shippingAddress, email }) => {
+const Checkout = () => {
   const stripe = useStripe();
   const elements = useElements();
-  const { cart } = useProduct();
-  const [loading, setLoading] = useState(false);
+  const { cart, removeFromCart, updateCartQuantity } = useProduct();
+  const [clientSecret, setClientSecret] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [redirecting, setRedirecting] = useState(false);
+  const [email, setEmail] = useState('');
+  const [shippingAddress, setShippingAddress] = useState({
+    recipient: '',
+    addressLine: '',
+    city: '',
+    region: '',
+    postalCode: '',
+    country: '',
+    phone: '',
+  });
+
+  useEffect(() => {
+    const fetchClientSecret = async () => {
+      if (cart.length === 0) {
+        setClientSecret("");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
+          cart,
+        });
+        setClientSecret(response.data.clientSecret);
+      } catch (error) {
+        setErrorMessage('An error occurred while initializing the payment process. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchClientSecret();
+  }, [cart]);
+
+  const handleShippingAddressChange = (e) => {
+    const { name, value } = e.target;
+    setShippingAddress((prevAddress) => ({
+      ...prevAddress,
+      [name]: value,
+    }));
+  };
 
   const updatePaymentIntent = async (paymentIntentId) => {
     try {
-      await axios.post("/.netlify/functions/update-payment-intent", {
+      const response = await axios.post("/.netlify/functions/update-payment-intent", {
         paymentIntentId,
         shippingAddress,
         email,
       });
+      if (response.status !== 200) {
+        throw new Error('Failed to update payment intent');
+      }
     } catch (err) {
       console.error("Failed to update payment intent:", err);
     }
@@ -62,63 +106,6 @@ const CheckoutForm = ({ clientSecret, shippingAddress, email }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  return (
-    <Form onSubmit={handleSubmit}>
-      {clientSecret && <PaymentElement />}
-      <Button type="submit" disabled={!stripe || loading || redirecting} className="mt-3">
-        {loading || redirecting ? "Processing..." : "Pay Now"}
-      </Button>
-      {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-    </Form>
-  );
-};
-
-const Checkout = () => {
-  const { cart, removeFromCart, updateCartQuantity } = useProduct();
-  const [clientSecret, setClientSecret] = useState("");
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [shippingAddress, setShippingAddress] = useState({
-    recipient: '',
-    addressLine: '',
-    city: '',
-    region: '',
-    postalCode: '',
-    country: '',
-    phone: '',
-  });
-  const [email, setEmail] = useState('');
-
-  useEffect(() => {
-    const fetchClientSecret = async () => {
-      if (cart.length === 0) {
-        setClientSecret("");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
-          cart,
-        });
-        setClientSecret(response.data.clientSecret);
-      } catch (error) {
-        setErrorMessage('An error occurred while initializing the payment process. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchClientSecret();
-  }, [cart]);
-
-  const handleShippingAddressChange = (e) => {
-    const { name, value } = e.target;
-    setShippingAddress((prevAddress) => ({
-      ...prevAddress,
-      [name]: value,
-    }));
   };
 
   if (loading) {
@@ -250,7 +237,13 @@ const Checkout = () => {
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           {clientSecret && (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <CheckoutForm clientSecret={clientSecret} shippingAddress={shippingAddress} email={email} />
+              <Form onSubmit={handleSubmit}>
+                {clientSecret && <PaymentElement />}
+                <Button type="submit" disabled={!stripe || loading || redirecting} className="mt-3">
+                  {loading || redirecting ? "Processing..." : "Pay Now"}
+                </Button>
+                {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+              </Form>
             </Elements>
           )}
         </Col>
