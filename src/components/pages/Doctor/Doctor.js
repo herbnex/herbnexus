@@ -1,15 +1,19 @@
+// Doctor.js
 import React, { useState, useEffect } from "react";
-import { Alert, Badge, Card, Col, Container, Row, Button } from "react-bootstrap";
+import { Alert, Badge, Card, Col, Container, Row, Button, Form } from "react-bootstrap";
 import { useParams, NavLink, useHistory } from "react-router-dom";
 import Appoinment from "../Appointment/Appoinment";
-import "./Doctor.css";
 import { db } from "../../../Firebase/firebase.config";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, collection, addDoc, query, orderBy } from "firebase/firestore";
+import "./Doctor.css";
 
 const Doctor = () => {
   const { doctorId } = useParams(); // This should be the id
   const [isOnline, setIsOnline] = useState(false);
   const [doctor, setDoctor] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState("");
+  const [newReviewRating, setNewReviewRating] = useState(5);
   const history = useHistory();
 
   // Fetch the doctor's online status and data
@@ -18,17 +22,27 @@ const Doctor = () => {
       try {
         const doctorRef = doc(db, "doctors", doctorId.toString());
         const doctorSnapshot = await getDoc(doctorRef);
-                if (doctorSnapshot.exists()) {
+        if (doctorSnapshot.exists()) {
           const doctorData = doctorSnapshot.data();
-                    setIsOnline(doctorData.isOnline || false);
+          setIsOnline(doctorData.isOnline || false);
           setDoctor(doctorData);
-        } else {
-                  }
+        }
       } catch (error) {
-        //console.error("Error fetching doctor data:", error);
+        console.error("Error fetching doctor data:", error);
       }
     };
+
+    const fetchReviews = () => {
+      const reviewsRef = collection(db, "doctors", doctorId.toString(), "reviews");
+      const q = query(reviewsRef, orderBy("timestamp", "desc"));
+      onSnapshot(q, (snapshot) => {
+        const reviewsData = snapshot.docs.map(doc => doc.data());
+        setReviews(reviewsData);
+      });
+    };
+
     fetchDoctorData();
+    fetchReviews();
   }, [doctorId]);
 
   if (!doctor) {
@@ -37,6 +51,22 @@ const Doctor = () => {
 
   const handleChatLive = () => {
     history.push(`/contact?doctorId=${doctor.id}`);
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const reviewRef = collection(db, "doctors", doctorId.toString(), "reviews");
+      await addDoc(reviewRef, {
+        review: newReview,
+        rating: newReviewRating,
+        timestamp: new Date(),
+      });
+      setNewReview("");
+      setNewReviewRating(5);
+    } catch (error) {
+      console.error("Error submitting review:", error);
+    }
   };
 
   return (
@@ -97,6 +127,51 @@ const Doctor = () => {
                   </Button>
                 </NavLink>
               )}
+
+              {/* Reviews Section */}
+              <div className="reviews mt-5">
+                <h4>Reviews</h4>
+                {reviews.map((review, index) => (
+                  <Card key={index} className="mb-2">
+                    <Card.Body>
+                      <Card.Text>{review.review}</Card.Text>
+                      <Card.Subtitle className="text-muted">Rating: {review.rating}</Card.Subtitle>
+                    </Card.Body>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Review Form */}
+              <Form onSubmit={handleReviewSubmit} className="mt-4">
+                <Form.Group controlId="review">
+                  <Form.Label>Leave a Review</Form.Label>
+                  <Form.Control 
+                    as="textarea" 
+                    rows={3} 
+                    value={newReview}
+                    onChange={(e) => setNewReview(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="rating" className="mt-2">
+                  <Form.Label>Rating</Form.Label>
+                  <Form.Control 
+                    as="select" 
+                    value={newReviewRating}
+                    onChange={(e) => setNewReviewRating(parseInt(e.target.value))}
+                    required
+                  >
+                    <option value={5}>5 - Excellent</option>
+                    <option value={4}>4 - Good</option>
+                    <option value={3}>3 - Average</option>
+                    <option value={2}>2 - Poor</option>
+                    <option value={1}>1 - Terrible</option>
+                  </Form.Control>
+                </Form.Group>
+                <Button type="submit" className="mt-3">
+                  Submit Review
+                </Button>
+              </Form>
             </div>
           </Col>
         </Row>
