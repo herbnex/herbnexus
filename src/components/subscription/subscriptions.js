@@ -3,7 +3,7 @@ import { useStripe, useElements, PaymentElement, Elements } from '@stripe/react-
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { Container, Form, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
-import useAuth from '../../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import Loading from '../../components/Loading/Loading'; // Adjust the path to your Loading component
