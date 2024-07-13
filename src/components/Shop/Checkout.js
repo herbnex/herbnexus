@@ -50,7 +50,7 @@ const CheckoutForm = ({ clientSecret, email, updatePaymentIntent }) => {
         // Delay the retrieval of receipt_url by 5 seconds
         setTimeout(() => {
           const latestCharge = paymentIntent.latest_charge;
-          const receiptUrl = latestCharge?.receipt_url;
+          const receiptUrl = paymentIntent?.receipt_url;
           if (receiptUrl) {
             window.open(receiptUrl, '_blank');
           } else {
