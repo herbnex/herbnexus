@@ -9,8 +9,6 @@ import './Checkout.css';
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 const Checkout = () => {
-  const stripe = useStripe();
-  const elements = useElements();
   const { cart, removeFromCart, updateCartQuantity } = useProduct();
   const [clientSecret, setClientSecret] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
@@ -36,7 +34,8 @@ const Checkout = () => {
       }
 
       try {
-        const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
+        const response = await axios.post("/.netlify/functions/combined-stripe-function", {
+          action: 'create',
           cart,
         });
         setClientSecret(response.data.clientSecret);
@@ -60,7 +59,8 @@ const Checkout = () => {
 
   const updatePaymentIntent = async (paymentIntentId) => {
     try {
-      const response = await axios.post("/.netlify/functions/update-payment-intent", {
+      const response = await axios.post("/.netlify/functions/combined-stripe-function", {
+        action: 'update',
         paymentIntentId,
         shippingAddress,
         email,
@@ -241,18 +241,68 @@ const Checkout = () => {
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           {clientSecret && (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <Form onSubmit={handleSubmit}>
-                {clientSecret && <PaymentElement />}
-                <Button type="submit" disabled={!stripe || loading || redirecting} className="mt-3">
-                  {loading || redirecting ? "Processing..." : "Pay Now"}
-                </Button>
-                {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-              </Form>
+              <CheckoutForm clientSecret={clientSecret} />
             </Elements>
           )}
         </Col>
       </Row>
     </Container>
+  );
+};
+
+const CheckoutForm = ({ clientSecret }) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [redirecting, setRedirecting] = useState(false);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setErrorMessage(null);
+
+    if (!stripe || !elements) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: 'https://herbnexus.io/shop', // Update with your actual URL
+          receipt_email: email,
+        },
+        redirect: 'if_required'
+      });
+
+      if (error) {
+        console.error('Error confirming payment:', error);
+        setErrorMessage(error.message);
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Update the payment intent with shipping details after successful payment
+        await updatePaymentIntent(paymentIntent.id);
+
+        setRedirecting(true);
+        window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
+      }
+    } catch (err) {
+      console.error('An error occurred during payment confirmation:', err);
+      setErrorMessage('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      {clientSecret && <PaymentElement />}
+      <Button type="submit" disabled={!stripe || loading || redirecting} className="mt-3">
+        {loading || redirecting ? "Processing..." : "Pay Now"}
+      </Button>
+      {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+    </Form>
   );
 };
 
