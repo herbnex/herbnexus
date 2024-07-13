@@ -3,7 +3,7 @@ import { useStripe, useElements, PaymentElement, Elements } from '@stripe/react-
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { Container, Form, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
-import useAuth from '../../../src/hooks/useAuth';
+import useAuth from '../../../hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import Loading from '../../components/Loading/Loading'; // Adjust the path to your Loading component
@@ -45,6 +45,9 @@ const SubscriptionForm = ({ clientSecret }) => {
         window.location.href = paymentIntent.next_action.redirect_to_url.url;
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
         setRedirecting(true);
+        // Update user subscription status in the database
+        await axios.post('/.netlify/functions/create-payment-intent', { paymentIntentId: paymentIntent.id, userId: user.uid });
+        updateUser({ ...user, isSubscribed: true });
         window.location.href = 'https://herbnexus.io/contact';
       }
     } catch (err) {
@@ -62,7 +65,7 @@ const SubscriptionForm = ({ clientSecret }) => {
     if (redirectStatus === 'succeeded' && paymentIntentId) {
       const verifyPaymentIntent = async () => {
         try {
-          const response = await axios.post('/.netlify/functions/verify-payment-intent', { paymentIntentId, userId: user.uid });
+          const response = await axios.post('/.netlify/functions/create-payment-intent', { paymentIntentId, userId: user.uid });
           if (response.data.success) {
             updateUser({ ...user, isSubscribed: true });
             window.location.href = 'https://herbnexus.io/contact';
