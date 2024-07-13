@@ -1,3 +1,4 @@
+/* Doctor.css */
 .details-heading {
   overflow: hidden;
   height: 400px;
@@ -8,6 +9,7 @@
 .details {
   padding-bottom: 5rem;
 }
+
 .details-img {
   margin-top: -300px;
   width: 300px;
@@ -18,4 +20,24 @@
   .details-img {
     margin-top: -50px;
   }
+}
+
+.reviews {
+  margin-top: 2rem;
+}
+
+.reviews h4 {
+  margin-bottom: 1rem;
+}
+
+.review-card {
+  margin-bottom: 1rem;
+}
+
+.bi-star-fill {
+  color: yellow;
+}
+
+.bi-star {
+  color: gray;
 }

@@ -6,9 +6,10 @@ import Appoinment from "../Appointment/Appoinment";
 import { db } from "../../../Firebase/firebase.config";
 import { doc, getDoc, onSnapshot, collection, addDoc, query, orderBy } from "firebase/firestore";
 import "./Doctor.css";
+import { format } from "date-fns";
 
 const Doctor = () => {
-  const { doctorId } = useParams(); // This should be the id
+  const { doctorId } = useParams();
   const [isOnline, setIsOnline] = useState(false);
   const [doctor, setDoctor] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -16,7 +17,6 @@ const Doctor = () => {
   const [newReviewRating, setNewReviewRating] = useState(5);
   const history = useHistory();
 
-  // Fetch the doctor's online status and data
   useEffect(() => {
     const fetchDoctorData = async () => {
       try {
@@ -69,9 +69,22 @@ const Doctor = () => {
     }
   };
 
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <i
+          key={i}
+          className={`bi bi-star${i <= rating ? "-fill" : ""}`}
+          style={{ color: i <= rating ? "yellow" : "gray" }}
+        ></i>
+      );
+    }
+    return stars;
+  };
+
   return (
     <div>
-      {/* DETAILS PAGE'S HEADING */}
       <Container fluid className="details-heading">
         <Container className="name h-100">
           <Row className="h-100">
@@ -84,7 +97,6 @@ const Doctor = () => {
         </Container>
       </Container>
 
-      {/* DETAILS */}
       <Container className="details">
         <Row>
           <Col xs={12} lg={4}>
@@ -135,7 +147,8 @@ const Doctor = () => {
                   <Card key={index} className="mb-2">
                     <Card.Body>
                       <Card.Text>{review.review}</Card.Text>
-                      <Card.Subtitle className="text-muted">Rating: {review.rating}</Card.Subtitle>
+                      <Card.Subtitle className="text-muted">Rating: {renderStars(review.rating)}</Card.Subtitle>
+                      <Card.Text className="text-muted">{format(new Date(review.timestamp.seconds * 1000), 'PPpp')}</Card.Text>
                     </Card.Body>
                   </Card>
                 ))}
