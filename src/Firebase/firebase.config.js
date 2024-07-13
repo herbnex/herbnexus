@@ -20,11 +20,19 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase App Check with reCAPTCHA v3
-initializeAppCheck(app, {
+const appCheck = initializeAppCheck(app, {
   provider: new ReCaptchaV3Provider(process.env.REACT_APP_RECAPTCHA_SITE_KEY),
-  isTokenAutoRefreshEnabled: true,
+  isTokenAutoRefreshEnabled: true
 });
+
+appCheck
+  .getToken()
+  .then((token) => {
+    localStorage.setItem('appCheckToken', token.token);
+  })
+  .catch((error) => {
+    console.error('Error getting App Check token:', error);
+  });
 
 // Initialize Firebase Authentication and export
 export const auth = getAuth(app);
