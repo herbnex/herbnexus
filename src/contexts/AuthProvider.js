@@ -44,7 +44,7 @@ const AuthProvider = ({ children }) => {
         const doctorData = doctorDoc.data();
         if (isMounted.current) {
           setUser({ ...firebaseUser, ...doctorData });
-          setIsSubscribed(true);
+          setIsSubscribed(doctorData.isSubscribed || false);
           setIsDoctor(true);
 
           // Set up a real-time listener for subscription status
