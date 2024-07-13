@@ -28,6 +28,7 @@ const HerbalChat = () => {
   const [captchaSolved, setCaptchaSolved] = useState(true); // Initially true to allow the first message
   const messagesEndRef = useRef(null);
   const chatMessagesRef = useRef(null);
+  const [userRole, setUserRole] = useState(null); // 'user' or 'doctor'
 
   const { executeRecaptcha } = useGoogleReCaptcha();
 
@@ -35,7 +36,7 @@ const HerbalChat = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsUserLoggedIn(true);
-        loadChatSessions(user.uid);
+        determineUserRole(user.uid);
       } else {
         setIsUserLoggedIn(false);
         clearChatSessions();
@@ -43,6 +44,26 @@ const HerbalChat = () => {
     });
     return unsubscribe;
   }, []);
+
+  const determineUserRole = async (userId) => {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', userId));
+      const doctorDoc = await getDoc(doc(db, 'doctors', userId));
+
+      if (userDoc.exists()) {
+        setUserRole('user');
+        loadChatSessions(userId, 'users');
+      } else if (doctorDoc.exists()) {
+        setUserRole('doctor');
+        loadChatSessions(userId, 'doctors');
+      } else {
+        setUserRole(null);
+        clearChatSessions();
+      }
+    } catch (error) {
+      console.error('Error determining user role: ', error);
+    }
+  };
 
   const clearChatSessions = () => {
     setChatSessions([]);
@@ -66,9 +87,9 @@ const HerbalChat = () => {
     };
   }, [input, messages]);
 
-  const loadChatSessions = async (userId) => {
+  const loadChatSessions = async (userId, role) => {
     try {
-      const q = query(collection(db, 'users', userId, 'chats'));
+      const q = query(collection(db, role, userId, 'chats'));
       const querySnapshot = await getDocs(q);
       const sessions = [];
       querySnapshot.forEach((doc) => {
@@ -76,7 +97,7 @@ const HerbalChat = () => {
       });
       setChatSessions(sessions);
       if (sessions.length > 0) {
-        loadChatHistory(userId, sessions[0].id); // Load the first chat session by default
+        loadChatHistory(userId, sessions[0].id, role); // Load the first chat session by default
       } else {
         startNewChatSession();
       }
@@ -85,9 +106,9 @@ const HerbalChat = () => {
     }
   };
 
-  const loadChatHistory = async (userId, chatId) => {
+  const loadChatHistory = async (userId, chatId, role) => {
     try {
-      const docRef = doc(db, 'users', userId, 'chats', chatId);
+      const docRef = doc(db, role, userId, 'chats', chatId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setMessages(docSnap.data().messages);
@@ -98,9 +119,9 @@ const HerbalChat = () => {
     }
   };
 
-  const saveChatHistory = async (userId, chatId, newMessages) => {
+  const saveChatHistory = async (userId, chatId, newMessages, role) => {
     try {
-      const docRef = doc(db, 'users', userId, 'chats', chatId);
+      const docRef = doc(db, role, userId, 'chats', chatId);
       await setDoc(docRef, {
         messages: newMessages,
         timestamp: Timestamp.now(),
@@ -110,9 +131,9 @@ const HerbalChat = () => {
     }
   };
 
-  const deleteChatSession = async (userId, chatId) => {
+  const deleteChatSession = async (userId, chatId, role) => {
     try {
-      await deleteDoc(doc(db, 'users', userId, 'chats', chatId));
+      await deleteDoc(doc(db, role, userId, 'chats', chatId));
       const updatedChatSessions = chatSessions.filter(session => session.id !== chatId);
       setChatSessions(updatedChatSessions);
       if (currentChatId === chatId) {
@@ -122,7 +143,7 @@ const HerbalChat = () => {
       if (updatedChatSessions.length === 0) {
         startNewChatSession();
       } else {
-        loadChatHistory(userId, updatedChatSessions[0].id); // Load the first remaining chat session
+        loadChatHistory(userId, updatedChatSessions[0].id, role); // Load the first remaining chat session
       }
     } catch (error) {
       console.error('Error deleting chat session: ', error);
@@ -160,8 +181,8 @@ const HerbalChat = () => {
       setMessages(updatedMessages);
 
       const user = auth.currentUser;
-      if (user && currentChatId) {
-        await saveChatHistory(user.uid, currentChatId, updatedMessages);
+      if (user && currentChatId && userRole) {
+        await saveChatHistory(user.uid, currentChatId, updatedMessages, userRole);
       }
 
       const userMessageCount = updatedMessages.filter(msg => msg.user === 'You').length;
@@ -185,8 +206,8 @@ const HerbalChat = () => {
       return;
     }
 
-    if (currentChatId) {
-      await saveChatHistory(user.uid, currentChatId, messages);
+    if (currentChatId && userRole) {
+      await saveChatHistory(user.uid, currentChatId, messages, userRole);
     }
 
     const initialMessages = [
@@ -200,7 +221,7 @@ const HerbalChat = () => {
     };
 
     try {
-      const docRef = await addDoc(collection(db, 'users', user.uid, 'chats'), newChat);
+      const docRef = await addDoc(collection(db, userRole, user.uid, 'chats'), newChat);
       const newSession = { id: docRef.id, ...newChat };
       setChatSessions([...chatSessions, newSession]);
       setMessages(initialMessages);
@@ -344,13 +365,13 @@ const HerbalChat = () => {
                   <h4>Chat Sessions</h4>
                   {chatSessions.map((session) => (
                     <div key={session.id} className="chat-session-container">
-                      <div className="chat-session" onClick={() => loadChatHistory(auth.currentUser.uid, session.id)}>
+                      <div className="chat-session" onClick={() => loadChatHistory(auth.currentUser.uid, session.id, userRole)}>
                         Chat started at {session.timestamp.toDate().toLocaleString()}
                       </div>
                       <Dropdown>
                         <Dropdown.Toggle as={FaEllipsisV} className="dropdown-toggle" />
                         <Dropdown.Menu className="dropdown-menu">
-                          <Dropdown.Item onClick={() => deleteChatSession(auth.currentUser.uid, session.id)}>Delete</Dropdown.Item>
+                          <Dropdown.Item onClick={() => deleteChatSession(auth.currentUser.uid, session.id, userRole)}>Delete</Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
                     </div>
