@@ -21,13 +21,19 @@ exports.handler = async (event) => {
       await userRef.set({ stripeCustomerId: customerId }, { merge: true });
     }
 
-    // Create a payment intent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: 10000, // $100.00
-      currency: 'cad',
+    // Create a subscription
+    const subscription = await stripe.subscriptions.create({
       customer: customerId,
-      metadata: { userId },
+      items: [{ price: process.env.STRIPE_PRICE_ID }],
+      payment_behavior: 'default_incomplete',
+      expand: ['latest_invoice.payment_intent'],
+      metadata: {
+        userId,
+        description: "Subscription creation"
+      }
     });
+
+    const clientSecret = subscription.latest_invoice.payment_intent.client_secret;
 
     // Verify payment intent if provided
     if (paymentIntentId) {
@@ -35,6 +41,7 @@ exports.handler = async (event) => {
       if (paymentIntent.status === 'succeeded') {
         await userRef.set({
           isSubscribed: true,
+          subscriptionId: subscription.id,
           subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         }, { merge: true });
       }
@@ -43,8 +50,9 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       body: JSON.stringify({
-        clientSecret: paymentIntent.client_secret,
-        success: true,
+        subscriptionId: subscription.id,
+        clientSecret,
+        success: true
       }),
     };
   } catch (error) {
