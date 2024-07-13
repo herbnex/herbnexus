@@ -136,7 +136,7 @@ const Checkout = () => {
         setTimeout(() => {
           window.open(receiptUrl, '_blank');
          // window.location.replace(receiptUrl);
-         window.location.replace(`/payment-success?payment_intent=${updatedPaymentIntent.id}`);
+         window.location.replace(`/payment-success?payment_intent=${updatedPaymentIntent.data.id}`);
 
         }, 5000);
       } else {
