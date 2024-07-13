@@ -41,6 +41,7 @@ const Checkout = () => {
         });
         setClientSecret(response.data.clientSecret);
       } catch (error) {
+        console.error('Error fetching client secret:', error);
         setErrorMessage('An error occurred while initializing the payment process. Please try again.');
       } finally {
         setLoading(false);
@@ -69,6 +70,7 @@ const Checkout = () => {
       }
     } catch (err) {
       console.error("Failed to update payment intent:", err);
+      setErrorMessage('An error occurred while updating the payment details. Please try again.');
     }
   };
 
@@ -93,6 +95,7 @@ const Checkout = () => {
       });
 
       if (error) {
+        console.error('Error confirming payment:', error);
         setErrorMessage(error.message);
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
         // Update the payment intent with shipping details after successful payment
@@ -102,6 +105,7 @@ const Checkout = () => {
         window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
       }
     } catch (err) {
+      console.error('An error occurred during payment confirmation:', err);
       setErrorMessage('An error occurred. Please try again.');
     } finally {
       setLoading(false);

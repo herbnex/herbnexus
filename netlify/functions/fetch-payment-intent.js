@@ -12,6 +12,7 @@ exports.handler = async (event) => {
       body: JSON.stringify(paymentIntent),
     };
   } catch (error) {
+    console.error("Error fetching payment intent:", error);
     return {
       statusCode: 400,
       body: JSON.stringify({ error: error.message }),

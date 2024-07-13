@@ -8,7 +8,7 @@ exports.handler = async (event) => {
     // Calculate the total amount for the cart
     const totalAmount = Math.round(cart.reduce((sum, item) => sum + item.price * item.quantity, 0) * 100); // Amount in cents
 
-    // Create a payment intent without shipping details initially
+    // Create a payment intent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalAmount,
       currency: 'cad',
@@ -21,6 +21,7 @@ exports.handler = async (event) => {
       }),
     };
   } catch (error) {
+    console.error("Error creating payment intent:", error);
     return {
       statusCode: 400,
       body: JSON.stringify({ error: error.message }),
