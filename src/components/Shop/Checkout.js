@@ -74,44 +74,6 @@ const Checkout = () => {
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    setErrorMessage(null);
-
-    if (!stripe || !elements) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: 'https://herbnexus.io/shop', // Update with your actual URL
-          receipt_email: email,
-        },
-        redirect: 'if_required'
-      });
-
-      if (error) {
-        console.error('Error confirming payment:', error);
-        setErrorMessage(error.message);
-      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Update the payment intent with shipping details after successful payment
-        await updatePaymentIntent(paymentIntent.id);
-
-        setRedirecting(true);
-        window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
-      }
-    } catch (err) {
-      console.error('An error occurred during payment confirmation:', err);
-      setErrorMessage('An error occurred. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (loading) {
     return (
       <Container className="checkout-container">
@@ -241,7 +203,11 @@ const Checkout = () => {
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           {clientSecret && (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <CheckoutForm clientSecret={clientSecret} />
+              <CheckoutForm
+                clientSecret={clientSecret}
+                email={email}
+                updatePaymentIntent={updatePaymentIntent}
+              />
             </Elements>
           )}
         </Col>
@@ -250,7 +216,7 @@ const Checkout = () => {
   );
 };
 
-const CheckoutForm = ({ clientSecret }) => {
+const CheckoutForm = ({ clientSecret, email, updatePaymentIntent }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
