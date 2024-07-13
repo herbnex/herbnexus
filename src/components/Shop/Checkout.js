@@ -59,7 +59,7 @@ const CheckoutForm = ({ clientSecret, email, updatePaymentIntent }) => {
           }
 
           window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
-        }, 5000);
+        }, 90000);
       }
     } catch (err) {
       console.error('An error occurred during payment confirmation:', err);
