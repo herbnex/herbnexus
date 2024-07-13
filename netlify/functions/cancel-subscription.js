@@ -6,15 +6,23 @@ exports.handler = async (event) => {
   const { userId } = JSON.parse(event.body);
 
   try {
-    // Fetch the user to get the Stripe customer ID and subscription ID
+    // Fetch the user or doctor to get the Stripe customer ID and subscription ID
     const userRef = db.collection("users").doc(userId);
+    const doctorRef = db.collection("doctors").doc(userId);
     const userDoc = await userRef.get();
-    
-    if (!userDoc.exists) {
+    const doctorDoc = await doctorRef.get();
+    let userData, userCollection;
+
+    if (userDoc.exists) {
+      userData = userDoc.data();
+      userCollection = 'users';
+    } else if (doctorDoc.exists) {
+      userData = doctorDoc.data();
+      userCollection = 'doctors';
+    } else {
       return { statusCode: 404, body: "User not found" };
     }
 
-    const userData = userDoc.data();
     const stripeCustomerId = userData.stripeCustomerId;
     const subscriptionId = userData.subscriptionId;
 
@@ -23,19 +31,19 @@ exports.handler = async (event) => {
     }
 
     // Cancel the subscription
-    await stripe.subscriptions.update(subscriptionId,{
+    await stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end: true,
     });
 
     // Update the user's subscription status in Firestore
-    await userRef.set({
+    await db.collection(userCollection).doc(userId).set({
       isSubscribed: false,
       cancel_at_period_end: true
     }, { merge: true });
 
     return { statusCode: 200, body: "Subscription canceled successfully" };
   } catch (error) {
-    //console.error("Error cancelling subscription:", error);
+    // console.error("Error cancelling subscription:", error);
     return { statusCode: 500, body: "Internal Server Error" };
   }
 };
