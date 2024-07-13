@@ -25,6 +25,9 @@ const Checkout = () => {
     phone: '',
   });
 
+  const stripe = useStripe();
+  const elements = useElements();
+
   useEffect(() => {
     const fetchClientSecret = async () => {
       if (cart.length === 0) {
@@ -71,6 +74,58 @@ const Checkout = () => {
     } catch (err) {
       console.error("Failed to update payment intent:", err);
       setErrorMessage('An error occurred while updating the payment details. Please try again.');
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setErrorMessage(null);
+
+    if (!stripe || !elements) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: 'https://herbnexus.io/shop', // Update with your actual URL
+          receipt_email: email,
+        },
+        redirect: 'if_required',
+      });
+
+      if (error) {
+        console.error('Error confirming payment:', error);
+        setErrorMessage(error.message);
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Update the payment intent with shipping details after successful payment
+        await updatePaymentIntent(paymentIntent.id);
+
+        setRedirecting(true);
+
+        // Log the paymentIntent to inspect its structure
+        console.log('PaymentIntent:', paymentIntent);
+
+        // Ensure that the receipt_url is present before trying to open it
+        const latestCharge = paymentIntent.charges?.data?.[0];
+        const receiptUrl = latestCharge?.receipt_url;
+        if (receiptUrl) {
+          window.open(receiptUrl, '_blank');
+        } else {
+          console.error('Receipt URL not found in payment intent:', paymentIntent);
+          setErrorMessage('Receipt URL not found. Please check your email for the receipt.');
+        }
+
+        window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
+      }
+    } catch (err) {
+      console.error('An error occurred during payment confirmation:', err);
+      setErrorMessage('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -203,86 +258,18 @@ const Checkout = () => {
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           {clientSecret && (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <CheckoutForm
-                clientSecret={clientSecret}
-                email={email}
-                updatePaymentIntent={updatePaymentIntent}
-              />
+              <Form onSubmit={handleSubmit}>
+                {clientSecret && <PaymentElement />}
+                <Button type="submit" disabled={!stripe || loading || redirecting} className="mt-3">
+                  {loading || redirecting ? "Processing..." : "Pay Now"}
+                </Button>
+                {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+              </Form>
             </Elements>
           )}
         </Col>
       </Row>
     </Container>
-  );
-};
-
-const CheckoutForm = ({ clientSecret, email, updatePaymentIntent }) => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [redirecting, setRedirecting] = useState(false);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    setErrorMessage(null);
-
-    if (!stripe || !elements) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: 'https://herbnexus.io/shop', // Update with your actual URL
-          receipt_email: email,
-        },
-        expand: ['latest_charge'],
-        redirect: 'if_required'
-      });
-
-      if (error) {
-        console.error('Error confirming payment:', error);
-        setErrorMessage(error.message);
-      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Update the payment intent with shipping details after successful payment
-        await updatePaymentIntent(paymentIntent.id);
-
-        setRedirecting(true);
-
-        // Log the paymentIntent to inspect its structure
-        console.log('PaymentIntent:', paymentIntent);
-
-        // Ensure that the receipt_url is present before trying to open it
-        const receiptUrl = paymentIntent.latest_charge.receipt_url;
-        if (receiptUrl) {
-          window.open(receiptUrl, '_blank');
-        } else {
-          console.error('Receipt URL not found in payment intent:', paymentIntent);
-          setErrorMessage('Receipt URL not found. Please check your email for the receipt.');
-        }
-
-        window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
-      }
-    } catch (err) {
-      console.error('An error occurred during payment confirmation:', err);
-      setErrorMessage('An error occurred. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <Form onSubmit={handleSubmit}>
-      {clientSecret && <PaymentElement />}
-      <Button type="submit" disabled={!stripe || loading || redirecting} className="mt-3">
-        {loading || redirecting ? "Processing..." : "Pay Now"}
-      </Button>
-      {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-    </Form>
   );
 };
 
