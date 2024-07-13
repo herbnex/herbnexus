@@ -25,9 +25,6 @@ const Checkout = () => {
     phone: '',
   });
 
-  const stripe = useStripe();
-  const elements = useElements();
-
   useEffect(() => {
     const fetchClientSecret = async () => {
       if (cart.length === 0) {
@@ -110,7 +107,7 @@ const Checkout = () => {
         console.log('PaymentIntent:', paymentIntent);
 
         // Ensure that the receipt_url is present before trying to open it
-        const latestCharge = paymentIntent.charges?.data?.[0];
+        const latestCharge = paymentIntent.latest_charge;
         const receiptUrl = latestCharge?.receipt_url;
         if (receiptUrl) {
           window.open(receiptUrl, '_blank');
