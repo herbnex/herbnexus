@@ -1,8 +1,7 @@
 /* Doctor.css */
 .details-heading {
   overflow: hidden;
-  height: 400px;
-  background-color: #39cabb;
+  
   text-align: center;
 }
 
@@ -11,14 +10,13 @@
 }
 
 .details-img {
-  margin-top: -300px;
   width: 300px;
   height: 300px;
 }
 
 @media screen and (max-width: 992px) {
   .details-img {
-    margin-top: -50px;
+    margin-top: -1px;
   }
 }
 
