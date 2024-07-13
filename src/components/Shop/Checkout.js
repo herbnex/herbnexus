@@ -130,11 +130,12 @@ const Checkout = () => {
 
       const latestCharge = updatedPaymentIntent.data.latest_charge;
       const receiptUrl = latestCharge?.receipt_url;
+      console.log(receiptUrl)
 
       if (receiptUrl) {
         setTimeout(() => {
           window.open(receiptUrl, '_blank');
-          window.location.replace(`/payment-success?payment_intent=${paymentIntentId}`);
+          window.location.replace(receiptUrl);
         }, 5000);
       } else {
         console.error('Receipt URL not found in payment intent:', updatedPaymentIntent.data);
