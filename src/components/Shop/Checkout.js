@@ -130,19 +130,18 @@ const Checkout = () => {
 
       const latestCharge = updatedPaymentIntent.data.latest_charge;
       const receiptUrl = latestCharge?.receipt_url;
-      console.log(receiptUrl)
 
       if (receiptUrl) {
+        // Open the receipt URL in a new tab immediately
+        const newTab = window.open('', '_blank');
+        
         setTimeout(() => {
-          window.open(receiptUrl, '_blank');
-         // window.location.replace(receiptUrl);
-         window.location.replace(`/payment-success?payment_intent=${updatedPaymentIntent.data.id}`);
-
+          newTab.location.href = receiptUrl;
+          window.location.replace(`/shop`);
         }, 5000);
       } else {
         console.error('Receipt URL not found in payment intent:', updatedPaymentIntent.data);
-        receiptUrl = updatedPaymentIntent.latest_charge.receipt_url;
-        window.open(receiptUrl, '_blank');
+        setErrorMessage('Receipt URL not found. Please check your email for the receipt.');
       }
     } catch (err) {
       console.error("Failed to update payment intent:", err);
