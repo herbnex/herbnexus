@@ -251,7 +251,7 @@ const CheckoutForm = ({ clientSecret, email, updatePaymentIntent }) => {
         await updatePaymentIntent(paymentIntent.id);
 
         setRedirecting(true);
-        window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
+        window.open(paymentIntent.charges.data[0].receipt_url, '_blank');
       }
     } catch (err) {
       console.error('An error occurred during payment confirmation:', err);
