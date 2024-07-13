@@ -39,27 +39,8 @@ const CheckoutForm = ({ clientSecret, email, updatePaymentIntent }) => {
         console.error('Error confirming payment:', error);
         setErrorMessage(error.message);
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Update the payment intent with shipping details after successful payment
+        // Update the payment intent with shipping details after successful payment and handle redirection
         await updatePaymentIntent(paymentIntent.id);
-
-        setRedirecting(true);
-
-        // Log the paymentIntent to inspect its structure
-        console.log('PaymentIntent:', paymentIntent);
-
-        // Delay the retrieval of receipt_url by 5 seconds
-        setTimeout(() => {
-          const latestCharge = paymentIntent.latest_charge;
-          const receiptUrl = paymentIntent?.receipt_url;
-          if (receiptUrl) {
-            window.open(receiptUrl, '_blank');
-          } else {
-            console.error('Receipt URL not found in payment intent:', paymentIntent);
-            setErrorMessage('Receipt URL not found. Please check your email for the receipt.');
-          }
-
-          window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
-        }, 90000);
       }
     } catch (err) {
       console.error('An error occurred during payment confirmation:', err);
@@ -136,8 +117,29 @@ const Checkout = () => {
         shippingAddress,
         email,
       });
+
       if (response.status !== 200) {
         throw new Error('Failed to update payment intent');
+      }
+
+      // Fetch the updated payment intent with expanded latest_charge
+      const updatedPaymentIntent = await axios.post("/.netlify/functions/combined-stripe-function", {
+        action: 'fetch',
+        paymentIntentId,
+      });
+
+      const latestCharge = updatedPaymentIntent.data.latest_charge;
+      const receiptUrl = latestCharge?.receipt_url;
+
+      if (receiptUrl) {
+        setTimeout(() => {
+          window.open(receiptUrl, '_blank');
+          window.location.replace(`/payment-success?payment_intent=${paymentIntentId}`);
+        }, 5000);
+      } else {
+        console.error('Receipt URL not found in payment intent:', updatedPaymentIntent.data);
+        receiptUrl = updatedPaymentIntent.latest_charge.receipt_url;
+        window.open(receiptUrl, '_blank');
       }
     } catch (err) {
       console.error("Failed to update payment intent:", err);
