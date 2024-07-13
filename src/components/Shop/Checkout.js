@@ -135,7 +135,9 @@ const Checkout = () => {
       if (receiptUrl) {
         setTimeout(() => {
           window.open(receiptUrl, '_blank');
-          window.location.replace(receiptUrl);
+         // window.location.replace(receiptUrl);
+         window.location.replace(`/payment-success?payment_intent=${updatedPaymentIntent.id}`);
+
         }, 5000);
       } else {
         console.error('Receipt URL not found in payment intent:', updatedPaymentIntent.data);

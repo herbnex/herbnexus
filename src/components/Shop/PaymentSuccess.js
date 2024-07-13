@@ -15,7 +15,10 @@ const PaymentSuccess = () => {
   useEffect(() => {
     const fetchPaymentDetails = async () => {
       try {
-        const response = await axios.get(`/.netlify/functions/fetch-payment-intent?paymentIntentId=${paymentIntentId}`);
+        const response = await axios.post("/.netlify/functions/combined-stripe-function", {
+          action: 'fetch',
+          paymentIntentId,
+        });
         setPaymentDetails(response.data);
       } catch (err) {
         setError('Failed to fetch payment details.');
