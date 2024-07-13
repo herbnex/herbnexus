@@ -1,12 +1,13 @@
 // Doctor.js
 import React, { useState, useEffect } from "react";
 import { Alert, Badge, Card, Col, Container, Row, Button, Form } from "react-bootstrap";
-import { useParams, NavLink, useHistory } from "react-router-dom";
+import { useParams, NavLink, useHistory, useLocation } from "react-router-dom";
 import Appoinment from "../Appointment/Appoinment";
 import { db } from "../../../Firebase/firebase.config";
 import { doc, getDoc, onSnapshot, collection, addDoc, query, orderBy } from "firebase/firestore";
 import "./Doctor.css";
 import { format } from "date-fns";
+import useAuth from "../../../hooks/useAuth"; // Import useAuth hook
 
 const Doctor = () => {
   const { doctorId } = useParams();
@@ -15,7 +16,9 @@ const Doctor = () => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState("");
   const [newReviewRating, setNewReviewRating] = useState(5);
+  const { user } = useAuth(); // Get the logged-in user
   const history = useHistory();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchDoctorData = async () => {
@@ -55,12 +58,18 @@ const Doctor = () => {
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
+    if (!user) {
+      history.push('/login', { from: location });
+      return;
+    }
     try {
       const reviewRef = collection(db, "doctors", doctorId.toString(), "reviews");
       await addDoc(reviewRef, {
         review: newReview,
         rating: newReviewRating,
         timestamp: new Date(),
+        userName: user.displayName,
+        userId: user.uid,
       });
       setNewReview("");
       setNewReviewRating(5);
@@ -146,6 +155,7 @@ const Doctor = () => {
                 {reviews.map((review, index) => (
                   <Card key={index} className="mb-2">
                     <Card.Body>
+                      <Card.Title>{review.userName}</Card.Title>
                       <Card.Text>{review.review}</Card.Text>
                       <Card.Subtitle className="text-muted">Rating: {renderStars(review.rating)}</Card.Subtitle>
                       <Card.Text className="text-muted">{format(new Date(review.timestamp.seconds * 1000), 'PPpp')}</Card.Text>
