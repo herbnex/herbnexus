@@ -111,10 +111,10 @@ const Doctor = () => {
           <Col xs={12} lg={4}>
             <Card className="shadow mx-auto" style={{ width: "300px" }}>
               <Card.Img className="details-img" variant="top" src={doctor.image} />
-              <Card.Body>
+              <Card.Body >
                 <h3>{doctor.name}</h3>
-                <h5 className="my-2 text-main">{doctor.speciality}</h5>
-                <p>{doctor.bio}</p>
+                <h5 className="my-2 text-main ">{doctor.speciality}</h5>
+                {/* <p>{doctor.bio}</p> */}
               </Card.Body>
             </Card>
           </Col>
