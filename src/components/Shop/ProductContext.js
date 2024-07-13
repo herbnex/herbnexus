@@ -1122,9 +1122,12 @@ const ProductProvider = ({ children }) => {
       );
     });
   };
+  const clearCart = () => {
+    setCart([]);
+  };
 
   return (
-    <ProductContext.Provider value={{ allProducts, cart, addToCart, removeFromCart, updateCartQuantity }}>
+    <ProductContext.Provider value={{ allProducts, cart, addToCart, removeFromCart, updateCartQuantity, clearCart }}>
       {children}
     </ProductContext.Provider>
   );

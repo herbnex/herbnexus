@@ -62,7 +62,7 @@ const CheckoutForm = ({ clientSecret, email, updatePaymentIntent }) => {
 };
 
 const Checkout = () => {
-  const { cart, removeFromCart, updateCartQuantity } = useProduct();
+  const { cart, removeFromCart, updateCartQuantity, clearCart } = useProduct();
   const [clientSecret, setClientSecret] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -92,7 +92,7 @@ const Checkout = () => {
         });
         setClientSecret(response.data.clientSecret);
       } catch (error) {
-        console.error('Error fetching client secret:', error);
+        //console.error('Error fetching client secret:', error);
         setErrorMessage('An error occurred while initializing the payment process. Please try again.');
       } finally {
         setLoading(false);
@@ -119,7 +119,7 @@ const Checkout = () => {
       });
 
       if (response.status !== 200) {
-        throw new Error('Failed to update payment intent');
+        throw new Error('Failed to update payment');
       }
 
       // Fetch the updated payment intent with expanded latest_charge
@@ -135,6 +135,7 @@ const Checkout = () => {
         // Open the receipt URL in a new tab immediately
         const newTab = window.open('', '_blank');
         newTab.location.href = receiptUrl;
+        clearCart();
         window.location.replace(`/shop`);
 
         
@@ -143,11 +144,11 @@ const Checkout = () => {
         //   window.location.replace(`/shop`);
         // }, 5000);
       } else {
-        console.error('Receipt URL not found in payment intent:', updatedPaymentIntent.data);
+        //console.error('Receipt URL not found in payment intent:', updatedPaymentIntent.data);
         setErrorMessage('Receipt URL not found. Please check your email for the receipt.');
       }
     } catch (err) {
-      console.error("Failed to update payment intent:", err);
+      //console.error("Failed to update payment intent:", err);
       setErrorMessage('An error occurred while updating the payment details. Please try again.');
     }
   };
