@@ -11,7 +11,7 @@ import './subscription.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const SubscriptionForm = ({ clientSecret }) => {
+const SubscriptionForm = ({ clientSecret, user }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -143,7 +143,7 @@ const Subscription = () => {
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           {clientSecret && (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <SubscriptionForm clientSecret={clientSecret} />
+              <SubscriptionForm clientSecret={clientSecret} user={user} />
             </Elements>
           )}
         </Col>
