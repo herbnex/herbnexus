@@ -30,6 +30,7 @@ import PromoModal from './components/PromoModal';
 import HerbalistsPage from "./components/HerbalistsPage";
 import HerbalReference from "./components/HerbalReference";
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3'; // Import GoogleReCaptchaProvider
+import PaymentSuccess from "./components/Shop/PaymentSuccess";
 
 const DelayedContact = withDelayedNavigation(Contact, 2000);
 
@@ -57,6 +58,9 @@ const App = () => {
               <Route path="/shop">
                 <ShopLayout />
               </Route>
+              <Route path="/payment-success">
+          <PaymentSuccess />
+        </Route>
               <Route path="/product/:id">
                 <ProductPage />
               </Route>
