@@ -47,17 +47,19 @@ const CheckoutForm = ({ clientSecret, email, updatePaymentIntent }) => {
         // Log the paymentIntent to inspect its structure
         console.log('PaymentIntent:', paymentIntent);
 
-        // Ensure that the receipt_url is present before trying to open it
-        const latestCharge = paymentIntent.latest_charge;
-        const receiptUrl = latestCharge?.receipt_url;
-        if (receiptUrl) {
-          window.open(receiptUrl, '_blank');
-        } else {
-          console.error('Receipt URL not found in payment intent:', paymentIntent);
-          setErrorMessage('Receipt URL not found. Please check your email for the receipt.');
-        }
+        // Delay the retrieval of receipt_url by 5 seconds
+        setTimeout(() => {
+          const latestCharge = paymentIntent.latest_charge;
+          const receiptUrl = latestCharge?.receipt_url;
+          if (receiptUrl) {
+            window.open(receiptUrl, '_blank');
+          } else {
+            console.error('Receipt URL not found in payment intent:', paymentIntent);
+            setErrorMessage('Receipt URL not found. Please check your email for the receipt.');
+          }
 
-        window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
+          window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
+        }, 5000);
       }
     } catch (err) {
       console.error('An error occurred during payment confirmation:', err);
