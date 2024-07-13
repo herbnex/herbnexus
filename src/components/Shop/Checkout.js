@@ -8,14 +8,25 @@ import './Checkout.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const CheckoutForm = ({ clientSecret }) => {
+const CheckoutForm = ({ clientSecret, shippingAddress, email }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { cart } = useProduct();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [redirecting, setRedirecting] = useState(false);
-  const [email, setEmail] = useState('');
+
+  const updatePaymentIntent = async (paymentIntentId) => {
+    try {
+      await axios.post("/.netlify/functions/update-payment-intent", {
+        paymentIntentId,
+        shippingAddress,
+        email,
+      });
+    } catch (err) {
+      console.error("Failed to update payment intent:", err);
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -31,7 +42,7 @@ const CheckoutForm = ({ clientSecret }) => {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: 'https://herbnexus.io/payment-success', // Update with your actual URL
+          return_url: 'https://herbnexus.io/shop', // Update with your actual URL
           receipt_email: email,
         },
         redirect: 'if_required'
@@ -41,20 +52,7 @@ const CheckoutForm = ({ clientSecret }) => {
         setErrorMessage(error.message);
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
         // Update the payment intent with shipping details after successful payment
-        await stripe.paymentIntents.update(paymentIntent.id, {
-          shipping: {
-            name: shippingAddress.recipient,
-            address: {
-              line1: shippingAddress.addressLine,
-              city: shippingAddress.city,
-              state: shippingAddress.region,
-              postal_code: shippingAddress.postalCode,
-              country: shippingAddress.country,
-            },
-            phone: shippingAddress.phone,
-          },
-          receipt_email: email,
-        });
+        await updatePaymentIntent(paymentIntent.id);
 
         setRedirecting(true);
         window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
@@ -69,15 +67,6 @@ const CheckoutForm = ({ clientSecret }) => {
   return (
     <Form onSubmit={handleSubmit}>
       {clientSecret && <PaymentElement />}
-      <Form.Group controlId="email">
-        <Form.Label>Email Address</Form.Label>
-        <Form.Control
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-      </Form.Group>
       <Button type="submit" disabled={!stripe || loading || redirecting} className="mt-3">
         {loading || redirecting ? "Processing..." : "Pay Now"}
       </Button>
@@ -100,6 +89,7 @@ const Checkout = () => {
     country: '',
     phone: '',
   });
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     const fetchClientSecret = async () => {
@@ -248,10 +238,19 @@ const Checkout = () => {
             </Form.Group>
           </Form>
           <h2>Payment</h2>
+          <Form.Group controlId="email">
+            <Form.Label>Email Address</Form.Label>
+            <Form.Control
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </Form.Group>
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           {clientSecret && (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <CheckoutForm clientSecret={clientSecret} />
+              <CheckoutForm clientSecret={clientSecret} shippingAddress={shippingAddress} email={email} />
             </Elements>
           )}
         </Col>
