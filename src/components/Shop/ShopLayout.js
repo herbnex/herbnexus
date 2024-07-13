@@ -13,6 +13,7 @@ import TermsOfService from '../pages/TermsOfService/TermsOfService';
 import DeliveryPolicy from '../Shop/DeliveryPolicy';
 import ReturnPolicy from '../Shop/ReturnPolicy';
 import PrivateRoute from '../PrivateRoute/PrivateRoute'; // Import PrivateRoute component
+import PaymentSuccess from './PaymentSuccess';
 
 const ShopLayout = () => {
   let { path } = useRouteMatch();
@@ -97,6 +98,11 @@ const ShopLayout = () => {
         <Route path={`${path}/return-policy`}>
           <ReturnPolicy />
         </Route>
+        <Route path={`${path}/payment-success`}>
+          <PaymentSuccess />
+        </Route>
+
+
       </Switch>
     </>
   );

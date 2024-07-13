@@ -15,6 +15,7 @@ const CheckoutForm = ({ clientSecret }) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [redirecting, setRedirecting] = useState(false);
+  const [email, setEmail] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -30,7 +31,8 @@ const CheckoutForm = ({ clientSecret }) => {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: 'https://herbnexus.io/shop',
+          return_url: 'https://herbnexus.io/payment-success', // Update with your actual URL
+          receipt_email: email,
         },
         redirect: 'if_required'
       });
@@ -38,8 +40,24 @@ const CheckoutForm = ({ clientSecret }) => {
       if (error) {
         setErrorMessage(error.message);
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Update the payment intent with shipping details after successful payment
+        await stripe.paymentIntents.update(paymentIntent.id, {
+          shipping: {
+            name: shippingAddress.recipient,
+            address: {
+              line1: shippingAddress.addressLine,
+              city: shippingAddress.city,
+              state: shippingAddress.region,
+              postal_code: shippingAddress.postalCode,
+              country: shippingAddress.country,
+            },
+            phone: shippingAddress.phone,
+          },
+          receipt_email: email,
+        });
+
         setRedirecting(true);
-        window.location.replace('/confirmation'); // Update with your actual URL
+        window.location.replace(`/payment-success?payment_intent=${paymentIntent.id}`);
       }
     } catch (err) {
       setErrorMessage('An error occurred. Please try again.');
@@ -51,6 +69,15 @@ const CheckoutForm = ({ clientSecret }) => {
   return (
     <Form onSubmit={handleSubmit}>
       {clientSecret && <PaymentElement />}
+      <Form.Group controlId="email">
+        <Form.Label>Email Address</Form.Label>
+        <Form.Control
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+      </Form.Group>
       <Button type="submit" disabled={!stripe || loading || redirecting} className="mt-3">
         {loading || redirecting ? "Processing..." : "Pay Now"}
       </Button>
@@ -85,7 +112,6 @@ const Checkout = () => {
       try {
         const response = await axios.post("/.netlify/functions/create-checkout-payment-intent", {
           cart,
-          shippingAddress
         });
         setClientSecret(response.data.clientSecret);
       } catch (error) {
@@ -95,7 +121,7 @@ const Checkout = () => {
       }
     };
     fetchClientSecret();
-  }, [cart, shippingAddress]);
+  }, [cart]);
 
   const handleShippingAddressChange = (e) => {
     const { name, value } = e.target;
