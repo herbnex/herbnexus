@@ -16,7 +16,6 @@ const SubscriptionForm = ({ clientSecret, user }) => {
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [redirecting, setRedirecting] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -34,16 +33,13 @@ const SubscriptionForm = ({ clientSecret, user }) => {
         confirmParams: {
           return_url: 'https://herbnexus.io/contact',
         },
-        redirect: 'if_required',
       });
 
       if (error) {
         setErrorMessage(error.message);
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        setRedirecting(true);
         // Update user subscription status in the database
         await axios.post('/.netlify/functions/create-payment-intent', { paymentIntentId: paymentIntent.id, userId: user.uid });
-        setRedirecting(false);
       }
     } catch (err) {
       setErrorMessage('An error occurred. Please try again.');
@@ -57,10 +53,10 @@ const SubscriptionForm = ({ clientSecret, user }) => {
       {clientSecret && <PaymentElement />}
       <Button
         type="submit"
-        disabled={!stripe || loading || redirecting}
+        disabled={!stripe || loading}
         className="subscribe-button mt-3"
       >
-        {loading || redirecting ? (
+        {loading ? (
           <>
             <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
             Processing...
