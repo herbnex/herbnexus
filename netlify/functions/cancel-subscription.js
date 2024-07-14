@@ -36,10 +36,16 @@ exports.handler = async (event) => {
     });
 
     // Update the user's subscription status in Firestore
-    await db.collection(userCollection).doc(userId).set({
-      isSubscribed: false,
-      cancel_at_period_end: true
-    }, { merge: true });
+    if (userCollection === 'users') {
+      await db.collection(userCollection).doc(userId).set({
+        isSubscribed: false,
+        cancel_at_period_end: true
+      }, { merge: true });
+    } else {
+      await db.collection(userCollection).doc(userId).set({
+        isSubscribed: false
+      }, { merge: true });
+    }
 
     return { statusCode: 200, body: "Subscription canceled successfully" };
   } catch (error) {
