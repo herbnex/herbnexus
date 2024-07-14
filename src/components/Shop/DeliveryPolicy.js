@@ -19,7 +19,7 @@ const DeliveryPolicy = () => {
 
           <h4>Shipping Methods</h4>
           <p>
-          <strong>Domestic Shipping:</strong>  <br />
+          <strong>Domestic Shipping</strong>  <br />
 
 <strong>Standard Shipping:</strong> 2 – 10 business days for transit*  <br />
 
