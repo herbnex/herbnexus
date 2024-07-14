@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, Table, Spinner, Button, Modal, Form, FloatingLabel } from 'react-bootstrap';
 import { db } from '../../Firebase/firebase.config';
 import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, getDoc } from 'firebase/firestore';
@@ -8,6 +8,7 @@ import './Appointments.css';
 const Appointments = () => {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
+  const [intakeForms, setIntakeForms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDoctor, setIsDoctor] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
@@ -43,6 +44,13 @@ const Appointments = () => {
         const querySnapshot = await getDocs(q);
         const appointmentsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setAppointments(appointmentsData);
+
+        if (isDoctor) {
+          const intakeFormsRef = collection(db, 'patientIntakeForms');
+          const intakeFormsSnapshot = await getDocs(intakeFormsRef);
+          const intakeFormsData = intakeFormsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setIntakeForms(intakeFormsData);
+        }
       } catch (error) {
         console.error('Error fetching appointments: ', error);
       } finally {
@@ -135,6 +143,7 @@ const Appointments = () => {
                       <th>Name</th>
                       <th>Email</th>
                       <th>Phone</th>
+                      <th>Intake Form</th> {/* New column for intake forms */}
                     </>
                   ) : (
                     <th>Herbalist</th>
@@ -152,6 +161,16 @@ const Appointments = () => {
                         <td>{appointment.userName}</td>
                         <td>{appointment.userEmail}</td>
                         <td>{appointment.userPhone}</td>
+                        <td>
+                          {/* Display the intake form for the corresponding patient */}
+                          {intakeForms.find(form => form.userId === appointment.userId) ? (
+                            <Button variant="info" onClick={() => handleViewIntakeForm(intakeForms.find(form => form.userId === appointment.userId))}>
+                              View Form
+                            </Button>
+                          ) : (
+                            'No Form'
+                          )}
+                        </td>
                       </>
                     ) : (
                       <td>{appointment.doctorName}</td>
