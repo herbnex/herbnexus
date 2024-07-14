@@ -19,31 +19,31 @@ const DeliveryPolicy = () => {
 
           <h4>Shipping Methods</h4>
           <p>
-          <strong>Domestic Shipping:</strong>
+          <strong>Domestic Shipping:</strong>  <br />
 
-<strong>Standard Shipping:</strong> 2 – 10 business days for transit*
+<strong>Standard Shipping:</strong> 2 – 10 business days for transit*  <br />
 
-<strong>UPS Standard Shipping:</strong> 1 - 6 business days for transit* 
+<strong>UPS Standard Shipping:</strong> 1 - 6 business days for transit*   <br />
 
-<strong>Express Shipping:</strong> 2 business days for transit*
+<strong>Express Shipping:</strong> 2 business days for transit*  <br />
 
-*UPS does not deliver to a PO Box, must enter a physical address.
+*UPS does not deliver to a PO Box, must enter a physical address.  <br />
 
-*All shipping methods take 1-5 business days for processing prior to shipping.
+*All shipping methods take 1-5 business days for processing prior to shipping.  <br />
 
-Please note: All transit times are estimates and not a guarantee. If carrier or customs delays occur and/or the package is lost an investigation must be opened prior to reshipping.
+Please note: All transit times are estimates and not a guarantee. If carrier or customs delays occur and/or the package is lost an investigation must be opened prior to reshipping.  <br />
 
-<strong>International Shipping</strong>
+<strong>International Shipping</strong>  <br />
 
-We strongly suggest International Customers check with their local customs agency for any Rules, Regulations or Restrictions on the importation of Dietary Herbal Supplements and/or our Herbal Formulas listed ingredients prior to placing an order. 
+We strongly suggest International Customers check with their local customs agency for any Rules, Regulations or Restrictions on the importation of Dietary Herbal Supplements and/or our Herbal Formulas listed ingredients prior to placing an order.   <br />
 
-<strong>Economy Shipping:</strong> Up to 30 days to reach customs*
+<strong>Economy Shipping:</strong> Up to 30 days to reach customs*   <br />
 
-<strong>Standard Shipping:</strong> 6 – 10 business days to reach customs*
+<strong>Standard Shipping:</strong> 6 – 10 business days to reach customs*  <br />
 
-*All shipping methods take 1-5 business days for processing prior to shipping.
+*All shipping methods take 1-5 business days for processing prior to shipping.   <br />
 
-Please note: All transit times are estimates and not a guarantee. If carrier or customs delays occur an investigation must be opened prior to reshipping.
+Please note: All transit times are estimates and not a guarantee. If carrier or customs delays occur an investigation must be opened prior to reshipping.   <br />
 
 
           </p>
