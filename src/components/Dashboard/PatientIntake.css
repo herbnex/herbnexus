@@ -9,7 +9,7 @@
 .patient-intake-card .card-header {
     background-color: #f8f9fa;
     font-weight: bold;
-    color: black; /* Ensure the header text color is black */
+    color: #39cabb; /* Ensure the header text color is black */
 }
 
 .patient-intake-card .form-control {
