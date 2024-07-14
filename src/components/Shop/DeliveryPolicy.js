@@ -19,8 +19,33 @@ const DeliveryPolicy = () => {
 
           <h4>Shipping Methods</h4>
           <p>
-            Delivery times may vary depending on your location and the shipping method selected. Standard shipping
-            typically takes 5-7 business days, while expedited shipping options are available for faster delivery.
+          <strong>Domestic Shipping:</strong>
+
+<strong>Standard Shipping:</strong> 2 – 10 business days for transit*
+
+<strong>UPS Standard Shipping:</strong> 1 - 6 business days for transit* 
+
+<strong>Express Shipping:</strong> 2 business days for transit*
+
+*UPS does not deliver to a PO Box, must enter a physical address.
+
+*All shipping methods take 1-5 business days for processing prior to shipping.
+
+Please note: All transit times are estimates and not a guarantee. If carrier or customs delays occur and/or the package is lost an investigation must be opened prior to reshipping.
+
+<strong>International Shipping</strong>
+
+We strongly suggest International Customers check with their local customs agency for any Rules, Regulations or Restrictions on the importation of Dietary Herbal Supplements and/or our Herbal Formulas listed ingredients prior to placing an order. 
+
+<strong>Economy Shipping:</strong> Up to 30 days to reach customs*
+
+<strong>Standard Shipping:</strong> 6 – 10 business days to reach customs*
+
+*All shipping methods take 1-5 business days for processing prior to shipping.
+
+Please note: All transit times are estimates and not a guarantee. If carrier or customs delays occur an investigation must be opened prior to reshipping.
+
+
           </p>
 
           <h4>Contact Us</h4>
@@ -29,7 +54,7 @@ const DeliveryPolicy = () => {
             with your delivery, please contact our customer service team for assistance.
             <br />
             Email: support@herbnexus.io <br />
-            Address: 6161 Tisdall St, Vancouver, Canada
+            
           </p>
         </Card.Body>
       </Card>

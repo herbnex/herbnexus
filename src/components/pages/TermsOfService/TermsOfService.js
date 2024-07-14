@@ -74,7 +74,7 @@ const TermsOfService = () => {
           <p>
             If you have any questions about these Terms of Service, please contact us at: <br />
             Email: contact@herbnexus.io <br />
-            Address: 6161 Tisdall St, Vancouver, Canada
+            
           </p>
         </Card.Body>
       </Card>

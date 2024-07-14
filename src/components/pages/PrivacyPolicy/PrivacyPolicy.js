@@ -81,7 +81,7 @@ const PrivacyPolicy = () => {
           <p>
             If you have any questions about this Privacy Policy, please contact us at: <br />
             Email: contact@herbnexus.io <br />
-            Address: 6161 Tisdall St, Vancouver, Canada
+            
           </p>
         </Card.Body>
       </Card>
