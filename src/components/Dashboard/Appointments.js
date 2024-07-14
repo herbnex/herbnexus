@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Table, Spinner, Button, Modal, Form, FloatingLabel } from 'react-bootstrap';
 import { db } from '../../Firebase/firebase.config';
 import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, getDoc } from 'firebase/firestore';
@@ -15,6 +15,8 @@ const Appointments = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
+  const [showIntakeFormModal, setShowIntakeFormModal] = useState(false);
+  const [selectedIntakeForm, setSelectedIntakeForm] = useState(null);
 
   useEffect(() => {
     const checkIfDoctor = async () => {
@@ -116,6 +118,11 @@ const Appointments = () => {
     } catch (error) {
       console.error('Error rescheduling appointment: ', error);
     }
+  };
+
+  const handleViewIntakeForm = (intakeForm) => {
+    setSelectedIntakeForm(intakeForm);
+    setShowIntakeFormModal(true);
   };
 
   if (loading) {
@@ -222,6 +229,50 @@ const Appointments = () => {
           </Button>
           <Button variant="primary" onClick={handleRescheduleSubmit}>
             Reschedule
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Intake Form Modal */}
+      <Modal show={showIntakeFormModal} onHide={() => setShowIntakeFormModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Intake Form</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedIntakeForm ? (
+            <div>
+              <p><strong>Name:</strong> {selectedIntakeForm.name}</p>
+              <p><strong>Address:</strong> {selectedIntakeForm.address}</p>
+              <p><strong>Address 2:</strong> {selectedIntakeForm.address2}</p>
+              <p><strong>Phone:</strong> {selectedIntakeForm.phone}</p>
+              <p><strong>Email:</strong> {selectedIntakeForm.email}</p>
+              <p><strong>Emergency Contact:</strong> {selectedIntakeForm.emergencyContact}</p>
+              <p><strong>Emergency Contact Phone:</strong> {selectedIntakeForm.emergencyContactPhone}</p>
+              <p><strong>Date of Birth:</strong> {selectedIntakeForm.dateOfBirth}</p>
+              <p><strong>Age:</strong> {selectedIntakeForm.age}</p>
+              <p><strong>Gender:</strong> {selectedIntakeForm.gender}</p>
+              <p><strong>Pronouns:</strong> {selectedIntakeForm.pronouns}</p>
+              <p><strong>Occupation:</strong> {selectedIntakeForm.occupation}</p>
+              <p><strong>Primary Concern:</strong> {selectedIntakeForm.primaryConcern}</p>
+              <p><strong>Issues:</strong> {selectedIntakeForm.issues.join(', ')}</p>
+              <p><strong>Medical History:</strong> {selectedIntakeForm.history.join(', ')}</p>
+              <p><strong>Family History:</strong> {selectedIntakeForm.familyHistory}</p>
+              <p><strong>Allergies:</strong> {selectedIntakeForm.allergies}</p>
+              <p><strong>Medications:</strong> {selectedIntakeForm.medications}</p>
+              <p><strong>Major Events:</strong> {selectedIntakeForm.majorEvents}</p>
+              <p><strong>Personal Habits:</strong> {selectedIntakeForm.personalHabits}</p>
+              <p><strong>Sleep:</strong> {selectedIntakeForm.sleep}</p>
+              <p><strong>Diet:</strong> {selectedIntakeForm.diet}</p>
+              <p><strong>Other Modalities:</strong> {selectedIntakeForm.otherModalities}</p>
+              <p><strong>Additional Info:</strong> {selectedIntakeForm.additionalInfo}</p>
+            </div>
+          ) : (
+            <p>No intake form found.</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowIntakeFormModal(false)}>
+            Close
           </Button>
         </Modal.Footer>
       </Modal>
