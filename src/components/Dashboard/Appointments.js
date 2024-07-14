@@ -161,14 +161,14 @@ const Appointments = () => {
               <tbody>
                 {appointments.map((appointment) => (
                   <tr key={appointment.id}>
-                    <td data-label="Date">{appointment.date}</td>
-                    <td data-label="Time">{appointment.time}</td>
+                    <td>{appointment.date}</td>
+                    <td>{appointment.time}</td>
                     {isDoctor ? (
                       <>
-                        <td data-label="Name">{appointment.userName}</td>
-                        <td data-label="Email">{appointment.userEmail}</td>
-                        <td data-label="Phone">{appointment.userPhone}</td>
-                        <td data-label="Intake Form">
+                        <td>{appointment.userName}</td>
+                        <td>{appointment.userEmail}</td>
+                        <td>{appointment.userPhone}</td>
+                        <td>
                           {/* Display the intake form for the corresponding patient */}
                           {intakeForms.find(form => form.userId === appointment.userId) ? (
                             <Button variant="info" onClick={() => handleViewIntakeForm(intakeForms.find(form => form.userId === appointment.userId))}>
@@ -180,9 +180,9 @@ const Appointments = () => {
                         </td>
                       </>
                     ) : (
-                      <td data-label="Herbalist">{appointment.doctorName}</td>
+                      <td>{appointment.doctorName}</td>
                     )}
-                    <td data-label="Actions" className="actions">
+                    <td>
                       <Button variant="danger" onClick={() => handleDelete(appointment.id)}>Delete</Button>{' '}
                       <Button variant="warning" onClick={() => handleReschedule(appointment)}>Reschedule</Button>
                     </td>
