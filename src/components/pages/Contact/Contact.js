@@ -1102,6 +1102,7 @@ const Contact = () => {
                           <video
                             ref={remoteVideoRef}
                             autoPlay={true}
+                            muted={true}
                             playsInline={true}
                             className="remote-video"
                             id="remoteVideo"
