@@ -965,7 +965,7 @@ const Contact = () => {
             ))}
           </ListGroup>
         </Col>
-        <Col md={12} className="chat-section" ref={chatSectionRef}>
+        <Col md={8} className="chat-section" ref={chatSectionRef}>
           {selectedParticipant ? (
             <>
               <div className="chat-top-bar d-flex justify-content-between align-items-center p-2 bg-light">
@@ -1121,7 +1121,7 @@ const Contact = () => {
                         </Button>
                       </div>
                     </Col>
-                    <Col md={4} className="chat-section">
+                    <Col md={12} className="chat-section">
                       <div className="msg-box" ref={msgBoxRef}>
                         {msgList.map((msg, index) => (
                           <div
