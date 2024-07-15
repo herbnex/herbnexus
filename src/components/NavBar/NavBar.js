@@ -86,7 +86,7 @@ const NavBar = () => {
 								id="user-nav-dropdown"
 								align="end"
 								className="user-profile">
-								<NavDropdown.ItemText className="text-center">
+								<NavDropdown.ItemText>
 									<div className="user-info text-center">
 										<h5 className="mb-0">{user.displayName ? user.displayName : "Anonymous"}</h5>
 										<small>{user.email}</small>

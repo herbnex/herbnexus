@@ -1,11 +1,7 @@
-/* Existing CSS */
-
 .logo img {
 	width: 2.1rem;
 	height: 2rem;
 }
-
-
 
 .logo h1 {
 	display: inline;
@@ -21,6 +17,7 @@
 	text-decoration: none;
 	color: #00224f;
 	font-weight: 500;
+	margin-left: 1rem;
 }
 
 .nav-item:hover,
@@ -48,30 +45,6 @@
 	height: 100%;
 }
 
-.user-info {
-	visibility: hidden;
-	opacity: 0;
-	text-align: center;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	position: absolute;
-	right: 0;
-	top: 60px;
-	z-index: 10;
-	width: 280px;
-	background-color: #fff;
-	box-shadow: 0 0 10px 3px #2224;
-	border-radius: 1rem;
-	padding: 1rem;
-	transition: all 0.5s ease;
-}
-
-.user-icon:hover .user-info {
-	visibility: visible;
-	opacity: 1;
-}
-
 .nav-small-text {
 	font-size: 14px;
 }
@@ -81,53 +54,43 @@
 	flex-direction: column;
 	align-items: center;
 }
+
 .offcanvas-end.show .nav-item {
 	margin: 0.5rem 0;
 }
+
 .offcanvas-end.show .btn-main {
 	margin: 0.5rem auto !important;
 }
+
 .offcanvas-end.show .user-profile {
 	display: none !important;
 }
+
 .mobile-profile {
 	display: none !important;
 }
+
 .offcanvas-end.show .mobile-profile {
 	display: flex !important;
 }
-
-/* Flexbox adjustments to align items in the navbar */
 
 .navbar {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	
 }
-
 
 .navbar-nav {
 	display: flex;
 	align-items: center;
 }
 
-.navbar-nav .nav-item {
-	margin-left: 1rem;
-}
-
-.navbar-nav .btn-main {
-	margin-left: 1rem;
-}
-
-.user {
-	display: flex;
-	align-items: center;
-}
-.shopbut{
+.shopbut {
 	background-color: #FF9900;
-	border:none;
+	border: none;
 }
+
 /* Additional styling for NavDropdown */
 
 .user-profile .dropdown-menu {
