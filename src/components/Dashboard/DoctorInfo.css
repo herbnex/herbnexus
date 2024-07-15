@@ -1,0 +1,32 @@
+.doctor-info-card {
+    max-width: 800px;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: black;
+}
+
+.doctor-info-card .card-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: black;
+}
+
+.doctor-info-card .form-control {
+    margin-bottom: 1rem;
+    color: black;
+}
+
+.doctor-info-card .form-check {
+    margin-bottom: 0.5rem;
+    color: black;
+}
+
+.doctor-info-card .btn {
+    margin-top: 1rem;
+}
+
+.doctor-info-card .form-label {
+    margin-bottom: 0.5rem;
+    color: black;
+}
