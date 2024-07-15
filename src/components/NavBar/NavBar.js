@@ -16,14 +16,27 @@ const NavBar = () => {
 	useEffect(() => {
 		const checkSubscriptionStatus = async () => {
 			if (user) {
+				// Check in users collection
 				const userDoc = await getDoc(doc(db, "users", user.uid));
-				if (userDoc.exists()) {
-					setIsSubscribed(userDoc.data().isSubscribed);
+				if (userDoc.exists() && userDoc.data().isSubscribed) {
+					setIsSubscribed(true);
+					return;
 				}
+	
+				// Check in doctors collection if not subscribed in users collection
+				const doctorDoc = await getDoc(doc(db, "doctors", user.uid));
+				if (doctorDoc.exists() && doctorDoc.data().isSubscribed) {
+					setIsSubscribed(true);
+					return;
+				}
+	
+				setIsSubscribed(false); // Not subscribed in either collection
 			}
 		};
+	
 		checkSubscriptionStatus();
 	}, [user]);
+	
 
 	useEffect(() => {
 		setShowMenu(false);
