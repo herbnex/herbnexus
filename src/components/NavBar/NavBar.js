@@ -113,12 +113,14 @@ const NavBar = () => {
 								</div>
 							)}
 							<div className="mt-2 mobile-profile flex-column align-items-center gap-4">
-								<NavLink to="/dashboard">Dashboard</NavLink>
+							<NavLink to="/dashboard">Dashboard</NavLink>
+							{user && (
 								<Button onClick={logOut} variant="danger" className="rounded-pill mx-3 p-2 nav-small-text px-3">
 									Log Out&nbsp;
 									<i className="bi bi-box-arrow-right"></i>
 								</Button>
-							</div>
+							)}
+						</div>
 						</Offcanvas.Body>
 					</Navbar.Offcanvas>
 				</Container>
