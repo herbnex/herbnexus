@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Card, FloatingLabel } from 'react-bootstrap';
+import { Form, Button, Card, FloatingLabel, Alert } from 'react-bootstrap';
 import { db } from '../../Firebase/firebase.config';
-import { collection, doc, addDoc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import useAuth from '../../hooks/useAuth';
 import './PatientIntake.css';
 
@@ -33,6 +33,8 @@ const PatientIntake = () => {
     otherModalities: '',
     additionalInfo: ''
   });
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchIntakeForm = async () => {
@@ -45,6 +47,7 @@ const PatientIntake = () => {
         }
       } catch (error) {
         console.error('Error fetching intake form: ', error);
+        setError('Error fetching intake form');
       }
     };
 
@@ -73,6 +76,8 @@ const PatientIntake = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSuccess('');
+    setError('');
     try {
       const intakeFormRef = doc(db, 'patientIntakeForms', user.uid);
       const intakeFormSnap = await getDoc(intakeFormRef);
@@ -81,16 +86,17 @@ const PatientIntake = () => {
         await updateDoc(intakeFormRef, {
           ...formData,
         });
-        alert('Form updated successfully');
+        setSuccess('Form updated successfully');
       } else {
         await setDoc(intakeFormRef, {
           userId: user.uid,
           ...formData,
         });
-        alert('Form submitted successfully');
+        setSuccess('Form submitted successfully');
       }
     } catch (error) {
       console.error('Error submitting form: ', error);
+      setError('Error submitting form');
     }
   };
 
@@ -98,6 +104,8 @@ const PatientIntake = () => {
     <Card className="patient-intake-card">
       <Card.Header>Patient Intake Form</Card.Header>
       <Card.Body>
+        {success && <Alert variant="success">{success}</Alert>}
+        {error && <Alert variant="danger">{error}</Alert>}
         <Form onSubmit={handleSubmit}>
           <FloatingLabel controlId="floatingName" label="Name" className="mb-3">
             <Form.Control
