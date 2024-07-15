@@ -26,7 +26,7 @@ const Doctors = () => {
   }, [searchQuery, filterSpeciality, filterOnlineStatus]);
 
   const handleChatLive = (doctorId) => {
-    history.push(`/contact?doctorId=${doctorId}`);
+    history.push(`/chat-portal`);
   };
 
   if (isLoading) {

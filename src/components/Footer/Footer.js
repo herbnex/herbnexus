@@ -23,7 +23,7 @@ const Footer = () => {
                 Welcome to HERB NEXUS, your go-to platform for personalized herbal consultations. Connect with accredited herbalists worldwide, 24/7, and receive tailored herbal remedy recommendations anytime.
               </p>
 
-              <NavLink to="/contact">
+              <NavLink to="chat-portal">
                 {/* <i className="bi bi-arrow-right"></i> */}
                 Chat Live with a Herbalist
               </NavLink>

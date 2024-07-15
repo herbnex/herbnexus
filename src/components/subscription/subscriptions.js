@@ -33,7 +33,7 @@ const SubscriptionForm = ({ clientSecret }) => {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: 'https://herbnexus.io/contact',
+          return_url: 'https://herbnexus.io/chat-portal',
         },
         redirect: 'if_required',
       });
@@ -48,7 +48,7 @@ const SubscriptionForm = ({ clientSecret }) => {
         // Update user subscription status in the database
         await axios.post('/.netlify/functions/create-payment-intent', { paymentIntentId: paymentIntent.id, userId: user.uid });
         updateUser({ ...user, isSubscribed: true });
-        window.location.href = 'https://herbnexus.io/contact';
+        window.location.href = 'https://herbnexus.io/chat-portal';
       }
     } catch (err) {
       setErrorMessage('An error occurred. Please try again.');
@@ -68,7 +68,7 @@ const SubscriptionForm = ({ clientSecret }) => {
           const response = await axios.post('/.netlify/functions/create-payment-intent', { paymentIntentId, userId: user.uid });
           if (response.data.success) {
             updateUser({ ...user, isSubscribed: true });
-            window.location.href = 'https://herbnexus.io/contact';
+            window.location.href = 'https://herbnexus.io/chat-portal';
           }
         } catch (error) {
           console.error('Error verifying payment intent:', error);

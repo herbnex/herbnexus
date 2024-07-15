@@ -65,7 +65,7 @@ const NavBar = () => {
 									</NavLink>
 								)}
 								{isSubscribed ? (
-									<NavLink activeClassName="active" className="nav-item" to="/contact">
+									<NavLink activeClassName="active" className="nav-item" to="/chat-portal">
 										Chat Portal
 									</NavLink>
 								) : (

@@ -76,7 +76,7 @@ const App = () => {
               <Route path="/about">
                 <About />
               </Route>
-              <PrivateRoute path="/contact">
+              <PrivateRoute path="/chat-portal">
                 <Contact />
               </PrivateRoute>
               <Route path="/faq">

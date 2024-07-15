@@ -53,7 +53,7 @@ const Doctor = () => {
   }
 
   const handleChatLive = () => {
-    history.push(`/contact?doctorId=${doctor.id}`);
+    history.push(`/chat-portal`);
   };
 
   const handleReviewSubmit = async (e) => {
