@@ -393,7 +393,7 @@ const Contact = () => {
     try {
       localStream.current = await navigator.mediaDevices.getUserMedia({
         video: {
-          
+          'facingMode':'user',
           'mandatory':{
             'minWidth':'200',
             'minHeight':'200',
