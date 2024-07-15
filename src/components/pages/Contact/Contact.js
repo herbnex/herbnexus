@@ -392,13 +392,7 @@ const Contact = () => {
     setLoading(true);
     try {
       localStream.current = await navigator.mediaDevices.getUserMedia({
-        video: {
-          'facingMode':'user',
-          'mandatory':{
-            'minWidth':'200',
-            'minHeight':'200',
-          },
-        },
+        video: true,
         audio: true,
       });
       if (localVideoRef.current) {
@@ -1098,17 +1092,17 @@ const Contact = () => {
                           <div className="video-label">You ({user.displayName || "Anonymous"})</div>
                           <video
                             ref={localVideoRef}
-                            autoPlay
-                            muted
-                            playsInline
+                            autoPlay={true}
+                            muted={true}
+                            playsInline={true}
                             className="local-video"
                             id="localVideo"
                           />
                           <div className="video-label">{selectedParticipant.name}</div>
                           <video
                             ref={remoteVideoRef}
-                            autoPlay
-                            playsInline
+                            autoPlay={true}
+                            playsInline={true}
                             className="remote-video"
                             id="remoteVideo"
                           />
