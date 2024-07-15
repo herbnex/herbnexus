@@ -965,7 +965,7 @@ const Contact = () => {
             ))}
           </ListGroup>
         </Col>
-        <Col md={8} className="chat-section" ref={chatSectionRef}>
+        <Col md={12} className="chat-section" ref={chatSectionRef}>
           {selectedParticipant ? (
             <>
               <div className="chat-top-bar d-flex justify-content-between align-items-center p-2 bg-light">
@@ -1031,7 +1031,7 @@ const Contact = () => {
                     as="textarea"
                     ref={textareaRef}
                     rows={1}
-                    placeholder="Type your message..."
+                    placeholder="Type..."
                     value={message}
                     onChange={handleTyping}
                     aria-label="User message input"
@@ -1084,7 +1084,7 @@ const Contact = () => {
                   <Row>
                     
                     <Col
-                      md={8}
+                      md={12}
                       className="d-flex flex-column align-items-center video-container"
                     >
                       {showCallModal && (
