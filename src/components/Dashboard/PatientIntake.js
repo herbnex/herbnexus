@@ -94,9 +94,11 @@ const PatientIntake = () => {
         });
         setSuccess('Form submitted successfully');
       }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error('Error submitting form: ', error);
       setError('Error submitting form');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
