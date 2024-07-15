@@ -215,6 +215,7 @@ const PatientIntake = () => {
 
           <h5>Issues</h5>
           <div className="mb-3">
+            {/* Add checkboxes for issues */}
             <Form.Check
               type="checkbox"
               label="Loss of Smell"
@@ -232,10 +233,52 @@ const PatientIntake = () => {
               checked={formData.issues.includes('Poor Sleep')}
             />
             {/* Add more checkboxes for other issues based on the form */}
+            <Form.Check
+              type="checkbox"
+              label="Fatigue/Low Energy"
+              name="issues"
+              value="Fatigue/Low Energy"
+              onChange={handleCheckboxChange}
+              checked={formData.issues.includes('Fatigue/Low Energy')}
+            />
+            <Form.Check
+              type="checkbox"
+              label="Headaches"
+              name="issues"
+              value="Headaches"
+              onChange={handleCheckboxChange}
+              checked={formData.issues.includes('Headaches')}
+            />
+            <Form.Check
+              type="checkbox"
+              label="Migraines"
+              name="issues"
+              value="Migraines"
+              onChange={handleCheckboxChange}
+              checked={formData.issues.includes('Migraines')}
+            />
+            <Form.Check
+              type="checkbox"
+              label="Hair Loss"
+              name="issues"
+              value="Hair Loss"
+              onChange={handleCheckboxChange}
+              checked={formData.issues.includes('Hair Loss')}
+            />
+            <Form.Check
+              type="checkbox"
+              label="Memory Loss"
+              name="issues"
+              value="Memory Loss"
+              onChange={handleCheckboxChange}
+              checked={formData.issues.includes('Memory Loss')}
+            />
+            {/* Add other issues similarly */}
           </div>
 
           <h5>Medical History</h5>
           <div className="mb-3">
+            {/* Add checkboxes for medical history */}
             <Form.Check
               type="checkbox"
               label="Allergic Reaction"
@@ -252,7 +295,47 @@ const PatientIntake = () => {
               onChange={handleCheckboxChange}
               checked={formData.history.includes('Alzheimer\'s/Dementia')}
             />
-            {/* Add more checkboxes for other history items based on the form */}
+            <Form.Check
+              type="checkbox"
+              label="Appendicitis"
+              name="history"
+              value="Appendicitis"
+              onChange={handleCheckboxChange}
+              checked={formData.history.includes('Appendicitis')}
+            />
+            <Form.Check
+              type="checkbox"
+              label="Arthritis"
+              name="history"
+              value="Arthritis"
+              onChange={handleCheckboxChange}
+              checked={formData.history.includes('Arthritis')}
+            />
+            <Form.Check
+              type="checkbox"
+              label="Asthma"
+              name="history"
+              value="Asthma"
+              onChange={handleCheckboxChange}
+              checked={formData.history.includes('Asthma')}
+            />
+            <Form.Check
+              type="checkbox"
+              label="Bronchitis"
+              name="history"
+              value="Bronchitis"
+              onChange={handleCheckboxChange}
+              checked={formData.history.includes('Bronchitis')}
+            />
+            <Form.Check
+              type="checkbox"
+              label="Cancer/Tumors"
+              name="history"
+              value="Cancer/Tumors"
+              onChange={handleCheckboxChange}
+              checked={formData.history.includes('Cancer/Tumors')}
+            />
+            {/* Add other medical history similarly */}
           </div>
 
           <FloatingLabel controlId="floatingFamilyHistory" label="Family History" className="mb-3">
