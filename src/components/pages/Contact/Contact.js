@@ -391,21 +391,50 @@ const Contact = () => {
   const openUserMedia = async () => {
     setLoading(true);
     try {
-      localStream.current = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
-        audio: true,
-      });
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = localStream.current;
-      }
-      remoteStream.current = new MediaStream();
+        // Check for media devices support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error("Your browser does not support media devices.");
+        }
+
+        // Define constraints for video and audio
+        const constraints = {
+            video: { facingMode: { exact: "user" } }, // Exact mode to ensure front-facing camera
+            audio: true,
+        };
+
+        // Request user media
+        localStream.current = await navigator.mediaDevices.getUserMedia(constraints);
+
+        // Assign the local stream to the video element
+        if (localVideoRef.current) {
+            localVideoRef.current.srcObject = localStream.current;
+        }
+
+        // Initialize the remote stream
+        remoteStream.current = new MediaStream();
+
     } catch (error) {
-      console.error("Error accessing user media:", error);
-      setError("Error accessing user media");
+        // Log the detailed error to the console
+        console.error("Error accessing user media:", error);
+
+        // Set a user-friendly error message
+        let errorMessage = "Error accessing user media.";
+        if (error.name === "NotAllowedError") {
+            errorMessage = "Permission denied. Please allow access to your camera and microphone.";
+        } else if (error.name === "NotFoundError") {
+            errorMessage = "No media devices found. Please connect a camera and microphone.";
+        } else if (error.name === "OverconstrainedError") {
+            errorMessage = "Requested media constraints cannot be satisfied by the available devices.";
+        }
+
+        // Set the error state
+        setError(errorMessage);
     } finally {
-      setLoading(false);
+        // Clear the loading state
+        setLoading(false);
     }
-  };
+};
+
 
   const createRoom = async () => {
     if (!localStream.current) {
