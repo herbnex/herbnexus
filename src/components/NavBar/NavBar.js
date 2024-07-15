@@ -114,10 +114,10 @@ const NavBar = () => {
 							)}
 							<div className="mt-2 mobile-profile flex-column align-items-center gap-4">
 								<NavLink to="/dashboard">Dashboard</NavLink>
-								<Button onClick={logOut} variant="danger" className="rounded-pill mx-3 p-2 nav-small-text px-3">
+								{/* <Button onClick={logOut} variant="danger" className="rounded-pill mx-3 p-2 nav-small-text px-3">
 									Log Out&nbsp;
 									<i className="bi bi-box-arrow-right"></i>
-								</Button>
+								</Button> */}
 							</div>
 						</Offcanvas.Body>
 					</Navbar.Offcanvas>
