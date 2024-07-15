@@ -3,12 +3,27 @@ import { Container, Nav, Navbar, Button, NavDropdown, Offcanvas } from "react-bo
 import { NavLink, useLocation } from "react-router-dom";
 import logo from "../../assets/logo-1.png";
 import useAuth from "../../hooks/useAuth";
+import { db } from "../../Firebase/firebase.config";
+import { doc, getDoc } from "firebase/firestore";
 import "./NavBar.css";
 
 const NavBar = () => {
 	const { user, logOut } = useAuth();
 	const [showMenu, setShowMenu] = useState(false);
+	const [isSubscribed, setIsSubscribed] = useState(false);
 	const { pathname } = useLocation();
+
+	useEffect(() => {
+		const checkSubscriptionStatus = async () => {
+			if (user) {
+				const userDoc = await getDoc(doc(db, "users", user.uid));
+				if (userDoc.exists()) {
+					setIsSubscribed(userDoc.data().isSubscribed);
+				}
+			}
+		};
+		checkSubscriptionStatus();
+	}, [user]);
 
 	useEffect(() => {
 		setShowMenu(false);
@@ -40,12 +55,15 @@ const NavBar = () => {
 								<NavLink activeClassName="active" className="nav-item" to="/doctors">
 									View Practitioners
 								</NavLink>
-								{/* <NavLink activeClassName="active" className="nav-item" to="/appointment">
-									Appointment
-								</NavLink> */}
-								<NavLink activeClassName="active" className="nav-item" to="/subscribe">
-									Subscribe
-								</NavLink>
+								{isSubscribed ? (
+									<NavLink activeClassName="active" className="nav-item" to="/appointment">
+										Appointment
+									</NavLink>
+								) : (
+									<NavLink activeClassName="active" className="nav-item" to="/subscribe">
+										Subscribe
+									</NavLink>
+								)}
 								<NavLink activeClassName="active" className="nav-item" to="/for-herbalists">
 									For Herbalists
 								</NavLink>
@@ -56,13 +74,13 @@ const NavBar = () => {
 
 							{/* ADD SHOP BUTTON */}
 							<NavLink to="/shop">
-							<Button
-								variant="outline"
-								className="rounded-pill shopbut chats nav-small-text btn-main py-2 px-3 h-auto me-3"
+								<Button
+									variant="outline"
+									className="rounded-pill shopbut chats nav-small-text btn-main py-2 px-3 h-auto me-3"
 								>
-								Shop&nbsp;
-								<i className="bi bi-cart"></i>
-							</Button>
+									Shop&nbsp;
+									<i className="bi bi-cart"></i>
+								</Button>
 							</NavLink>
 
 							{/* SHOW LOGIN OR LOGOUT BUTTON BASED ON LOGIN STATUS */}
@@ -91,7 +109,6 @@ const NavBar = () => {
 											/>
 										}
 										id="user-nav-dropdown">
-										
 										<NavDropdown.Divider />
 										<NavDropdown.Item as={NavLink} to="/dashboard">
 											Dashboard
@@ -108,14 +125,14 @@ const NavBar = () => {
 								</div>
 							)}
 							<div className="mt-2 mobile-profile flex-column align-items-center gap-4">
-							<NavLink class="nav-item"to="/dashboard">Dashboard</NavLink>
-							{user && (
-								<Button onClick={logOut} variant="danger" className="rounded-pill mx-3 p-2 nav-small-text px-3">
-									Log Out&nbsp;
-									<i className="bi bi-box-arrow-right"></i>
-								</Button>
-							)}
-						</div>
+								<NavLink to="/dashboard">Dashboard</NavLink>
+								{user && (
+									<Button onClick={logOut} variant="danger" className="rounded-pill mx-3 p-2 nav-small-text px-3">
+										Log Out&nbsp;
+										<i className="bi bi-box-arrow-right"></i>
+									</Button>
+								)}
+							</div>
 						</Offcanvas.Body>
 					</Navbar.Offcanvas>
 				</Container>
