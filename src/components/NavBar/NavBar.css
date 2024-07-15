@@ -139,3 +139,13 @@
 	margin: 0.5rem 0;
 	border-top: 1px solid #e9ecef;
 }
+.user-profile.dropdown-item.active {
+    color: #fff !important;
+    text-decoration: none !important;
+    background-color: #39cabb !important;
+}
+.user-profile.dropdown-item {
+    color: #fff !important;
+    text-decoration: none !important;
+    background-color: #39cabb !important;
+}
