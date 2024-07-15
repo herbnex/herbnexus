@@ -9,8 +9,9 @@
 .doctor-info-card .card-header {
     background-color: #f8f9fa;
     font-weight: bold;
-    color: black;
+    color: #39cabb; /* Ensure the header text color is black */
 }
+
 
 .doctor-info-card .form-control {
     margin-bottom: 1rem;
