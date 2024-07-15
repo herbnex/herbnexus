@@ -266,7 +266,7 @@ const Contact = () => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Error response from email function:', errorData);
+      //console.error('Error response from email function:', errorData);
     }
       setTimeout(() => {
         if (msgBoxRef.current) {
@@ -1092,18 +1092,17 @@ const Contact = () => {
                           <div className="video-label">You ({user.displayName || "Anonymous"})</div>
                           <video
                             ref={localVideoRef}
-                            autoPlay={true}
-                            muted={true}
-                            playsInline={true}
+                            autoPlay
+                            muted
+                            playsInline
                             className="local-video"
                             id="localVideo"
                           />
                           <div className="video-label">{selectedParticipant.name}</div>
                           <video
                             ref={remoteVideoRef}
-                            autoPlay={true}
-                            muted={true}
-                            playsInline={true}
+                            autoPlay
+                            playsInline
                             className="remote-video"
                             id="remoteVideo"
                           />
