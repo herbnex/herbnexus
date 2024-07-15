@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, FloatingLabel } from 'react-bootstrap';
 import { db } from '../../Firebase/firebase.config';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
 import useAuth from '../../hooks/useAuth';
 import './PatientIntake.css';
 
@@ -34,6 +34,25 @@ const PatientIntake = () => {
     additionalInfo: ''
   });
 
+  useEffect(() => {
+    const fetchIntakeForm = async () => {
+      try {
+        const intakeFormRef = doc(db, 'patientIntakeForms', user.uid);
+        const intakeFormSnap = await getDoc(intakeFormRef);
+
+        if (intakeFormSnap.exists()) {
+          setFormData(intakeFormSnap.data());
+        }
+      } catch (error) {
+        console.error('Error fetching intake form: ', error);
+      }
+    };
+
+    if (user) {
+      fetchIntakeForm();
+    }
+  }, [user]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -55,37 +74,21 @@ const PatientIntake = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, 'patientIntakeForms'), {
-        userId: user.uid,
-        ...formData,
-      });
-      alert('Form submitted successfully');
-      setFormData({
-        name: '',
-        address: '',
-        address2: '',
-        phone: '',
-        email: '',
-        emergencyContact: '',
-        emergencyContactPhone: '',
-        dateOfBirth: '',
-        age: '',
-        gender: '',
-        pronouns: '',
-        occupation: '',
-        primaryConcern: '',
-        issues: [],
-        history: [],
-        familyHistory: '',
-        allergies: '',
-        medications: '',
-        majorEvents: '',
-        personalHabits: '',
-        sleep: '',
-        diet: '',
-        otherModalities: '',
-        additionalInfo: ''
-      });
+      const intakeFormRef = doc(db, 'patientIntakeForms', user.uid);
+      const intakeFormSnap = await getDoc(intakeFormRef);
+
+      if (intakeFormSnap.exists()) {
+        await updateDoc(intakeFormRef, {
+          ...formData,
+        });
+        alert('Form updated successfully');
+      } else {
+        await setDoc(intakeFormRef, {
+          userId: user.uid,
+          ...formData,
+        });
+        alert('Form submitted successfully');
+      }
     } catch (error) {
       console.error('Error submitting form: ', error);
     }
@@ -215,7 +218,6 @@ const PatientIntake = () => {
 
           <h5>Issues</h5>
           <div className="mb-3">
-            {/* Add checkboxes for issues */}
             <Form.Check
               type="checkbox"
               label="Loss of Smell"
@@ -232,7 +234,6 @@ const PatientIntake = () => {
               onChange={handleCheckboxChange}
               checked={formData.issues.includes('Poor Sleep')}
             />
-            {/* Add more checkboxes for other issues based on the form */}
             <Form.Check
               type="checkbox"
               label="Fatigue/Low Energy"
@@ -278,7 +279,6 @@ const PatientIntake = () => {
 
           <h5>Medical History</h5>
           <div className="mb-3">
-            {/* Add checkboxes for medical history */}
             <Form.Check
               type="checkbox"
               label="Allergic Reaction"
