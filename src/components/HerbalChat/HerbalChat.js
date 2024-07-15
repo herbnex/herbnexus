@@ -13,8 +13,8 @@ const auth = getAuth();
 
 const HerbalChat = () => {
   const [messages, setMessages] = useState([
-    { user: 'Bot', text: 'Hello! I\'m your free AI Symptom Diagnosis Tool. Could you please describe your primary health concerns?' },
-    { user: 'Bot', text: 'Additionally, could you let me know which herbal medicine practice you are interested in? Options include Traditional Chinese Medicine, Ayurvedic Medicine, Naturopathy, African, or Arabic.' }
+    { user: 'Bot', text: 'Hello! I\'m your free AI Symptom Diagnosis Tool. Could you please describe your primary health concerns?' }
+   // { user: 'Bot', text: 'Additionally, could you let me know which herbal medicine practice you are interested in? Options include Traditional Chinese Medicine, Ayurvedic Medicine, Naturopathy, African, or Arabic.' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
