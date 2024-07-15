@@ -1031,7 +1031,7 @@ const Contact = () => {
                     as="textarea"
                     ref={textareaRef}
                     rows={1}
-                    placeholder="Type..."
+                    placeholder="Type your message..."
                     value={message}
                     onChange={handleTyping}
                     aria-label="User message input"
@@ -1084,7 +1084,7 @@ const Contact = () => {
                   <Row>
                     
                     <Col
-                      md={12}
+                      md={8}
                       className="d-flex flex-column align-items-center video-container"
                     >
                       {showCallModal && (
@@ -1121,7 +1121,7 @@ const Contact = () => {
                         </Button>
                       </div>
                     </Col>
-                    <Col md={12} className="chat-section">
+                    <Col md={4} className="chat-section">
                       <div className="msg-box" ref={msgBoxRef}>
                         {msgList.map((msg, index) => (
                           <div
