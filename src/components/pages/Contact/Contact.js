@@ -392,7 +392,13 @@ const Contact = () => {
     setLoading(true);
     try {
       localStream.current = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: {
+          
+          'mandatory':{
+            'minWidth':'200',
+            'minHeight':'200',
+          },
+        },
         audio: true,
       });
       if (localVideoRef.current) {
