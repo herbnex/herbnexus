@@ -91,7 +91,7 @@ const Contact = () => {
           setIsDoctor(false);
         }
       } catch (error) {
-        //console.error("Error checking doctor status:", error);
+        console.error("Error checking doctor status:", error);
       }
     };
 
@@ -115,14 +115,14 @@ const Contact = () => {
         id: doc.id,
         ...doc.data(),
       }));
-            const uniqueDoctors = doctors.filter(
+      const uniqueDoctors = doctors.filter(
         (doctor, index, self) =>
           index === self.findIndex((d) => d.id === doctor.id)
       );
 
       setOnlineDoctors(uniqueDoctors);
     } catch (error) {
-      //console.error("Error fetching online doctors:", error);
+      console.error("Error fetching online doctors:", error);
     }
   };
 
@@ -134,14 +134,14 @@ const Contact = () => {
         id: doc.id,
         ...doc.data(),
       }));
-            const uniqueUsers = users.filter(
+      const uniqueUsers = users.filter(
         (user, index, self) =>
           index === self.findIndex((u) => u.id === user.id)
       );
 
       setActiveUsers(uniqueUsers);
     } catch (error) {
-      //console.error("Error fetching active users:", error);
+      console.error("Error fetching active users:", error);
     }
   };
 
@@ -154,14 +154,14 @@ const Contact = () => {
         ? generateChatId(selectedParticipant.id, user.uid)
         : generateChatId(user.uid, selectedParticipant.id);
 
-            const chatRef = databaseRef(database, `chats/${chatId}/messages`);
+      const chatRef = databaseRef(database, `chats/${chatId}/messages`);
       const typingRef = databaseRef(database, `chats/${chatId}/typing`);
 
       const unsubscribe = onValue(chatRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
           const messages = Object.values(data);
-                    setMsgList(messages);
+          setMsgList(messages);
           setTimeout(() => {
             if (msgBoxRef.current) {
               msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
@@ -266,7 +266,7 @@ const Contact = () => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      //console.error('Error response from email function:', errorData);
+      console.error('Error response from email function:', errorData);
     }
       setTimeout(() => {
         if (msgBoxRef.current) {
@@ -274,7 +274,7 @@ const Contact = () => {
         }
       }, 100);
     } catch (error) {
-      //console.error("Error sending message:", error);
+      console.error("Error sending message:", error);
     }
   };
 
@@ -300,7 +300,7 @@ const Contact = () => {
         await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
       }
     } catch (error) {
-      //console.error("Error handling typing:", error);
+      console.error("Error handling typing:", error);
     }
 
     autoResizeTextarea();
@@ -392,7 +392,7 @@ const Contact = () => {
     setLoading(true);
     try {
       localStream.current = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: { facingMode: "user" },
         audio: true,
       });
       if (localVideoRef.current) {
@@ -400,7 +400,7 @@ const Contact = () => {
       }
       remoteStream.current = new MediaStream();
     } catch (error) {
-      //console.error("Error accessing user media:", error);
+      console.error("Error accessing user media:", error);
       setError("Error accessing user media");
     } finally {
       setLoading(false);
@@ -471,7 +471,7 @@ const Contact = () => {
             }
           }
         } catch (error) {
-          //console.error("Error setting remote description:", error);
+          console.error("Error setting remote description:", error);
         }
       }
     });
@@ -487,7 +487,7 @@ const Contact = () => {
               pendingCandidates.current.push(candidate);
             }
           } catch (error) {
-            //console.error("Error adding ICE candidate:", error);
+            console.error("Error adding ICE candidate:", error);
           }
         }
       });
@@ -558,16 +558,16 @@ const Contact = () => {
                     pendingCandidates.current.push(candidate);
                   }
                 } catch (error) {
-                  //console.error("Error adding ICE candidate:", error);
+                  console.error("Error adding ICE candidate:", error);
                 }
               }
             });
           });
         } catch (error) {
-          // console.error(
-          //   "Error setting remote description or creating answer:",
-          //   error
-          // );
+          console.error(
+            "Error setting remote description or creating answer:",
+            error
+          );
         }
       }
     }
@@ -668,7 +668,7 @@ const Contact = () => {
 
         setIsScreenSharing(true);
       } catch (error) {
-        //console.error("Error starting screen share:", error);
+        console.error("Error starting screen share:", error);
       }
     } else {
       stopScreenShare();
@@ -692,15 +692,15 @@ const Contact = () => {
     if (!peerConnection.current) return;
 
     peerConnection.current.addEventListener("icegatheringstatechange", () => {
-      // console.log(
-      //   `ICE gathering state changed: ${peerConnection.current.iceGatheringState}`
-      // );
+      console.log(
+        `ICE gathering state changed: ${peerConnection.current.iceGatheringState}`
+      );
     });
 
     peerConnection.current.addEventListener("connectionstatechange", () => {
-      // console.log(
-      //   `Connection state change: ${peerConnection.current.connectionState}`
-      // );
+      console.log(
+        `Connection state change: ${peerConnection.current.connectionState}`
+      );
       if (peerConnection.current.connectionState === "disconnected" || 
           peerConnection.current.connectionState === "failed" || 
           peerConnection.current.connectionState === "closed") {
@@ -709,15 +709,15 @@ const Contact = () => {
     });
 
     peerConnection.current.addEventListener("signalingstatechange", () => {
-      // console.log(
-      //   `Signaling state change: ${peerConnection.current.signalingState}`
-      // );
+      console.log(
+        `Signaling state change: ${peerConnection.current.signalingState}`
+      );
     });
 
     peerConnection.current.addEventListener("iceconnectionstatechange", () => {
-      // console.log(
-      //   `ICE connection state change: ${peerConnection.current.iceConnectionState}`
-      // );
+      console.log(
+        `ICE connection state change: ${peerConnection.current.iceConnectionState}`
+      );
       if (peerConnection.current.iceConnectionState === "disconnected" || 
           peerConnection.current.iceConnectionState === "failed" || 
           peerConnection.current.iceConnectionState === "closed") {
@@ -762,7 +762,7 @@ const Contact = () => {
       timestamp: new Date().toISOString(),
     };
 
-   // console.log('Call data being sent:', callData); // Log call data for debugging
+   console.log('Call data being sent:', callData); // Log call data for debugging
     await addDoc(collection(db, "calls"), callData);
   };
 
@@ -826,7 +826,7 @@ const Contact = () => {
           // Optional: handle upload progress
         },
         (error) => {
-         // console.error("Error uploading file:", error);
+         console.error("Error uploading file:", error);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -902,7 +902,7 @@ const Contact = () => {
         document.body.removeChild(link);
         setDownloadModal({ show: false, fileUrl: '', fileName: '' });
       })
-      // .catch(error => console.error('Error downloading file:', error));
+      .catch(error => console.error('Error downloading file:', error));
   };
   
   
