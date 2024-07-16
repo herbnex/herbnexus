@@ -537,7 +537,7 @@ const Contact = () => {
     }
 
     const roomRef = doc(db, "rooms", roomId);
-    const roomSnapshot = await getDoc(roomRef
+    const roomSnapshot = await getDoc(roomRef);
       if (roomSnapshot.exists()) {
         peerConnection.current = new RTCPeerConnection(configuration);
         registerPeerConnectionListeners();
