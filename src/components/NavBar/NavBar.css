@@ -123,6 +123,7 @@
 .user-profile .dropdown-item {
 	padding: 0.5rem 1rem;
 	text-align: center;
+	font-weight: inherit;
 }
 
 .user-profile .dropdown-item:hover {
@@ -141,7 +142,7 @@
 	border-top: 1px solid #e9ecef;
 }
 .dropdown-item.active, .dropdown-item:active {
-    color: black !important;
+    color: #fff !important;
     text-decoration: none !important;
     background-color: #39cabb !important;
 }
