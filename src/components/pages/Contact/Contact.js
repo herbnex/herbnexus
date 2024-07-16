@@ -69,6 +69,7 @@ const Contact = () => {
   const [searchQuery, setSearchQuery] = useState(""); // New state for search query
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); // State for emoji picker
   const [downloadModal, setDownloadModal] = useState({ show: false, fileUrl: '', fileName: '' }); // State for download modal
+  const [unreadMessages, setUnreadMessages] = useState({}); // State for unread messages
 
   const configuration = {
     iceServers: [
@@ -115,7 +116,7 @@ const Contact = () => {
         id: doc.id,
         ...doc.data(),
       }));
-            const uniqueDoctors = doctors.filter(
+      const uniqueDoctors = doctors.filter(
         (doctor, index, self) =>
           index === self.findIndex((d) => d.id === doctor.id)
       );
@@ -134,7 +135,7 @@ const Contact = () => {
         id: doc.id,
         ...doc.data(),
       }));
-            const uniqueUsers = users.filter(
+      const uniqueUsers = users.filter(
         (user, index, self) =>
           index === self.findIndex((u) => u.id === user.id)
       );
@@ -154,19 +155,30 @@ const Contact = () => {
         ? generateChatId(selectedParticipant.id, user.uid)
         : generateChatId(user.uid, selectedParticipant.id);
 
-            const chatRef = databaseRef(database, `chats/${chatId}/messages`);
+      const chatRef = databaseRef(database, `chats/${chatId}/messages`);
       const typingRef = databaseRef(database, `chats/${chatId}/typing`);
 
       const unsubscribe = onValue(chatRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
           const messages = Object.values(data);
-                    setMsgList(messages);
+          setMsgList(messages);
           setTimeout(() => {
             if (msgBoxRef.current) {
               msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
             }
           }, 100);
+          
+          // Update unread messages count
+          if (selectedParticipant && messages.length > 0) {
+            setUnreadMessages((prevUnreadMessages) => {
+              const participantId = isDoctor ? selectedParticipant.id : user.uid;
+              return {
+                ...prevUnreadMessages,
+                [participantId]: (prevUnreadMessages[participantId] || 0) + 1,
+              };
+            });
+          }
         } else {
           setMsgList([]);
         }
@@ -242,32 +254,32 @@ const Contact = () => {
 
       await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
 
-     // Determine sender type
+      // Determine sender type
 
-    // Format the message based on sender type
-    const formattedMessage = senderType === 'doctor' 
-      ? `You have received a new message from ${newMessage.doctorEmail}: ${newMessage.text}` 
-      : `You have received a new message from ${newMessage.userEmail}: ${newMessage.text}`;
+      // Format the message based on sender type
+      const formattedMessage = senderType === 'doctor'
+        ? `You have received a new message from ${newMessage.doctorEmail}: ${newMessage.text}`
+        : `You have received a new message from ${newMessage.userEmail}: ${newMessage.text}`;
 
-    // Send email notification
-    const response = await fetch('/.netlify/functions/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userEmail: newMessage.userEmail,
-        doctorEmail: newMessage.doctorEmail,
-        subject: 'New Message Notification',
-        message: formattedMessage,
-        senderType: senderType,
-      }),
-    });
+      // Send email notification
+      const response = await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userEmail: newMessage.userEmail,
+          doctorEmail: newMessage.doctorEmail,
+          subject: 'New Message Notification',
+          message: formattedMessage,
+          senderType: senderType,
+        }),
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Error response from email function:', errorData);
-    }
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error response from email function:', errorData);
+      }
       setTimeout(() => {
         if (msgBoxRef.current) {
           msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
@@ -343,6 +355,10 @@ const Contact = () => {
 
   const handleParticipantClick = (participant) => {
     setSelectedParticipant(participant);
+    setUnreadMessages((prevUnreadMessages) => ({
+      ...prevUnreadMessages,
+      [participant.id]: 0,
+    }));
 
     setTimeout(() => {
       const chatSection = chatSectionRef.current;
@@ -351,7 +367,6 @@ const Contact = () => {
       }
     }, 300);
 
-    // Reset call-related states to avoid automatic calls
     setCurrentRoom(null);
     if (peerConnection.current) {
       peerConnection.current.close();
@@ -904,8 +919,6 @@ const Contact = () => {
       })
       // .catch(error => console.error('Error downloading file:', error));
   };
-  
-  
 
   return (
     <Container fluid className="chat-room">
@@ -949,7 +962,7 @@ const Contact = () => {
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-flex align-items-center">
                     <img
-                      src={participant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"} // Replace "default-avatar-url" with the actual default avatar URL
+                      src={participant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"}
                       alt="Avatar"
                       className="rounded-circle me-2"
                       style={{ width: '40px', height: '40px' }}
@@ -959,7 +972,7 @@ const Contact = () => {
                       <p>{isDoctor ? participant.email : participant.speciality}</p>
                     </div>
                   </div>
-                  <Badge bg="success" >Online</Badge>
+                  <Badge bg="success">{unreadMessages[participant.id] || 0}</Badge>
                 </div>
               </ListGroup.Item>
             ))}
@@ -972,7 +985,7 @@ const Contact = () => {
                 <div className="d-flex align-items-center">
                   <div className="user-avatar bg-secondary rounded-circle me-2" style={{ width: '40px', height: '40px' }}>
                     <img
-                      src={selectedParticipant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"} // Replace "default-avatar-url" with the actual default avatar URL
+                      src={selectedParticipant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"}
                       alt="Avatar"
                       className="rounded-circle"
                       style={{ width: '40px', height: '40px' }}
