@@ -130,7 +130,7 @@ const NavBar = () => {
 										}
 										id="user-nav-dropdown">
 										<NavDropdown.Divider />
-										<NavDropdown.Item as={NavLink} to="/dashboard">
+										<NavDropdown.Item as={NavLink} className="nav-item"to="/dashboard">
 											Dashboard
 										</NavDropdown.Item>
 										<NavDropdown.Divider />
