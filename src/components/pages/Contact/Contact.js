@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { Container, Row, Col, ListGroup, Form, Button, InputGroup, Badge, Modal, Spinner, Alert, Toast, ToastContainer, Dropdown } from "react-bootstrap";
-import { ref as databaseRef, set, onValue, push, get } from "firebase/database";
+import { ref as databaseRef, set, onValue, push } from "firebase/database";
 import { db, database, storage } from "../../../Firebase/firebase.config"; // Import storage
 import { doc, getDocs, collection, query, where, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
 import { ref as storageRef, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Import upload functions
@@ -69,7 +69,6 @@ const Contact = () => {
   const [searchQuery, setSearchQuery] = useState(""); // New state for search query
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); // State for emoji picker
   const [downloadModal, setDownloadModal] = useState({ show: false, fileUrl: '', fileName: '' }); // State for download modal
-  const [unreadMessages, setUnreadMessages] = useState({}); // State for tracking unread messages
 
   const configuration = {
     iceServers: [
@@ -116,20 +115,10 @@ const Contact = () => {
         id: doc.id,
         ...doc.data(),
       }));
-      const uniqueDoctors = doctors.filter(
+            const uniqueDoctors = doctors.filter(
         (doctor, index, self) =>
           index === self.findIndex((d) => d.id === doctor.id)
       );
-
-      // Fetch unread messages for each doctor
-      for (const doctor of uniqueDoctors) {
-        const chatId = generateChatId(doctor.id, user.uid);
-        const unreadRef = databaseRef(database, `chats/${chatId}/unread/${user.uid}`);
-        onValue(unreadRef, (snapshot) => {
-          const unreadCount = snapshot.exists() ? snapshot.val() : 0;
-          setUnreadMessages((prev) => ({ ...prev, [doctor.id]: unreadCount }));
-        });
-      }
 
       setOnlineDoctors(uniqueDoctors);
     } catch (error) {
@@ -145,20 +134,10 @@ const Contact = () => {
         id: doc.id,
         ...doc.data(),
       }));
-      const uniqueUsers = users.filter(
+            const uniqueUsers = users.filter(
         (user, index, self) =>
           index === self.findIndex((u) => u.id === user.id)
       );
-
-      // Fetch unread messages for each user
-      for (const user of uniqueUsers) {
-        const chatId = generateChatId(user.id, user.uid);
-        const unreadRef = databaseRef(database, `chats/${chatId}/unread/${user.uid}`);
-        onValue(unreadRef, (snapshot) => {
-          const unreadCount = snapshot.exists() ? snapshot.val() : 0;
-          setUnreadMessages((prev) => ({ ...prev, [user.id]: unreadCount }));
-        });
-      }
 
       setActiveUsers(uniqueUsers);
     } catch (error) {
@@ -175,14 +154,14 @@ const Contact = () => {
         ? generateChatId(selectedParticipant.id, user.uid)
         : generateChatId(user.uid, selectedParticipant.id);
 
-      const chatRef = databaseRef(database, `chats/${chatId}/messages`);
+            const chatRef = databaseRef(database, `chats/${chatId}/messages`);
       const typingRef = databaseRef(database, `chats/${chatId}/typing`);
 
       const unsubscribe = onValue(chatRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
           const messages = Object.values(data);
-          setMsgList(messages);
+                    setMsgList(messages);
           setTimeout(() => {
             if (msgBoxRef.current) {
               msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
@@ -199,10 +178,6 @@ const Contact = () => {
           typingData && typingData.typing && typingData.typing !== user.uid
         );
       });
-
-      // Reset unread messages when a participant is selected
-      const unreadRef = databaseRef(database, `chats/${chatId}/unread/${user.uid}`);
-      set(unreadRef, 0);
 
       return () => {
         unsubscribe();
@@ -265,41 +240,34 @@ const Contact = () => {
       setMessage("");
       resetTextarea();
 
-      // Update unread messages
-      const unreadRef = databaseRef(database, `chats/${chatId}/unread/${selectedParticipant.id}`);
-      const unreadSnapshot = await get(unreadRef);
-      const unreadCount = unreadSnapshot.exists() ? unreadSnapshot.val() : 0;
-      await set(unreadRef, unreadCount + 1);
-
       await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
 
-      // Determine sender type
+     // Determine sender type
 
-      // Format the message based on sender type
-      const formattedMessage = senderType === 'doctor' 
-        ? `You have received a new message from ${newMessage.doctorEmail}: ${newMessage.text}` 
-        : `You have received a new message from ${newMessage.userEmail}: ${newMessage.text}`;
+    // Format the message based on sender type
+    const formattedMessage = senderType === 'doctor' 
+      ? `You have received a new message from ${newMessage.doctorEmail}: ${newMessage.text}` 
+      : `You have received a new message from ${newMessage.userEmail}: ${newMessage.text}`;
 
-      // Send email notification
-      const response = await fetch('/.netlify/functions/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userEmail: newMessage.userEmail,
-          doctorEmail: newMessage.doctorEmail,
-          subject: 'New Message Notification',
-          message: formattedMessage,
-          senderType: senderType,
-        }),
-      });
+    // Send email notification
+    const response = await fetch('/.netlify/functions/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userEmail: newMessage.userEmail,
+        doctorEmail: newMessage.doctorEmail,
+        subject: 'New Message Notification',
+        message: formattedMessage,
+        senderType: senderType,
+      }),
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error response from email function:', errorData);
-      }
-      
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error response from email function:', errorData);
+    }
       setTimeout(() => {
         if (msgBoxRef.current) {
           msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
@@ -794,7 +762,7 @@ const Contact = () => {
       timestamp: new Date().toISOString(),
     };
 
-    // console.log('Call data being sent:', callData); // Log call data for debugging
+   // console.log('Call data being sent:', callData); // Log call data for debugging
     await addDoc(collection(db, "calls"), callData);
   };
 
@@ -858,7 +826,7 @@ const Contact = () => {
           // Optional: handle upload progress
         },
         (error) => {
-          // console.error("Error uploading file:", error);
+         // console.error("Error uploading file:", error);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -936,6 +904,8 @@ const Contact = () => {
       })
       // .catch(error => console.error('Error downloading file:', error));
   };
+  
+  
 
   return (
     <Container fluid className="chat-room">
@@ -989,12 +959,7 @@ const Contact = () => {
                       <p>{isDoctor ? participant.email : participant.speciality}</p>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center">
-                    <Badge bg="success">Online</Badge>
-                    {unreadMessages[participant.id] > 0 && (
-                      <Badge bg="danger" className="ms-2">{unreadMessages[participant.id]}</Badge>
-                    )}
-                  </div>
+                  <Badge bg="success" >Online</Badge>
                 </div>
               </ListGroup.Item>
             ))}
