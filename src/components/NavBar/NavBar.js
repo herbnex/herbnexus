@@ -130,7 +130,7 @@ const NavBar = () => {
 										}
 										id="user-nav-dropdown">
 										<NavDropdown.Divider />
-										<NavDropdown.Item as={NavLink} className="nav-item" to="/dashboard">
+										<NavDropdown.Item as={NavLink} to="/dashboard">
 											Dashboard
 										</NavDropdown.Item>
 										<NavDropdown.Divider />
@@ -145,7 +145,7 @@ const NavBar = () => {
 								</div>
 							)}
 							<div className="mt-2 mobile-profile flex-column align-items-center gap-4">
-								<NavLink to="/dashboard">Dashboard</NavLink>
+								<NavLink to="/dashboard" className="nav-item">Dashboard</NavLink>
 								{user && (
 									<Button onClick={logOut} variant="danger" className="rounded-pill mx-3 p-2 nav-small-text px-3">
 										Log Out&nbsp;
