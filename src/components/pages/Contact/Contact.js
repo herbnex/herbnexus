@@ -55,7 +55,7 @@ const Contact = () => {
   const msgBoxRef = useRef(null);
   const textareaRef = useRef(null);
   const chatSectionRef = useRef(null);
-  const [visibleTimestamps, setVisibleTimestamps] = useState({});
+  const [visibleTimestamps, setVisibleTtimestamps] = useState({});
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnection = useRef(null);
