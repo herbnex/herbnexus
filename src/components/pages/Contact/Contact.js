@@ -69,7 +69,8 @@ const Contact = () => {
   const [searchQuery, setSearchQuery] = useState(""); // New state for search query
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); // State for emoji picker
   const [downloadModal, setDownloadModal] = useState({ show: false, fileUrl: '', fileName: '' }); // State for download modal
-  const [unreadMessages, setUnreadMessages] = useState({}); // State for unread messages
+
+  const [unreadCounts, setUnreadCounts] = useState({}); // State for unread message counts
 
   const configuration = {
     iceServers: [
@@ -79,12 +80,6 @@ const Contact = () => {
     ],
     iceCandidatePoolSize: 2,
   };
-
-  useEffect(() => {
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission();
-    }
-  }, []);
 
   useEffect(() => {
     const checkIfDoctor = async () => {
@@ -98,7 +93,7 @@ const Contact = () => {
           setIsDoctor(false);
         }
       } catch (error) {
-        console.error("Error checking doctor status:", error);
+        //console.error("Error checking doctor status:", error);
       }
     };
 
@@ -129,7 +124,7 @@ const Contact = () => {
 
       setOnlineDoctors(uniqueDoctors);
     } catch (error) {
-      console.error("Error fetching online doctors:", error);
+      //console.error("Error fetching online doctors:", error);
     }
   };
 
@@ -148,39 +143,9 @@ const Contact = () => {
 
       setActiveUsers(uniqueUsers);
     } catch (error) {
-      console.error("Error fetching active users:", error);
+      //console.error("Error fetching active users:", error);
     }
   };
-
-  useEffect(() => {
-    if (user) {
-      const chatRef = databaseRef(database, `chats`);
-      onValue(chatRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          Object.keys(data).forEach(chatId => {
-            const messages = Object.values(data[chatId].messages || {});
-            if (messages.length > 0) {
-              const lastMessage = messages[messages.length - 1];
-              if (lastMessage.userId !== user.uid && (!selectedParticipant || selectedParticipant.id !== chatId.split('_').find(id => id !== user.uid))) {
-                const participantId = chatId.split('_').find(id => id !== user.uid);
-                setUnreadMessages(prevUnreadMessages => ({
-                  ...prevUnreadMessages,
-                  [participantId]: (prevUnreadMessages[participantId] || 0) + 1,
-                }));
-
-                if (Notification.permission === "granted") {
-                  new Notification(`New message from ${lastMessage.user}`, {
-                    body: lastMessage.text,
-                  });
-                }
-              }
-            }
-          });
-        }
-      });
-    }
-  }, [user, selectedParticipant]);
 
   useEffect(() => {
     if (user && selectedParticipant) {
@@ -282,8 +247,8 @@ const Contact = () => {
       // Determine sender type
 
       // Format the message based on sender type
-      const formattedMessage = senderType === 'doctor'
-        ? `You have received a new message from ${newMessage.doctorEmail}: ${newMessage.text}`
+      const formattedMessage = senderType === 'doctor' 
+        ? `You have received a new message from ${newMessage.doctorEmail}: ${newMessage.text}` 
         : `You have received a new message from ${newMessage.userEmail}: ${newMessage.text}`;
 
       // Send email notification
@@ -305,13 +270,22 @@ const Contact = () => {
         const errorData = await response.json();
         console.error('Error response from email function:', errorData);
       }
+
+      // Update unread message count for the recipient
+      if (selectedParticipant.id !== user.uid) {
+        setUnreadCounts((prevCounts) => ({
+          ...prevCounts,
+          [selectedParticipant.id]: (prevCounts[selectedParticipant.id] || 0) + 1,
+        }));
+      }
+
       setTimeout(() => {
         if (msgBoxRef.current) {
           msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
         }
       }, 100);
     } catch (error) {
-      console.error("Error sending message:", error);
+      //console.error("Error sending message:", error);
     }
   };
 
@@ -337,7 +311,7 @@ const Contact = () => {
         await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
       }
     } catch (error) {
-      console.error("Error handling typing:", error);
+      //console.error("Error handling typing:", error);
     }
 
     autoResizeTextarea();
@@ -380,10 +354,6 @@ const Contact = () => {
 
   const handleParticipantClick = (participant) => {
     setSelectedParticipant(participant);
-    setUnreadMessages((prevUnreadMessages) => ({
-      ...prevUnreadMessages,
-      [participant.id]: 0,
-    }));
 
     setTimeout(() => {
       const chatSection = chatSectionRef.current;
@@ -392,11 +362,18 @@ const Contact = () => {
       }
     }, 300);
 
+    // Reset call-related states to avoid automatic calls
     setCurrentRoom(null);
     if (peerConnection.current) {
       peerConnection.current.close();
       peerConnection.current = null;
     }
+
+    // Reset unread count for the selected participant
+    setUnreadCounts((prevCounts) => ({
+      ...prevCounts,
+      [participant.id]: 0,
+    }));
   };
 
   // WebRTC Functions
@@ -440,7 +417,7 @@ const Contact = () => {
       }
       remoteStream.current = new MediaStream();
     } catch (error) {
-      console.error("Error accessing user media:", error);
+      //console.error("Error accessing user media:", error);
       setError("Error accessing user media");
     } finally {
       setLoading(false);
@@ -511,7 +488,7 @@ const Contact = () => {
             }
           }
         } catch (error) {
-          console.error("Error setting remote description:", error);
+          //console.error("Error setting remote description:", error);
         }
       }
     });
@@ -527,7 +504,7 @@ const Contact = () => {
               pendingCandidates.current.push(candidate);
             }
           } catch (error) {
-            console.error("Error adding ICE candidate:", error);
+            //console.error("Error adding ICE candidate:", error);
           }
         }
       });
@@ -598,16 +575,16 @@ const Contact = () => {
                     pendingCandidates.current.push(candidate);
                   }
                 } catch (error) {
-                  console.error("Error adding ICE candidate:", error);
+                  //console.error("Error adding ICE candidate:", error);
                 }
               }
             });
           });
         } catch (error) {
-          console.error(
-            "Error setting remote description or creating answer:",
-            error
-          );
+          // console.error(
+          //   "Error setting remote description or creating answer:",
+          //   error
+          // );
         }
       }
     }
@@ -708,7 +685,7 @@ const Contact = () => {
 
         setIsScreenSharing(true);
       } catch (error) {
-        console.error("Error starting screen share:", error);
+        //console.error("Error starting screen share:", error);
       }
     } else {
       stopScreenShare();
@@ -732,15 +709,15 @@ const Contact = () => {
     if (!peerConnection.current) return;
 
     peerConnection.current.addEventListener("icegatheringstatechange", () => {
-      console.log(
-        `ICE gathering state changed: ${peerConnection.current.iceGatheringState}`
-      );
+      // console.log(
+      //   `ICE gathering state changed: ${peerConnection.current.iceGatheringState}`
+      // );
     });
 
     peerConnection.current.addEventListener("connectionstatechange", () => {
-      console.log(
-        `Connection state change: ${peerConnection.current.connectionState}`
-      );
+      // console.log(
+      //   `Connection state change: ${peerConnection.current.connectionState}`
+      // );
       if (peerConnection.current.connectionState === "disconnected" || 
           peerConnection.current.connectionState === "failed" || 
           peerConnection.current.connectionState === "closed") {
@@ -749,15 +726,15 @@ const Contact = () => {
     });
 
     peerConnection.current.addEventListener("signalingstatechange", () => {
-      console.log(
-        `Signaling state change: ${peerConnection.current.signalingState}`
-      );
+      // console.log(
+      //   `Signaling state change: ${peerConnection.current.signalingState}`
+      // );
     });
 
     peerConnection.current.addEventListener("iceconnectionstatechange", () => {
-      console.log(
-        `ICE connection state change: ${peerConnection.current.iceConnectionState}`
-      );
+      // console.log(
+      //   `ICE connection state change: ${peerConnection.current.iceConnectionState}`
+      // );
       if (peerConnection.current.iceConnectionState === "disconnected" || 
           peerConnection.current.iceConnectionState === "failed" || 
           peerConnection.current.iceConnectionState === "closed") {
@@ -802,7 +779,7 @@ const Contact = () => {
       timestamp: new Date().toISOString(),
     };
 
-    console.log('Call data being sent:', callData); // Log call data for debugging
+   // console.log('Call data being sent:', callData); // Log call data for debugging
     await addDoc(collection(db, "calls"), callData);
   };
 
@@ -866,7 +843,7 @@ const Contact = () => {
           // Optional: handle upload progress
         },
         (error) => {
-          console.error("Error uploading file:", error);
+         // console.error("Error uploading file:", error);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -942,8 +919,32 @@ const Contact = () => {
         document.body.removeChild(link);
         setDownloadModal({ show: false, fileUrl: '', fileName: '' });
       })
-      .catch(error => console.error('Error downloading file:', error));
+      // .catch(error => console.error('Error downloading file:', error));
   };
+
+  useEffect(() => {
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  useEffect(() => {
+    const notifyNewMessage = (message) => {
+      if (Notification.permission === "granted") {
+        new Notification("New Message", {
+          body: message.text,
+          icon: "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png", // Replace with your icon URL
+        });
+      }
+    };
+
+    if (msgList.length > 0) {
+      const lastMessage = msgList[msgList.length - 1];
+      if (lastMessage.userId !== user.uid) {
+        notifyNewMessage(lastMessage);
+      }
+    }
+  }, [msgList]);
 
   return (
     <Container fluid className="chat-room">
@@ -987,7 +988,7 @@ const Contact = () => {
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-flex align-items-center">
                     <img
-                      src={participant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"}
+                      src={participant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"} // Replace "default-avatar-url" with the actual default avatar URL
                       alt="Avatar"
                       className="rounded-circle me-2"
                       style={{ width: '40px', height: '40px' }}
@@ -997,7 +998,7 @@ const Contact = () => {
                       <p>{isDoctor ? participant.email : participant.speciality}</p>
                     </div>
                   </div>
-                  <Badge bg="success">{unreadMessages[participant.id] || 0}</Badge>
+                  <Badge bg="success">{unreadCounts[participant.id] || 0}</Badge>
                 </div>
               </ListGroup.Item>
             ))}
@@ -1010,7 +1011,7 @@ const Contact = () => {
                 <div className="d-flex align-items-center">
                   <div className="user-avatar bg-secondary rounded-circle me-2" style={{ width: '40px', height: '40px' }}>
                     <img
-                      src={selectedParticipant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"}
+                      src={selectedParticipant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"} // Replace "default-avatar-url" with the actual default avatar URL
                       alt="Avatar"
                       className="rounded-circle"
                       style={{ width: '40px', height: '40px' }}
