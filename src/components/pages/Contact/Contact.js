@@ -93,7 +93,7 @@ const Contact = () => {
           setIsDoctor(false);
         }
       } catch (error) {
-        //console.error("Error checking doctor status:", error);
+        console.error("Error checking doctor status:", error);
       }
     };
 
@@ -124,7 +124,7 @@ const Contact = () => {
 
       setOnlineDoctors(uniqueDoctors);
     } catch (error) {
-      //console.error("Error fetching online doctors:", error);
+      console.error("Error fetching online doctors:", error);
     }
   };
 
@@ -143,7 +143,7 @@ const Contact = () => {
 
       setActiveUsers(uniqueUsers);
     } catch (error) {
-      //console.error("Error fetching active users:", error);
+      console.error("Error fetching active users:", error);
     }
   };
 
@@ -272,7 +272,7 @@ const Contact = () => {
       }
 
       // Update unread message count for the recipient
-      if (selectedParticipant.id !== user.uid) {
+      if (newMessage.userId !== user.uid) {
         setUnreadCounts((prevCounts) => ({
           ...prevCounts,
           [selectedParticipant.id]: (prevCounts[selectedParticipant.id] || 0) + 1,
@@ -285,7 +285,7 @@ const Contact = () => {
         }
       }, 100);
     } catch (error) {
-      //console.error("Error sending message:", error);
+      console.error("Error sending message:", error);
     }
   };
 
@@ -311,7 +311,7 @@ const Contact = () => {
         await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
       }
     } catch (error) {
-      //console.error("Error handling typing:", error);
+      console.error("Error handling typing:", error);
     }
 
     autoResizeTextarea();
@@ -417,7 +417,7 @@ const Contact = () => {
       }
       remoteStream.current = new MediaStream();
     } catch (error) {
-      //console.error("Error accessing user media:", error);
+      console.error("Error accessing user media:", error);
       setError("Error accessing user media");
     } finally {
       setLoading(false);
@@ -488,7 +488,7 @@ const Contact = () => {
             }
           }
         } catch (error) {
-          //console.error("Error setting remote description:", error);
+          console.error("Error setting remote description:", error);
         }
       }
     });
@@ -504,7 +504,7 @@ const Contact = () => {
               pendingCandidates.current.push(candidate);
             }
           } catch (error) {
-            //console.error("Error adding ICE candidate:", error);
+            console.error("Error adding ICE candidate:", error);
           }
         }
       });
@@ -575,16 +575,16 @@ const Contact = () => {
                     pendingCandidates.current.push(candidate);
                   }
                 } catch (error) {
-                  //console.error("Error adding ICE candidate:", error);
+                  console.error("Error adding ICE candidate:", error);
                 }
               }
             });
           });
         } catch (error) {
-          // console.error(
-          //   "Error setting remote description or creating answer:",
-          //   error
-          // );
+          console.error(
+            "Error setting remote description or creating answer:",
+            error
+          );
         }
       }
     }
@@ -685,7 +685,7 @@ const Contact = () => {
 
         setIsScreenSharing(true);
       } catch (error) {
-        //console.error("Error starting screen share:", error);
+        console.error("Error starting screen share:", error);
       }
     } else {
       stopScreenShare();
@@ -709,15 +709,15 @@ const Contact = () => {
     if (!peerConnection.current) return;
 
     peerConnection.current.addEventListener("icegatheringstatechange", () => {
-      // console.log(
-      //   `ICE gathering state changed: ${peerConnection.current.iceGatheringState}`
-      // );
+      console.log(
+        `ICE gathering state changed: ${peerConnection.current.iceGatheringState}`
+      );
     });
 
     peerConnection.current.addEventListener("connectionstatechange", () => {
-      // console.log(
-      //   `Connection state change: ${peerConnection.current.connectionState}`
-      // );
+      console.log(
+        `Connection state change: ${peerConnection.current.connectionState}`
+      );
       if (peerConnection.current.connectionState === "disconnected" || 
           peerConnection.current.connectionState === "failed" || 
           peerConnection.current.connectionState === "closed") {
@@ -726,15 +726,15 @@ const Contact = () => {
     });
 
     peerConnection.current.addEventListener("signalingstatechange", () => {
-      // console.log(
-      //   `Signaling state change: ${peerConnection.current.signalingState}`
-      // );
+      console.log(
+        `Signaling state change: ${peerConnection.current.signalingState}`
+      );
     });
 
     peerConnection.current.addEventListener("iceconnectionstatechange", () => {
-      // console.log(
-      //   `ICE connection state change: ${peerConnection.current.iceConnectionState}`
-      // );
+      console.log(
+        `ICE connection state change: ${peerConnection.current.iceConnectionState}`
+      );
       if (peerConnection.current.iceConnectionState === "disconnected" || 
           peerConnection.current.iceConnectionState === "failed" || 
           peerConnection.current.iceConnectionState === "closed") {
@@ -779,7 +779,7 @@ const Contact = () => {
       timestamp: new Date().toISOString(),
     };
 
-   // console.log('Call data being sent:', callData); // Log call data for debugging
+    console.log('Call data being sent:', callData); // Log call data for debugging
     await addDoc(collection(db, "calls"), callData);
   };
 
@@ -843,7 +843,7 @@ const Contact = () => {
           // Optional: handle upload progress
         },
         (error) => {
-         // console.error("Error uploading file:", error);
+          console.error("Error uploading file:", error);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -919,7 +919,7 @@ const Contact = () => {
         document.body.removeChild(link);
         setDownloadModal({ show: false, fileUrl: '', fileName: '' });
       })
-      // .catch(error => console.error('Error downloading file:', error));
+      .catch(error => console.error('Error downloading file:', error));
   };
 
   useEffect(() => {
