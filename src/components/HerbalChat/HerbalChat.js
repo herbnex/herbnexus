@@ -12,6 +12,7 @@ const BlogGenerator = () => {
   const [showModal, setShowModal] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [blogContent, setBlogContent] = useState([]);
+  const [htmlContent, setHtmlContent] = useState('');
   const chatMessagesRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -60,10 +61,18 @@ const BlogGenerator = () => {
       }
 
       setBlogContent(blog);
+
+      const blogHtml = blog.map((sentence, index) => {
+        if (index === 0) return `<h1>${sentence}</h1>`;
+        if (index % 10 === 0) return `<h2>${sentence}</h2>`;
+        return `<p>${sentence}</p>`;
+      }).join('');
+
+      setHtmlContent(blogHtml);
+
       setMessages((prevMessages) => [
         ...prevMessages,
-        { user: 'Bot', text: 'The blog is ready. Here is your 2000-word blog:' },
-        ...blog.map(sentence => ({ user: 'Bot', text: sentence }))
+        { user: 'Bot', text: 'The blog is ready. Click the button below to view it as an HTML document.' }
       ]);
     } catch (error) {
       console.error('Error generating blog content: ', error);
@@ -170,6 +179,25 @@ const BlogGenerator = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {htmlContent && (
+        <Container>
+          <Button onClick={() => setShowModal(true)}>View Blog as HTML</Button>
+          <Modal show={showModal} onHide={toggleModal} size="lg">
+            <Modal.Header closeButton>
+              <Modal.Title>Generated Blog</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={toggleModal}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </Container>
       )}
     </Container>
   );
