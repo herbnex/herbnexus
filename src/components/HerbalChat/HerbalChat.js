@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Container, InputGroup, Form, Modal } from 'react-bootstrap';
 import axios from 'axios';
-import './BlogGenerator.css';
+import './HerbalChat.css';
 
 const BlogGenerator = () => {
   const [messages, setMessages] = useState([
