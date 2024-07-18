@@ -5,7 +5,7 @@ import './HerbalChat.css';
 
 const BlogGenerator = () => {
   const [messages, setMessages] = useState([
-    { user: 'Bot', text: 'Welcome to the Blog Generator Tool. Please provide a title for your blog and an example or inspiration topic. Type "start" to begin.' }
+    { user: 'Bot', text: 'Welcome to the Blog Generator Tool. What is the title of your blog?.' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
