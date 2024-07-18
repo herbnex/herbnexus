@@ -28,7 +28,7 @@ const BlogGenerator = () => {
     try {
       let blog = [];
       let sentenceCount = 1;
-      let prompt = `Generate the title for a 2000-word LinkedIn blog on a popular topic that the herbal medicine community would like.`;
+      let prompt = `Generate the title for a 2000-word LinkedIn blog on a random, interesting topic in herbal medicine such as the benefits of specific herbs or how to make herbal tinctures.`;
 
       while (blog.join(' ').split(' ').length < 2000) {
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
@@ -50,11 +50,11 @@ const BlogGenerator = () => {
         blog.push(newSentence);
         
         if (sentenceCount === 1) {
-          prompt = `Generate the first sentence of the 2000 word blog titled: "${newSentence}"`;
+          prompt = `Generate the first sentence of the blog titled: "${newSentence}"`;
         } else if (sentenceCount % 10 === 0) {
-          prompt = `Generate a section title for the blog continuing from: "${newSentence}"`;
+          prompt = `Generate a section title for the blog on a topic related to herbal medicine, continuing from: "${newSentence}"`;
         } else {
-          prompt = `Generate the next sentence for the 2000 word blog continuing from: "${newSentence}"`;
+          prompt = `Generate the next sentence for the blog continuing from: "${newSentence}"`;
         }
 
         sentenceCount += 1;
