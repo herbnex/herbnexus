@@ -52,9 +52,9 @@ const BlogGenerator = () => {
         if (sentenceCount === 1) {
           prompt = `Generate the first sentence of the blog titled: "${newSentence}"`;
         } else if (sentenceCount % 10 === 0) {
-          prompt = `Generate a section title for the blog on a topic related to herbal medicine, continuing from: "${newSentence}"`;
+          prompt = `Generate a section title for the blog continuing from: "${newSentence}"`;
         } else {
-          prompt = `Generate the next sentence for the blog continuing from: "${newSentence}"`;
+          prompt = `Generate the ${sentenceCount}th sentence for the blog continuing from: "${newSentence}"`;
         }
 
         sentenceCount += 1;
