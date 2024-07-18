@@ -5,7 +5,7 @@ import './HerbalChat.css';
 
 const BlogGenerator = () => {
   const [messages, setMessages] = useState([
-    { user: 'Bot', text: 'Welcome to the Blog Generator Tool. Type "go" to start creating a 2000-word blog on an interesting topic in herbal medicine.' }
+    { user: 'Bot', text: 'Welcome to the Blog Generator Tool. Please provide a title for your blog and an example or inspiration topic. Type "start" to begin.' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -13,6 +13,9 @@ const BlogGenerator = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [blogContent, setBlogContent] = useState([]);
   const [htmlContent, setHtmlContent] = useState('');
+  const [blogTitle, setBlogTitle] = useState('');
+  const [exampleBlog, setExampleBlog] = useState('');
+  const [stage, setStage] = useState('title'); // Track the current stage (title or example)
   const chatMessagesRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -28,7 +31,7 @@ const BlogGenerator = () => {
     try {
       let blog = [];
       let sentenceCount = 1;
-      let prompt = `Generate the title for a 2000-word LinkedIn blog on a random, interesting topic in herbal medicine such as the benefits of specific herbs or how to make herbal tinctures.`;
+      let prompt = `Generate the title for a 2000-word LinkedIn blog inspired by the following example: "${exampleBlog}"`;
 
       while (blog.join(' ').split(' ').length < 2000) {
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
@@ -48,11 +51,11 @@ const BlogGenerator = () => {
 
         const newSentence = response.data.choices[0].message.content.trim();
         blog.push(newSentence);
-        
+
         if (sentenceCount === 1) {
-          prompt = `Generate the first sentence of the blog titled: "${newSentence}"`;
+          prompt = `Generate the first sentence of the blog titled: "${blogTitle}"`;
         } else if (sentenceCount % 10 === 0) {
-          prompt = `Generate a section title for the blog continuing from: "${newSentence}"`;
+          prompt = `Generate a section title for the blog inspired by "${exampleBlog}", continuing from: "${newSentence}"`;
         } else {
           prompt = `Generate the ${sentenceCount}th sentence for the blog continuing from: "${newSentence}"`;
         }
@@ -86,7 +89,23 @@ const BlogGenerator = () => {
   };
 
   const handleSendMessage = () => {
-    if (input.trim().toLowerCase() === 'go') {
+    if (stage === 'title') {
+      setBlogTitle(input);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { user: 'You', text: input },
+        { user: 'Bot', text: 'Great! Now, please provide an example blog or topic to use as inspiration.' }
+      ]);
+      setStage('example');
+    } else if (stage === 'example') {
+      setExampleBlog(input);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { user: 'You', text: input },
+        { user: 'Bot', text: 'Thank you! Type "start" to begin generating your blog.' }
+      ]);
+      setStage('start');
+    } else if (input.trim().toLowerCase() === 'start') {
       setIsLoading(true);
       generateBlogContent();
     } else {
