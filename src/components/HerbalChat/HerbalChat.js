@@ -31,7 +31,7 @@ const BlogGenerator = () => {
     try {
       let blog = [];
       let sentenceCount = 1;
-      let prompt = `Generate the title for a 2000-word LinkedIn blog inspired by the following example: "${exampleBlog}"`;
+      let prompt = `Generate the first sentence of the blog titled: "${blogTitle}", inspired by the following example: "${exampleBlog}"`;
 
       while (blog.join(' ').split(' ').length < 2000) {
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
@@ -52,12 +52,10 @@ const BlogGenerator = () => {
         const newSentence = response.data.choices[0].message.content.trim();
         blog.push(newSentence);
 
-        if (sentenceCount === 1) {
-          prompt = `Generate the first sentence of the blog titled: "${blogTitle}"`;
-        } else if (sentenceCount % 10 === 0) {
-          prompt = `Generate a section title for the blog "`;
+        if (sentenceCount % 10 === 0) {
+          prompt = `Generate a section title for the blog continuing from: "${newSentence}", inspired by "${exampleBlog}"`;
         } else {
-          prompt = `Generate the ${sentenceCount}th sentence for the 2000 word blog "`;
+          prompt = `Generate the ${sentenceCount + 1}th sentence for the blog continuing from: "${newSentence}", inspired by "${exampleBlog}"`;
         }
 
         sentenceCount += 1;
