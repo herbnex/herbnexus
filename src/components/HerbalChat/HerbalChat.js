@@ -11,6 +11,7 @@ const BlogGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [blogContent, setBlogContent] = useState([]);
   const chatMessagesRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -25,7 +26,8 @@ const BlogGenerator = () => {
   const generateBlogContent = async () => {
     try {
       let blog = [];
-      let prompt = 'Generate the first sentence for a 2000-word LinkedIn blog on a random, interesting topic in herbal medicine.';
+      let sentenceCount = 1;
+      let prompt = `Generate the title for a 2000-word LinkedIn blog on a random, interesting topic in herbal medicine.`;
 
       while (blog.join(' ').split(' ').length < 2000) {
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
@@ -45,14 +47,20 @@ const BlogGenerator = () => {
 
         const newSentence = response.data.choices[0].message.content.trim();
         blog.push(newSentence);
-        prompt = 'Generate the next sentence for the blog continuing from: "' + newSentence + '"';
-
-        // Add the generated sentence to the messages state
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { user: 'Bot', text: newSentence }
-        ]);
+        sentenceCount += 1;
+        prompt = `Generate the ${sentenceCount}th sentence for the blog continuing from: "${newSentence}"`;
+        
+        if (sentenceCount % 20 === 0) {
+          prompt = `Generate a section title for a 2000-word LinkedIn blog on herbal medicine, continuing from: "${newSentence}"`;
+        }
       }
+
+      setBlogContent(blog);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { user: 'Bot', text: 'The blog is ready. Here is your 2000-word blog:' },
+        ...blog.map(sentence => ({ user: 'Bot', text: sentence }))
+      ]);
     } catch (error) {
       console.error('Error generating blog content: ', error);
       setMessages((prevMessages) => [
