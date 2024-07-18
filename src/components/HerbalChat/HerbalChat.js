@@ -55,7 +55,7 @@ const BlogGenerator = () => {
         if (sentenceCount === 1) {
           prompt = `Generate the first sentence of the blog titled: "${blogTitle}"`;
         } else if (sentenceCount % 10 === 0) {
-          prompt = `Generate a section title for the blog inspired by "${exampleBlog}", continuing from: "${newSentence}"`;
+          prompt = `Generate a section title for the blog "`;
         } else {
           prompt = `Generate the ${sentenceCount}th sentence for the 2000 word blog "`;
         }
