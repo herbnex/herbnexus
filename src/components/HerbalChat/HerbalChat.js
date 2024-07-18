@@ -47,12 +47,16 @@ const BlogGenerator = () => {
 
         const newSentence = response.data.choices[0].message.content.trim();
         blog.push(newSentence);
-        sentenceCount += 1;
-        prompt = `Generate the ${sentenceCount}th sentence for the blog continuing from: "${newSentence}"`;
         
-        if (sentenceCount % 20 === 0) {
-          prompt = `Generate a section title for a 2000-word LinkedIn blog on herbal medicine, continuing from: "${newSentence}"`;
+        if (sentenceCount === 1) {
+          prompt = `Generate the first sentence of the blog titled: "${newSentence}"`;
+        } else if (sentenceCount % 10 === 0) {
+          prompt = `Generate a section title for the blog continuing from: "${newSentence}"`;
+        } else {
+          prompt = `Generate the next sentence for the blog continuing from: "${newSentence}"`;
         }
+
+        sentenceCount += 1;
       }
 
       setBlogContent(blog);
