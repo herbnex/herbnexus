@@ -19,7 +19,7 @@ const categories = [
   { name: 'Hormone Health', image: hh },
   { name: 'Neurological Health', image: nh },
   { name: 'Immune Health', image: ih },
-  { name: 'Hollistc Health', image: hlh },
+  { name: 'Holistic Health', image: hlh },
 ];
 
 const CategoryList = () => {
