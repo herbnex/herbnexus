@@ -29,7 +29,7 @@ cd herbnexus
 npm install
 ```
 
-4. **Create a .env file in the root of your project and add your environment variables. For example:**
+4. **Create a .env file in the root of your project and add your environment variables. For example: **
 
 ```bash
 REACT_APP_FIREBASE_API_KEY=your_api_key
