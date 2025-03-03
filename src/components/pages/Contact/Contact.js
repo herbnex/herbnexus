@@ -65,7 +65,7 @@ const Contact = () => {
   const roomIdRef = useRef(null);
   const pendingCandidates = useRef([]);
   const sessionId = useRef(null); // New session ID
-  const [initialLoad, setInitialLoad] = useState(true); // New state to track initial load
+  // (Removed initialLoad state for Safari fix.)
   const [searchQuery, setSearchQuery] = useState(""); // New state for search query
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); // State for emoji picker
   const [downloadModal, setDownloadModal] = useState({ show: false, fileUrl: '', fileName: '' }); // State for download modal
@@ -115,7 +115,7 @@ const Contact = () => {
         id: doc.id,
         ...doc.data(),
       }));
-            const uniqueDoctors = doctors.filter(
+      const uniqueDoctors = doctors.filter(
         (doctor, index, self) =>
           index === self.findIndex((d) => d.id === doctor.id)
       );
@@ -134,7 +134,7 @@ const Contact = () => {
         id: doc.id,
         ...doc.data(),
       }));
-            const uniqueUsers = users.filter(
+      const uniqueUsers = users.filter(
         (user, index, self) =>
           index === self.findIndex((u) => u.id === user.id)
       );
@@ -154,14 +154,14 @@ const Contact = () => {
         ? generateChatId(selectedParticipant.id, user.uid)
         : generateChatId(user.uid, selectedParticipant.id);
 
-            const chatRef = databaseRef(database, `chats/${chatId}/messages`);
+      const chatRef = databaseRef(database, `chats/${chatId}/messages`);
       const typingRef = databaseRef(database, `chats/${chatId}/typing`);
 
       const unsubscribe = onValue(chatRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
           const messages = Object.values(data);
-                    setMsgList(messages);
+          setMsgList(messages);
           setTimeout(() => {
             if (msgBoxRef.current) {
               msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
@@ -186,14 +186,21 @@ const Contact = () => {
     }
   }, [user, selectedParticipant, isDoctor, currentRoom]);
 
+  // Updated Incoming Call Listener for Safari:
+  // Instead of relying on sessionId and initialLoad, we now check the call's timestamp.
   useEffect(() => {
     const handleIncomingCalls = (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
           const callData = change.doc.data();
-          if (callData.receiverId === user.uid && callData.callerId !== user.uid && callData.sessionId === sessionId.current && !initialLoad) {
-            setIncomingCall(callData);
-            setShowIncomingCallModal(true);
+          if (callData.receiverId === user.uid && callData.callerId !== user.uid) {
+            const callTime = new Date(callData.timestamp);
+            const now = new Date();
+            // Only trigger if the call was initiated within the last 30 seconds
+            if (now - callTime < 30000) {
+              setIncomingCall(callData);
+              setShowIncomingCallModal(true);
+            }
           }
         }
       });
@@ -201,14 +208,10 @@ const Contact = () => {
 
     const callUnsubscribe = onSnapshot(collection(db, `calls`), handleIncomingCalls);
 
-    setTimeout(() => {
-      setInitialLoad(false); // Set initialLoad to false after initial load
-    }, 1000);
-
     return () => {
       callUnsubscribe();
     };
-  }, [user.uid, initialLoad]);
+  }, [user.uid]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -217,13 +220,13 @@ const Contact = () => {
     }
 
     try {
-      const senderType = isDoctor ? 'doctor' : 'user';
+      const senderType = isDoctor ? "doctor" : "user";
       const userEmail = isDoctor ? selectedParticipant.email : user.email;
       const doctorEmail = isDoctor ? user.email : selectedParticipant.email;
       const newMessage = {
         user: user.displayName || "Anonymous",
         userId: user.uid,
-        userEmail: userEmail,  // Add user email
+        userEmail: userEmail, // Add user email
         doctorEmail: doctorEmail,
         text: message,
         timestamp: new Date().toISOString(),
@@ -242,32 +245,30 @@ const Contact = () => {
 
       await set(databaseRef(database, `chats/${chatId}/typing`), { typing: false });
 
-     // Determine sender type
+      const formattedMessage =
+        senderType === "doctor"
+          ? `You have received a new message from ${newMessage.doctorEmail}: ${newMessage.text}`
+          : `You have received a new message from ${newMessage.userEmail}: ${newMessage.text}`;
 
-    // Format the message based on sender type
-    const formattedMessage = senderType === 'doctor' 
-      ? `You have received a new message from ${newMessage.doctorEmail}: ${newMessage.text}` 
-      : `You have received a new message from ${newMessage.userEmail}: ${newMessage.text}`;
+      // Send email notification
+      const response = await fetch("/.netlify/functions/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: newMessage.userEmail,
+          doctorEmail: newMessage.doctorEmail,
+          subject: "New Message Notification",
+          message: formattedMessage,
+          senderType: senderType,
+        }),
+      });
 
-    // Send email notification
-    const response = await fetch('/.netlify/functions/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userEmail: newMessage.userEmail,
-        doctorEmail: newMessage.doctorEmail,
-        subject: 'New Message Notification',
-        message: formattedMessage,
-        senderType: senderType,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Error response from email function:', errorData);
-    }
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error response from email function:", errorData);
+      }
       setTimeout(() => {
         if (msgBoxRef.current) {
           msgBoxRef.current.scrollTop = msgBoxRef.current.scrollHeight;
@@ -362,7 +363,7 @@ const Contact = () => {
   // WebRTC Functions
 
   useEffect(() => {
-    // Handle attaching/detaching streams ONLY when showCallModal changes
+    // Attach/detach streams when showCallModal changes
     if (showCallModal && localStream.current && remoteStream.current) {
       attachMediaStreams();
     } else {
@@ -535,9 +536,7 @@ const Contact = () => {
       const offer = roomSnapshot.data().offer;
       if (offer) {
         try {
-          await peerConnection.current.setRemoteDescription(
-            new RTCSessionDescription(offer)
-          );
+          await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
           const answer = await peerConnection.current.createAnswer();
           await peerConnection.current.setLocalDescription(answer);
 
@@ -564,10 +563,7 @@ const Contact = () => {
             });
           });
         } catch (error) {
-          // console.error(
-          //   "Error setting remote description or creating answer:",
-          //   error
-          // );
+          //console.error("Error setting remote description or creating answer:", error);
         }
       }
     }
@@ -597,15 +593,11 @@ const Contact = () => {
 
     if (roomIdRef.current) {
       const roomRef = doc(db, "rooms", roomIdRef.current);
-      const calleeCandidatesSnapshot = await getDocs(
-        collection(roomRef, "calleeCandidates")
-      );
+      const calleeCandidatesSnapshot = await getDocs(collection(roomRef, "calleeCandidates"));
       calleeCandidatesSnapshot.forEach(async (candidate) => {
         await deleteDoc(candidate.ref);
       });
-      const callerCandidatesSnapshot = await getDocs(
-        collection(roomRef, "callerCandidates")
-      );
+      const callerCandidatesSnapshot = await getDocs(collection(roomRef, "callerCandidates"));
       callerCandidatesSnapshot.forEach(async (candidate) => {
         await deleteDoc(candidate.ref);
       });
@@ -692,34 +684,26 @@ const Contact = () => {
     if (!peerConnection.current) return;
 
     peerConnection.current.addEventListener("icegatheringstatechange", () => {
-      // console.log(
-      //   `ICE gathering state changed: ${peerConnection.current.iceGatheringState}`
-      // );
+      // console.log(`ICE gathering state changed: ${peerConnection.current.iceGatheringState}`);
     });
 
     peerConnection.current.addEventListener("connectionstatechange", () => {
-      // console.log(
-      //   `Connection state change: ${peerConnection.current.connectionState}`
-      // );
-      if (peerConnection.current.connectionState === "disconnected" || 
-          peerConnection.current.connectionState === "failed" || 
+      // console.log(`Connection state change: ${peerConnection.current.connectionState}`);
+      if (peerConnection.current.connectionState === "disconnected" ||
+          peerConnection.current.connectionState === "failed" ||
           peerConnection.current.connectionState === "closed") {
         hangUp();
       }
     });
 
     peerConnection.current.addEventListener("signalingstatechange", () => {
-      // console.log(
-      //   `Signaling state change: ${peerConnection.current.signalingState}`
-      // );
+      // console.log(`Signaling state change: ${peerConnection.current.signalingState}`);
     });
 
     peerConnection.current.addEventListener("iceconnectionstatechange", () => {
-      // console.log(
-      //   `ICE connection state change: ${peerConnection.current.iceConnectionState}`
-      // );
-      if (peerConnection.current.iceConnectionState === "disconnected" || 
-          peerConnection.current.iceConnectionState === "failed" || 
+      // console.log(`ICE connection state change: ${peerConnection.current.iceConnectionState}`);
+      if (peerConnection.current.iceConnectionState === "disconnected" ||
+          peerConnection.current.iceConnectionState === "failed" ||
           peerConnection.current.iceConnectionState === "closed") {
         hangUp();
       }
@@ -762,12 +746,12 @@ const Contact = () => {
       timestamp: new Date().toISOString(),
     };
 
-   // console.log('Call data being sent:', callData); // Log call data for debugging
+    // console.log('Call data being sent:', callData); // Log call data for debugging
     await addDoc(collection(db, "calls"), callData);
   };
 
   const generateRoomId = (doctorId, userId) => {
-    const ids = [doctorId, userId].sort(); // Ensure the room ID is the same regardless of the order of doctorId and userId
+    const ids = [doctorId, userId].sort(); // Ensure the room ID is the same regardless of the order
     return `${ids[0]}_${ids[1]}`;
   };
 
@@ -901,11 +885,8 @@ const Contact = () => {
         link.click();
         document.body.removeChild(link);
         setDownloadModal({ show: false, fileUrl: '', fileName: '' });
-      })
-      // .catch(error => console.error('Error downloading file:', error));
+      });
   };
-  
-  
 
   return (
     <Container fluid className="chat-room">
@@ -949,7 +930,7 @@ const Contact = () => {
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-flex align-items-center">
                     <img
-                      src={participant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"} // Replace "default-avatar-url" with the actual default avatar URL
+                      src={participant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"}
                       alt="Avatar"
                       className="rounded-circle me-2"
                       style={{ width: '40px', height: '40px' }}
@@ -972,7 +953,7 @@ const Contact = () => {
                 <div className="d-flex align-items-center">
                   <div className="user-avatar bg-secondary rounded-circle me-2" style={{ width: '40px', height: '40px' }}>
                     <img
-                      src={selectedParticipant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"} // Replace "default-avatar-url" with the actual default avatar URL
+                      src={selectedParticipant.photoURL || "https://i.ibb.co/4NM5vPL/Profile-avatar-placeholder-large.png"}
                       alt="Avatar"
                       className="rounded-circle"
                       style={{ width: '40px', height: '40px' }}
@@ -999,9 +980,7 @@ const Contact = () => {
                     key={index}
                     className={`message-container ${
                       msg.userId === user.uid ? "msg-self" : "msg-other"
-                    } ${
-                      visibleTimestamps[index] ? "show-timestamp" : ""
-                    }`}
+                    } ${visibleTimestamps[index] ? "show-timestamp" : ""}`}
                     onClick={() => toggleTimestamp(index)}
                   >
                     {renderMessage(msg)}
@@ -1022,10 +1001,7 @@ const Contact = () => {
                   <p className="msg-other typing-indicator">Typing...</p>
                 )}
               </div>
-              <Form
-                onSubmit={handleSendMessage}
-                className="message-input-container"
-              >
+              <Form onSubmit={handleSendMessage} className="message-input-container">
                 <InputGroup className="mb-3">
                   <Form.Control
                     as="textarea"
@@ -1038,11 +1014,7 @@ const Contact = () => {
                     className="message-input"
                     style={{ resize: "none", overflow: "auto" }}
                   />
-                  <Button
-                    variant="outline-secondary"
-                    onClick={() => setShowEmojiPicker(val => !val)}
-                    className="message-icon-button"
-                  >
+                  <Button variant="outline-secondary" onClick={() => setShowEmojiPicker(val => !val)} className="message-icon-button">
                     <FaSmile />
                   </Button>
                   <Form.Control
@@ -1051,18 +1023,10 @@ const Contact = () => {
                     id="file-input"
                     onChange={handleFileChange}
                   />
-                  <Button
-                    variant="outline-secondary"
-                    onClick={() => document.getElementById("file-input").click()}
-                    className="message-icon-button"
-                  >
+                  <Button variant="outline-secondary" onClick={() => document.getElementById("file-input").click()} className="message-icon-button">
                     <FaPaperclip />
                   </Button>
-                  <Button
-                    variant="outline-secondary"
-                    type="submit"
-                    className="message-send-button"
-                  >
+                  <Button variant="outline-secondary" type="submit" className="message-send-button">
                     Send
                   </Button>
                 </InputGroup>
@@ -1077,16 +1041,12 @@ const Contact = () => {
                 backdrop="static" // Prevent modal from closing by clicking outside
                 keyboard={false} // Prevent modal from closing by pressing Esc
               >
-                <Modal.Header >
+                <Modal.Header>
                   <Modal.Title>Video Call</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                   <Row>
-                    
-                    <Col
-                      md={12}
-                      className="d-flex flex-column align-items-center video-container"
-                    >
+                    <Col md={12} className="d-flex flex-column align-items-center video-container">
                       {showCallModal && (
                         <>
                           <div className="video-label">You ({user.displayName || "Anonymous"})</div>
@@ -1108,7 +1068,6 @@ const Contact = () => {
                           />
                         </>
                       )}
-
                       <div className="video-call-controls">
                         <Button onClick={toggleMute} className="control-button">
                           {isMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
@@ -1126,22 +1085,12 @@ const Contact = () => {
                         {msgList.map((msg, index) => (
                           <div
                             key={index}
-                            className={`message-container ${
-                              msg.userId === user.uid ? "msg-self" : "msg-other"
-                            } ${
-                              visibleTimestamps[index] ? "show-timestamp" : ""
-                            }`}
+                            className={`message-container ${msg.userId === user.uid ? "msg-self" : "msg-other"} ${visibleTimestamps[index] ? "show-timestamp" : ""}`}
                             onClick={() => toggleTimestamp(index)}
                           >
                             {renderMessage(msg)}
                             {visibleTimestamps[index] && (
-                              <span
-                                className={`timestamp ${
-                                  msg.userId === user.uid
-                                    ? "timestamp-left"
-                                    : "timestamp-right"
-                                }`}
-                              >
+                              <span className={`timestamp ${msg.userId === user.uid ? "timestamp-left" : "timestamp-right"}`}>
                                 {formatTimestamp(msg.timestamp)}
                               </span>
                             )}
@@ -1151,10 +1100,7 @@ const Contact = () => {
                           <p className="msg-other typing-indicator">Typing...</p>
                         )}
                       </div>
-                      <Form
-                        onSubmit={handleSendMessage}
-                        className="message-input-container"
-                      >
+                      <Form onSubmit={handleSendMessage} className="message-input-container">
                         <InputGroup className="mb-3">
                           <Form.Control
                             as="textarea"
@@ -1167,11 +1113,7 @@ const Contact = () => {
                             className="message-input"
                             style={{ resize: "none", overflow: "auto" }}
                           />
-                          <Button
-                            variant="outline-secondary"
-                            type="submit"
-                            className="message-send-button"
-                          >
+                          <Button variant="outline-secondary" type="submit" className="message-send-button">
                             Send
                           </Button>
                         </InputGroup>
